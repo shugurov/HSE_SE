@@ -6,7 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import utills.FileManager;
+import ru.hse.se.shugurov.utills.FileManager;
+
 
 /**
  * Created by Иван on 28.10.13.

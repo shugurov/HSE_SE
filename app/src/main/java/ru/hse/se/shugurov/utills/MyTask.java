@@ -13,9 +13,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import ViewsPackage.FileDescription;
-import observer.Observable;
-import observer.Observer;
+import ru.hse.se.shugurov.ViewsPackage.FileDescription;
+import ru.hse.se.shugurov.observer.Observable;
+import ru.hse.se.shugurov.observer.Observer;
+
 
 /**
  * Created by Shugurov Ivan on 21.10.13.
