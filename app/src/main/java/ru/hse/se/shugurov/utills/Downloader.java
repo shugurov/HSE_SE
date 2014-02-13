@@ -21,7 +21,7 @@ import ru.hse.se.shugurov.observer.Observer;
 /**
  * Created by Shugurov Ivan on 21.10.13.
  */
-public class MyTask extends AsyncTask<FileDescription, Void, Void> implements Observable
+public class Downloader extends AsyncTask<FileDescription, Void, Void> implements Observable
 {
     private ArrayList<Observer> observers = new ArrayList<Observer>();
     private ArrayList<FileDescription> fileDescriptions;
@@ -31,21 +31,21 @@ public class MyTask extends AsyncTask<FileDescription, Void, Void> implements Ob
     private String result;
     private String url;
 
-    public MyTask(String url)
+    public Downloader(String url)
     {
         result = "";
         status = DownloadStatus.DOWNLOAD_WITHOUT_SAVING;
         this.url = url;
     }
 
-    public MyTask(Context context, DownloadStatus status)
+    public Downloader(Context context, DownloadStatus status)
     {
         this.context = context;
         fileManager = new FileManager(context);
         this.status = status;
     }
 
-    public MyTask(Context context, ArrayList<FileDescription> fileDescriptions, DownloadStatus status)
+    public Downloader(Context context, ArrayList<FileDescription> fileDescriptions, DownloadStatus status)
     {
         this.context = context;
         this.fileDescriptions = fileDescriptions;
@@ -90,7 +90,6 @@ public class MyTask extends AsyncTask<FileDescription, Void, Void> implements Ob
                         }//TODO удалять старые файлы, но не тут
                     }
                 }
-                String[] files = context.fileList();
         }
         return null;
     }
@@ -135,7 +134,6 @@ public class MyTask extends AsyncTask<FileDescription, Void, Void> implements Ob
             if (response == httpURLConnection.HTTP_OK)
             {
                 input = httpURLConnection.getInputStream();
-                int a = 5;
             }
         } catch (MalformedURLException e)
         {

@@ -1,23 +1,24 @@
 package ru.hse.se.shugurov;
 
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.hse.se.shugurov.ViewsPackage.FileDescription;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
@@ -40,8 +42,8 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewWithFile;
 import ru.hse.se.shugurov.observer.Observer;
 import ru.hse.se.shugurov.social_networks.VkWebView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
+import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
-import ru.hse.se.shugurov.utills.MyTask;
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, Observer
 {
@@ -53,10 +55,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private int[] indexes;
     private int screenWidth;
     private int contentViewId;
-    private MyTask task;
+    private Downloader task;
     private ProgressDialog progressDialog;
     private Bundle savedInstanceState;
-    private View.OnClickListener buttonBackListener;
+    private boolean doShowRefreshButton = false;
+    private boolean isRefreshButtonShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -66,7 +69,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 //        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.savedInstanceState = savedInstanceState;
-        setDefaultBehaviorForBackButton();
         checkFiles();
     }
 
@@ -76,14 +78,20 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         super.onSaveInstanceState(outState);
         if (outState != null)
         {
-            outState.putString("index", currentView.getIndex());
+            outState.putString("index", currentView.getIndex());//TODO почему падает тут?(
         }
     }
 
     @Override
     public void onBackPressed()
     {
-        buttonBackListener.onClick(null);
+        if (currentView.isMainView())
+        {
+            return;
+        } else
+        {
+            openPreviousView();
+        }
     }
 
     private LinearLayout getLinearLayoutWithScreenItems(HSEView[] elements)//TODO исправить использование поля indexes
@@ -129,9 +137,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             for (RelativeLayout item : items)
             {
                 linearLayout.addView(item);
-                final TextView textView = (TextView) item.findViewById(R.id.item_text_id);
             }
-            RelativeLayout lol = (RelativeLayout) findViewById(indexes[0]);
             content.addView(linearLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
         return content;
@@ -169,27 +175,31 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         ScrollView parentView;
         parentView = (ScrollView) findViewById(R.id.scroll_view);
         changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
-        setHeader(givenView);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // Inflate the menu; this adds items to the action bar if it is present. TODO наверное, вообще удалить
+        //getMenuInflater().inflate(R.menu.main, menu);
+        if (doShowRefreshButton)
+        {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu, menu);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings)
+        if (id == R.id.action_refresh)
         {
+            startProgressDialog();
+            createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
+            task.execute(new FileDescription("json", HSEView.JSON_LINK));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -202,14 +212,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         switch (task.getDownloadStatus())
         {
             case DOWNLOAD_JSON:
-                String[] lol = fileList();
                 setJsonField();
-                ArrayList<FileDescription> files = new ArrayList<FileDescription>();
                 checkFiles();
                 break;
             case DOWNLOAD_FILES:
                 setGeneralScreen();
-                hseView.notifyAboutFiles(this);
+                hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
                 progressDialog.cancel();
                 break;
         }
@@ -260,27 +268,35 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case HSEViewTypes.LINKEDIN:
                 break;
-            case HSEViewTypes.MAP:
-                View map = View.inflate(this, R.layout.map, null);
-                break;
             case HSEViewTypes.FILE:
                 HSEViewWithFile viewWithFile = (HSEViewWithFile) givenView;
-                FileManager fileManager1 = new FileManager(this);
-                String path = getFilesDir() + "/" + viewWithFile.getFileName();
-                File file = new File(path);
+                String path = getFilesDir() + File.separator + viewWithFile.getFileName();
+                /*File file = new File(path);
                 if (file.exists())
                 {
                     Uri filePath = Uri.fromFile(file);
                     Intent fileIntent = new Intent(Intent.ACTION_VIEW);
-                    fileIntent.setData(filePath);
+                    fileIntent.setDataAndType(filePath, "application/pdf");
                     try
                     {
                         startActivity(fileIntent);
                     } catch (ActivityNotFoundException ex)
                     {
-                        Toast.makeText(this, "Не найдено приложений, способных открыть файл" + viewWithFile.getFileName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Не найдено приложений, способных открыть файл", Toast.LENGTH_LONG).show();
                     }
-                }//TODO что делать, если файл не существует?
+                }//TODO что делать, если файл не существует?*/
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
+                //intent.setType("application/pdf");
+                PackageManager pm = getPackageManager();
+                List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
+                if (activities.size() > 0)
+                {
+                    startActivity(intent);
+                } else
+                {
+                    Toast.makeText(this, "Не найдено приложений, способных открыть файл", Toast.LENGTH_LONG).show();
+                }
+
                 break;
             case HSEViewTypes.RSS_WRAPPER:
                 LinearLayout viewToAppear = new LinearLayout(this);
@@ -310,7 +326,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), viewToAppear, false);
                 currentView = givenView;
-                setHeader(givenView);
                 break;
             case HSEViewTypes.VK_FORUM:
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
@@ -322,7 +337,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 currentView = givenView;
                 break;
             case HSEViewTypes.WEB_PAGE:
-                Intent intent;
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(givenView.getUrl()));
                 startActivity(intent);
@@ -375,7 +389,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                 anotherViewToAppear.addView(RSSViewToAppear);
                                 changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), anotherViewToAppear, false);
                                 currentView = givenView;
-                                setHeader(givenView);
                                 break;
                             case ONLY_TITLE:
                                 Intent intentForBrowser;
@@ -391,6 +404,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 }
                 break;
         }
+        setActionBar();
     }
 
     private HSEView findViewUsingID(int givenId)
@@ -484,79 +498,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         viewToAppear.setId(contentViewId);
     }
 
-    private void setHeader(HSEView hseView)
+    private void setActionBar()
     {
-        ((TextView) findViewById(R.id.header_text)).setText(hseView.getName());
-        if (currentView.isMainView())
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(currentView.getName());
+        if (currentView.isMainView() && !isRefreshButtonShown)
         {
-            View button;
-            button = findViewById(R.id.header).findViewById(R.id.button_back);
-            if (button != null)
-            {
-                Animation animation;
-                animation = AnimationUtils.loadAnimation(this, R.anim.set_invisibility);
-                animation.reset();
-                button.setVisibility(View.INVISIBLE);
-                button.setAnimation(animation);
-                ((ViewManager) findViewById(R.id.header)).removeView(button);
-                getLayoutInflater().inflate(R.layout.button_refresh, (RelativeLayout) findViewById(R.id.header));
-                button = findViewById(R.id.header).findViewById(R.id.button_load);
-                button.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
-                    {
-                        refresh();
-                    }
-                });
-            } else
-            {
-                if (hseView.isMainView())
-                {
-                    getLayoutInflater().inflate(R.layout.button_refresh, (RelativeLayout) findViewById(R.id.header));
-                    button = findViewById(R.id.header).findViewById(R.id.button_load);
-                    button.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            refresh();
-                        }
-                    });
-                }
-            }
+            doShowRefreshButton = true;
+            isRefreshButtonShown = true;
+            supportInvalidateOptionsMenu();
         } else
         {
-            View button;
-            button = findViewById(R.id.header).findViewById(R.id.button_load);
-            if (button != null)
+            if (!currentView.isMainView() && isRefreshButtonShown)
             {
-                Animation animation;
-                animation = AnimationUtils.loadAnimation(this, R.anim.set_invisibility);
-                animation.reset();
-                button.setVisibility(View.INVISIBLE);
-                button.setAnimation(animation);
-                ((ViewManager) findViewById(R.id.header)).removeView(button);
-                RelativeLayout header;
-                header = (RelativeLayout) findViewById(R.id.header);
-                getLayoutInflater().inflate(R.layout.button_back, header);
-                ((ImageButton) header.findViewById(R.id.button_back)).setOnClickListener(buttonBackListener);
-            }
-            button = findViewById(R.id.header).findViewById(R.id.button_back);
-            if (button == null)
-            {
-                getLayoutInflater().inflate(R.layout.button_back, (RelativeLayout) findViewById(R.id.header));
-                View button_back;
-                button_back = findViewById(R.id.header).findViewById(R.id.button_back);
-                button_back.setOnClickListener(buttonBackListener);
+                doShowRefreshButton = false;
+                isRefreshButtonShown = false;
+                supportInvalidateOptionsMenu();
             }
         }
-    }
-
-    private void refresh()
-    {
-        createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-        task.execute(new FileDescription("json", HSEView.JSON_LINK));
     }
 
     private void openPreviousView()
@@ -591,23 +550,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     viewToAppear.addView(item);
                 }
                 changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), viewToAppear, true);
-                setHeader(currentView);
+
                 break;
             default:
                 openViewOfOtherViews(hseView.getViewByIndex(currentView.getParentIndex()), true);
         }
-
+        setActionBar();
     }
 
     private void createAsyncTask(DownloadStatus status)
     {
-        task = new MyTask(this, status);
+        task = new Downloader(this, status);
         task.addObserver(this);
     }
 
     private void createAsyncTask(ArrayList<FileDescription> descriptions, DownloadStatus status)
     {
-        task = new MyTask(this, descriptions, status);
+        task = new Downloader(this, descriptions, status);
         task.addObserver(this);
     }
 
@@ -627,13 +586,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 setJsonField();
                 ArrayList<FileDescription> files = new ArrayList<FileDescription>();
                 hseView.getDescriptionsOfFiles(files);
-                startProgressDialog();
+                //startProgressDialog();
                 createAsyncTask(files, DownloadStatus.DOWNLOAD_FILES);
                 task.execute();
             }
         } else
         {
-            createAsyncTask(DownloadStatus.DOWNLOAD_JSON); //TODO
+            createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
             task.execute(new FileDescription("json", HSEView.JSON_LINK));
         }
     }
@@ -641,7 +600,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private void startProgressDialog()
     {
         progressDialog = new ProgressDialog(this);
-        progressDialog.setIndeterminate(true);//TODO что это?
+        progressDialog.setIndeterminate(true);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
     }
@@ -736,11 +695,12 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         this.contentViewId = getFreeId();
         content.setId(this.contentViewId);
+        scrollView.removeAllViews();
         scrollView.addView(content);
-        setHeader(currentView);
+        setActionBar();
     }
 
-    private void setJsonField()
+    private void setJsonField()//TODO может разнести проверку json и файлов в разные методы?
     {
         FileManager fileManager = new FileManager(this);
         FileInputStream fileInputStream = fileManager.openFile("json");
@@ -751,7 +711,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         } else
         {
             String json = fileManager.getFileContent("json");
-            HSEView newView = null;
+            HSEView newView;
             try
             {
                 newView = HSEView.getView(json);
@@ -764,24 +724,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             hseView = newView;
             hseView.notifyAboutFiles(this);
         }
-    }
-
-    private void setDefaultBehaviorForBackButton()//TODO а  надо ли это?
-    {
-        buttonBackListener = new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                if (currentView.isMainView())
-                {
-                    return;
-                } else
-                {
-                    openPreviousView();
-                }
-            }
-        };
     }
 
 
