@@ -21,15 +21,15 @@ public class VKRequester
         this.accessToken = accessToken;
     }
 
-    public void getBoardTopics(String groupID)//темы в обсуждении группы
+    public void getTopics(String groupID, Callback<VKTopic> callback)//темы в обсуждении группы
     {
         String request = REQUEST_BEGINNING + BOARD_GET_TOPICS + "?" + GROUP_ID_TAG + "=" + groupID +
                 "&" + ACCESS_TOKEN_TAG + "=" + accessToken + "&extended=1";
     }
 
-    private VKBoardTopic[] parseBoardTopics(String data)
+    private VKTopic[] parseTopics(String data)
     {
-        VKBoardTopic[] vkBoardTopics = null;
+        VKTopic[] vkBoardTopics = null;
         try
         {
             JSONObject responseObject = new JSONObject(data);
@@ -42,5 +42,11 @@ public class VKRequester
             e.printStackTrace();
         }
         return vkBoardTopics;
+    }
+
+
+    public interface Callback<T>
+    {
+        public T pushData();
     }
 }

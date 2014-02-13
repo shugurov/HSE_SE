@@ -586,7 +586,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 setJsonField();
                 ArrayList<FileDescription> files = new ArrayList<FileDescription>();
                 hseView.getDescriptionsOfFiles(files);
-                //startProgressDialog();
+                startProgressDialog();
                 createAsyncTask(files, DownloadStatus.DOWNLOAD_FILES);
                 task.execute();
             }
