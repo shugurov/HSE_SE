@@ -1,38 +1,45 @@
 package ru.hse.se.shugurov.social_networks;
 
+import java.util.Date;
+
 /**
  * Created by Иван on 13.02.14.
  */
 public class VKTopic
 {
-    private final String authorPhoto;
-    private final String authorName;
+    private final int topicID;
+    private final VKUser author;
     private final String text;
-    private final String comments;
-    private final String date;
+    private final int comments;
+    private final Date date;
 
-    public VKTopic(String authorPhoto, String authorName, String text, String comments, String date)
+    public VKTopic(int topicID, VKUser author, String text, int comments, Date date)
     {
-        this.authorPhoto = authorPhoto;
-        this.authorName = authorName;
+        this.topicID = topicID;
+        this.author = author;
         this.text = text;
         this.comments = comments;
         this.date = date;
     }
 
-    public String getDate()
+    public Date getDate()
     {
         return date;
     }
 
     public String getAuthorPhoto()
     {
-        return authorPhoto;
+        return author.getPhoto();
     }
 
     public String getAuthorName()
     {
-        return authorName;
+        return author.getFirstName() + " " + author.getLastName();
+    }
+
+    public VKUser getAuthor()
+    {
+        return author;
     }
 
     public String getText()
@@ -40,7 +47,7 @@ public class VKTopic
         return text;
     }
 
-    public String getComments()
+    public int getComments()
     {
         return comments;
     }

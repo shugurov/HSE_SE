@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.List;
-
 import ru.hse.se.shugurov.R;
 
 
@@ -17,10 +15,10 @@ import ru.hse.se.shugurov.R;
  */
 public class VKTopicsAdapter extends BaseAdapter
 {
-    private List<VKTopic> topics;
+    private VKTopic[] topics;
     private LayoutInflater inflater;
 
-    public VKTopicsAdapter(Context context, List<VKTopic> topics)
+    public VKTopicsAdapter(Context context, VKTopic[] topics)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
@@ -29,13 +27,13 @@ public class VKTopicsAdapter extends BaseAdapter
     @Override
     public int getCount()
     {
-        return topics.size();
+        return topics.length;
     }
 
     @Override
     public Object getItem(int position)
     {
-        return topics.get(position);
+        return topics[position];
     }
 
     @Override
@@ -50,10 +48,10 @@ public class VKTopicsAdapter extends BaseAdapter
         if (convertView == null)
         {
             convertView = inflater.inflate(R.layout.vk_topic, parent, false);
-            ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(topics.get(position).getAuthorName());
-            ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(topics.get(position).getText());
-            ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(topics.get(position).getComments());
-            ((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics.get(position).getComments());
+            ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(topics[position].getAuthorName());
+            ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(topics[position].getText());
+            ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
+            //((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics[position].getComments());
         }
         return convertView;
     }

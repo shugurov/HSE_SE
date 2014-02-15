@@ -12,10 +12,11 @@ public class VkWebView extends WebViewClient
     private static final String ACCESS_TOKEN_TAG = "access_token";
 
 
-    private String accessToken;
+    private VKCallBack callBack;
 
-    public VkWebView()
+    public VkWebView(VKCallBack callBack)
     {
+        this.callBack = callBack;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class VkWebView extends WebViewClient
     {
         if (url.startsWith("http://oauth.vk.com/blank.html") || url.startsWith("https://oauth.vk.com/blank.html"))//TODO поменять на константы
         {
-            accessToken = getAccessToken(url);
+            callBack.call(getAccessToken(url));
             return true;
         }
         return false;
@@ -49,11 +50,6 @@ public class VkWebView extends WebViewClient
         {
             return null;
         }
-    }
-
-    public String getAccessToken()
-    {
-        return accessToken;
     }
 
     public interface VKCallBack

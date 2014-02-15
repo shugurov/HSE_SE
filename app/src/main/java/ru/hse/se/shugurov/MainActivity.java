@@ -21,6 +21,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -39,7 +40,10 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewRSS;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewRSSWrapper;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewWithFile;
+import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
 import ru.hse.se.shugurov.observer.Observer;
+import ru.hse.se.shugurov.social_networks.VKRequester;
+import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 import ru.hse.se.shugurov.social_networks.VkWebView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
@@ -60,6 +64,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Bundle savedInstanceState;
     private boolean doShowRefreshButton = false;
     private boolean isRefreshButtonShown = false;
+    private VKRequester vkRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -329,12 +334,38 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case HSEViewTypes.VK_FORUM:
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                WebView vkView;
-                vkView = new WebView(this);
-                vkView.loadUrl(VkWebView.OAUTH);
-                vkView.setWebViewClient(new VkWebView());
-                changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), vkView, false);
+                final ListView vkTopicsList = new ListView(this);
+                vkTopicsList.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 currentView = givenView;
+                if (vkRequester == null)//TODO проверять существование токена
+                {
+                    WebView vkView;
+
+                    vkView = new WebView(this);
+                    vkView.loadUrl(VkWebView.OAUTH);
+                    vkView.setWebViewClient(new VkWebView(new VkWebView.VKCallBack()
+                    {
+                        @Override
+                        public void call(String token)
+                        {
+                            vkRequester = new VKRequester(token, new Requester.RequestResultCallback()
+                            {
+                                @Override
+                                public void pushResult(String result)
+                                {
+                                    VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
+                                    vkTopicsList.setAdapter(adapter);
+                                    changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), vkTopicsList, false);
+                                }
+                            });
+                            vkRequester.getTopics(((VKHSEView) currentView).getObjectID());
+                        }
+                    }));
+                    changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), vkView, false);
+                } else//TODO то делать, если requester есть
+                {
+
+                }
                 break;
             case HSEViewTypes.WEB_PAGE:
                 intent = new Intent(Intent.ACTION_VIEW);
@@ -512,6 +543,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             if (!currentView.isMainView() && isRefreshButtonShown)
             {
                 doShowRefreshButton = false;
+
                 isRefreshButtonShown = false;
                 supportInvalidateOptionsMenu();
             }
@@ -686,7 +718,29 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 WebView vkView;
                 vkView = new WebView(this);
                 vkView.loadUrl(VkWebView.OAUTH);
-                vkView.setWebViewClient(new VkWebView());
+                vkView.setWebViewClient(new VkWebView(new VkWebView.VKCallBack()
+                {
+                    @Override
+                    public void call(final String token)
+                    {
+                        Requester requester = new Requester(new Requester.RequestResultCallback()
+                        {
+                            @Override
+                            public void pushResult(String result)
+                            {
+                                String lol = "change me(";
+                            }
+                        });
+                        VKRequester vkRequester = new VKRequester(token, new Requester.RequestResultCallback()
+                        {
+                            @Override
+                            public void pushResult(String result)
+                            {
+
+                            }
+                        });
+                    }
+                }));
                 vkView.loadUrl(VkWebView.OAUTH);
                 content = vkView;
                 break;
@@ -726,5 +780,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
+    private void openVKView(String accessToken)
+    {
+        Requester requester = new Requester(new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String result)
+            {
+                String lol = "sdsds";
+            }
+        });
+    }
 
 }
