@@ -52,6 +52,8 @@ public class VKTopicsAdapter extends BaseAdapter
             ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(topics[position].getText());
             ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
             //((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics[position].getComments());
+
+
         }
         return convertView;
     }
