@@ -2,7 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:orientation="horizontal">
 
     <ImageView
@@ -19,7 +19,7 @@
             android:id="@+id/vk_topic_author_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/vk_topic_text"

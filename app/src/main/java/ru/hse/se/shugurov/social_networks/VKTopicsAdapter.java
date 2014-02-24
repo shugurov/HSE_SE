@@ -1,6 +1,8 @@
 package ru.hse.se.shugurov.social_networks;
 
 import android.content.Context;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,7 @@ public class VKTopicsAdapter extends BaseAdapter
     @Override
     public int getCount()
     {
-        return topics.length;
+        return /*topics.length*/ 20;
     }
 
     @Override
@@ -48,13 +50,12 @@ public class VKTopicsAdapter extends BaseAdapter
         if (convertView == null)
         {
             convertView = inflater.inflate(R.layout.vk_topic, parent, false);
-            ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(topics[position].getAuthorName());
-            ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(topics[position].getText());
-            ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
-            //((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics[position].getComments());
-
-
         }
+        Log.d("my", Integer.toString(position));
+        ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthorName()));
+        ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
+        ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
+        ((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics[position].getDate().toString());
         return convertView;
     }
 }

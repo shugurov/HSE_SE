@@ -4,9 +4,11 @@
               android:layout_height="match_parent"
               android:background="#FFF"
               android:orientation="vertical"
-              tools:context=".MainActivity">
+              tools:context=".MainActivity"
+              android:id="@+id/main_frame"
+    >
 
-    <ScrollView
+<ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

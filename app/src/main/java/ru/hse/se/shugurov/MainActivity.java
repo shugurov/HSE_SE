@@ -70,8 +70,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-//        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.savedInstanceState = savedInstanceState;
         checkFiles();
@@ -186,8 +184,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu)
     {
 
-        // Inflate the menu; this adds items to the action bar if it is present. TODO наверное, вообще удалить
-        //getMenuInflater().inflate(R.menu.main, menu);
         if (doShowRefreshButton)
         {
             MenuInflater inflater = getMenuInflater();
@@ -335,9 +331,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case HSEViewTypes.VK_FORUM:
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
                 final ListView vkTopicsList = new ListView(this);
-                vkTopicsList.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                //vkTopicsList.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 currentView = givenView;
-                if (vkRequester == null)//TODO проверять существование токена
+                if (vkRequester == null)//TODO проверять существование токена и не надо каждый раз показывать веб вью(
                 {
                     WebView vkView;
 
@@ -355,13 +351,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                 {
                                     VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
                                     vkTopicsList.setAdapter(adapter);
-                                    changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), vkTopicsList, false);
+                                    changeViews((LinearLayout) findViewById(R.id.main_frame), findViewById(R.id.scroll_view), vkTopicsList, false);
+
                                 }
                             });
                             vkRequester.getTopics(((VKHSEView) currentView).getObjectID());
                         }
                     }));
                     changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), vkView, false);
+                    return;
                 } else//TODO то делать, если requester есть
                 {
 
@@ -517,7 +515,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         viewToAppear.setAnimation(animationAppearing);
     }
 
-    private void changeViews(ScrollView parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
+    private void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
     {
         viewToAppear.setVisibility(View.INVISIBLE);
         viewToDisappear.setVisibility(View.INVISIBLE);
