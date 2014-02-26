@@ -1,18 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#FFF"
-              android:orientation="vertical"
-              tools:context=".MainActivity"
-              android:id="@+id/main_frame"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFF"
+            android:orientation="vertical"
+            tools:context=".MainActivity"
+            android:fillViewport="true"
+            android:id="@+id/scroll_view"
     >
 
-<ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        >
-    </ScrollView>
+    <!--<ScrollView-->
+    <!--android:id="@+id/scroll_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:fillViewport="true"-->
+    <!-->-->
+    <!--</ScrollView>-->
 
-</LinearLayout>
+</ScrollView>

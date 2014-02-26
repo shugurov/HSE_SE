@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -330,8 +331,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
             case HSEViewTypes.VK_FORUM:
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                final ListView vkTopicsList = new ListView(this);
-                //vkTopicsList.setLayoutParams(new ScrollView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 currentView = givenView;
                 if (vkRequester == null)//TODO проверять существование токена и не надо каждый раз показывать веб вью(
                 {
@@ -350,8 +349,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                 public void pushResult(String result)
                                 {
                                     VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
-                                    vkTopicsList.setAdapter(adapter);
-                                    changeViews((LinearLayout) findViewById(R.id.main_frame), findViewById(R.id.scroll_view), vkTopicsList, false);
+                                    LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                                    LinearLayout vkGroupLayout = (LinearLayout) inflater.inflate(R.layout.vk_group, (ScrollView) findViewById(R.id.scroll_view), false);
+                                    ListView listView = (ListView) vkGroupLayout.findViewById(R.id.vk_group_list);
+                                    listView.setAdapter(adapter);
+                                    changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), vkGroupLayout, false);
 
                                 }
                             });

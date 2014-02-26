@@ -2,14 +2,15 @@ package ru.hse.se.shugurov.social_networks;
 
 import android.content.Context;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.utills.ImageLoader;
 
 
 /**
@@ -19,17 +20,19 @@ public class VKTopicsAdapter extends BaseAdapter
 {
     private VKTopic[] topics;
     private LayoutInflater inflater;
+    private ImageLoader imageLoader;
 
     public VKTopicsAdapter(Context context, VKTopic[] topics)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
+        imageLoader = new ImageLoader(context);
     }
 
     @Override
     public int getCount()
     {
-        return /*topics.length*/ 20;
+        return topics.length;
     }
 
     @Override
@@ -51,7 +54,8 @@ public class VKTopicsAdapter extends BaseAdapter
         {
             convertView = inflater.inflate(R.layout.vk_topic, parent, false);
         }
-        Log.d("my", Integer.toString(position));
+        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_topic_author_photo);
+        imageLoader.displayImage(topics[position].getAuthorPhoto(), authorPhoto);
         ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthorName()));
         ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
         ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
