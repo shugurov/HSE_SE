@@ -3,14 +3,14 @@ package ru.hse.se.shugurov.social_networks;
 /**
  * Created by Иван on 14.02.14.
  */
-public class VKUser
+public class VKProfile
 {
     private final int userID;
     private final String firstName;
     private final String lastName;
     private final String photo;
 
-    public VKUser(int userID, String firstName, String lastName, String photo)
+    public VKProfile(int userID, String firstName, String lastName, String photo)
     {
         this.userID = userID;
         this.firstName = firstName;
@@ -36,6 +36,11 @@ public class VKUser
     public String getPhoto()
     {
         return photo;
+    }
+
+    public String getFullName()
+    {
+        return firstName + " " + lastName;
     }
 
 }

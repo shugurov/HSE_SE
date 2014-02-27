@@ -20,6 +20,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -43,6 +44,8 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewWithFile;
 import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
 import ru.hse.se.shugurov.observer.Observer;
+import ru.hse.se.shugurov.social_networks.VKAbstractItem;
+import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 import ru.hse.se.shugurov.social_networks.VkWebView;
@@ -343,21 +346,53 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         @Override
                         public void call(String token)
                         {
-                            vkRequester = new VKRequester(token, new Requester.RequestResultCallback()
+                            vkRequester = new VKRequester(token);
+                            vkRequester.getTopics(((VKHSEView) currentView).getObjectID(), new Requester.RequestResultCallback()
                             {
                                 @Override
                                 public void pushResult(String result)
                                 {
-                                    VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
-                                    LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                                    final VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
+                                    final LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                                     LinearLayout vkGroupLayout = (LinearLayout) inflater.inflate(R.layout.vk_group, (ScrollView) findViewById(R.id.scroll_view), false);
-                                    ListView listView = (ListView) vkGroupLayout.findViewById(R.id.vk_group_list);
-                                    listView.setAdapter(adapter);
+                                    final ListView vkTopicsList = (ListView) vkGroupLayout.findViewById(R.id.vk_group_list);
+                                    vkTopicsList.setAdapter(adapter);
+                                    vkTopicsList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                                    {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                                        {
+                                            final ListView commentsList = new ListView(MainActivity.this);
+                                            vkRequester.getComments(((VKHSEView) currentView).getObjectID(), adapter.getItem(position).getTopicID(), new Requester.RequestResultCallback()
+                                            {
+                                                @Override
+                                                public void pushResult(String result)
+                                                {
+                                                    VKAbstractItem[] comments = vkRequester.getComments(result);
+                                                    if (comments == null)
+                                                    {
+                                                        //TODO что делать, если массив комментариев пуст?
+                                                    } else
+                                                    {
+                                                        VKCommentsAdapter vkCommentsAdapter = new VKCommentsAdapter(MainActivity.this, comments);
+                                                        commentsList.setAdapter(vkCommentsAdapter);
+                                                        ListView experiment = (ListView) inflater.inflate(R.layout.experiment_list, null, false);
+                                                        // experiment.setAdapter(new ExperimentAdapter(MainActivity.this, comments));
+                                                        experiment.setAdapter(vkCommentsAdapter);
+                                                        setContentView(experiment);
+                                                    }
+                                                }
+                                            });
+                                            commentsList.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)); //TODO прогресс бар во время загрузки сообщений где-то тут
+                                            //changeViews((ScrollView) findViewById(R.id.scroll_view), vkTopicsList, commentsList, false);
+                                            //setContentView(commentsList);
+
+                                        }
+                                    });
                                     changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), vkGroupLayout, false);
 
                                 }
                             });
-                            vkRequester.getTopics(((VKHSEView) currentView).getObjectID());
                         }
                     }));
                     changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), vkView, false);
@@ -728,17 +763,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                             @Override
                             public void pushResult(String result)
                             {
-                                String lol = "change me(";
+                                String lol = "change me(";//TODO
                             }
                         });
-                        VKRequester vkRequester = new VKRequester(token, new Requester.RequestResultCallback()
-                        {
-                            @Override
-                            public void pushResult(String result)
-                            {
-
-                            }
-                        });
+                        VKRequester vkRequester = new VKRequester(token);
                     }
                 }));
                 vkView.loadUrl(VkWebView.OAUTH);
@@ -780,16 +808,5 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
-    private void openVKView(String accessToken)
-    {
-        Requester requester = new Requester(new Requester.RequestResultCallback()
-        {
-            @Override
-            public void pushResult(String result)
-            {
-                String lol = "sdsds";
-            }
-        });
-    }
 
 }

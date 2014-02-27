@@ -36,7 +36,7 @@ public class VKTopicsAdapter extends BaseAdapter
     }
 
     @Override
-    public Object getItem(int position)
+    public VKTopic getItem(int position)
     {
         return topics[position];
     }
@@ -55,8 +55,8 @@ public class VKTopicsAdapter extends BaseAdapter
             convertView = inflater.inflate(R.layout.vk_topic, parent, false);
         }
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_topic_author_photo);
-        imageLoader.displayImage(topics[position].getAuthorPhoto(), authorPhoto);
-        ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthorName()));
+        imageLoader.displayImage(topics[position].getAuthor().getPhoto(), authorPhoto);
+        ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthor().getFullName()));
         ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
         ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
         ((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(topics[position].getDate().toString());
