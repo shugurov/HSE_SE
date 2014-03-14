@@ -1,6 +1,7 @@
 package ru.hse.se.shugurov;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,10 +20,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,11 +41,10 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewRSSWrapper;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewWithFile;
 import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
+import ru.hse.se.shugurov.gui.ScreenAdapter;
+import ru.hse.se.shugurov.gui.VKScreenAdapter;
 import ru.hse.se.shugurov.observer.Observer;
-import ru.hse.se.shugurov.social_networks.VKAbstractItem;
-import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 import ru.hse.se.shugurov.social_networks.VkWebView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
@@ -68,7 +65,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Bundle savedInstanceState;
     private boolean doShowRefreshButton = false;
     private boolean isRefreshButtonShown = false;
-    private VKRequester vkRequester;
+    private boolean doShowAddMessageButton = false;
+    private ScreenAdapter screenAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -97,7 +95,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             return;
         } else
         {
-            openPreviousView();
+            if (screenAdapter != null && screenAdapter.hasPreviousView())
+            {
+                screenAdapter.showPreviousView();
+            } else
+            {
+                openPreviousView();
+            }
         }
     }
 
@@ -180,18 +184,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         View viewToDisappear;
         viewToDisappear = findViewById(contentViewId);
         ScrollView parentView;
-        parentView = (ScrollView) findViewById(R.id.scroll_view);
+        parentView = (ScrollView) findViewById(R.id.main_scroll);
         changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-
+        MenuInflater inflater = getMenuInflater();
         if (doShowRefreshButton)
         {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.menu, menu);
+            inflater.inflate(R.menu.refresh_menu, menu);
+        } else
+        {
+            if (doShowAddMessageButton)
+            {
+                inflater.inflate(R.menu.message_adding_menu, menu);
+            }
         }
         return true;
     }
@@ -199,13 +208,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        int id = item.getItemId();
-        if (id == R.id.action_refresh)
+        switch (item.getItemId())
         {
-            startProgressDialog();
-            createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-            task.execute(new FileDescription("json", HSEView.JSON_LINK));
-            return true;
+            case R.id.action_refresh:
+                startProgressDialog();
+                createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
+                task.execute(new FileDescription("json", HSEView.JSON_LINK));
+                return true;
+            case R.id.action_add_message:
+                Toast.makeText(this, "I'm working!", Toast.LENGTH_SHORT).show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -233,8 +245,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     {
         int givenId;
         givenId = view.getId();
-        HSEView givenView;
-        givenView = findViewUsingID(givenId);
+        final HSEView givenView = findViewUsingID(givenId);
         if (givenView == null)
         {
             Toast.makeText(this, "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
@@ -254,7 +265,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 webView = new WebView(this);
                 webView.loadDataWithBaseURL(null, HTMLContent, mime, encoding, null);
                 webView.setWebViewClient(new WebViewClient());
-                changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), webView, false);
+                changeViews(((ScrollView) findViewById(R.id.main_scroll)), findViewById(contentViewId), webView, false);
                 currentView = givenView;
                 break;
             case HSEViewTypes.INNER_WEB_PAGE:
@@ -262,7 +273,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 webViewToAppear = new WebView(this);
                 webViewToAppear.loadUrl(givenView.getUrl());
                 webViewToAppear.setWebViewClient(new WebViewClient());
-                changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), webViewToAppear, false);
+                changeViews(((ScrollView) findViewById(R.id.main_scroll)), findViewById(contentViewId), webViewToAppear, false);
                 currentView = givenView;
                 break;
             case HSEViewTypes.EVENTS:
@@ -329,18 +340,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 {
                     return;
                 }
-                changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), viewToAppear, false);
+                changeViews((ScrollView) findViewById(R.id.main_scroll), findViewById(contentViewId), viewToAppear, false);
                 currentView = givenView;
                 break;
             case HSEViewTypes.VK_FORUM:
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                currentView = givenView;
+                /*currentView = givenView;
                 if (vkRequester == null)//TODO проверять существование токена и не надо каждый раз показывать веб вью(
                 {
                     WebView vkView;
-
                     vkView = new WebView(this);
                     vkView.loadUrl(VkWebView.OAUTH);
+                    final LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+                    final ListView vkList = (ListView) inflater.inflate(R.layout.activity_main_list, (LinearLayout) findViewById(R.id.main), false);
                     vkView.setWebViewClient(new VkWebView(new VkWebView.VKCallBack()
                     {
                         @Override
@@ -353,16 +365,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                 public void pushResult(String result)
                                 {
                                     final VKTopicsAdapter adapter = new VKTopicsAdapter(MainActivity.this, vkRequester.getTopicsAdapter(result));
-                                    final LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
-                                    LinearLayout vkGroupLayout = (LinearLayout) inflater.inflate(R.layout.vk_group, (ScrollView) findViewById(R.id.scroll_view), false);
-                                    final ListView vkTopicsList = (ListView) vkGroupLayout.findViewById(R.id.vk_group_list);
-                                    vkTopicsList.setAdapter(adapter);
-                                    vkTopicsList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                                    doShowAddMessageButton = true;
+                                    setActionBar();
+                                    vkList.setAdapter(adapter);
+                                    vkList.setOnItemClickListener(new AdapterView.OnItemClickListener()
                                     {
                                         @Override
                                         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                                         {
-                                            final ListView commentsList = new ListView(MainActivity.this);
                                             vkRequester.getComments(((VKHSEView) currentView).getObjectID(), adapter.getItem(position).getTopicID(), new Requester.RequestResultCallback()
                                             {
                                                 @Override
@@ -375,32 +385,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                                     } else
                                                     {
                                                         VKCommentsAdapter vkCommentsAdapter = new VKCommentsAdapter(MainActivity.this, comments);
-                                                        commentsList.setAdapter(vkCommentsAdapter);
-                                                        ListView experiment = (ListView) inflater.inflate(R.layout.experiment_list, null, false);
-                                                        // experiment.setAdapter(new ExperimentAdapter(MainActivity.this, comments));
-                                                        experiment.setAdapter(vkCommentsAdapter);
-                                                        setContentView(experiment);
+                                                        ListView responsesListView = (ListView) inflater.inflate(R.layout.activity_main_list, (LinearLayout) findViewById(R.id.main), false);
+                                                        responsesListView.setAdapter(vkCommentsAdapter);
+                                                        changeViews((LinearLayout) findViewById(R.id.main), vkList, responsesListView, false);
                                                     }
                                                 }
                                             });
-                                            commentsList.setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)); //TODO прогресс бар во время загрузки сообщений где-то тут
-                                            //changeViews((ScrollView) findViewById(R.id.scroll_view), vkTopicsList, commentsList, false);
-                                            //setContentView(commentsList);
 
                                         }
                                     });
-                                    changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), vkGroupLayout, false);
-
                                 }
                             });
                         }
                     }));
-                    changeViews(((ScrollView) findViewById(R.id.scroll_view)), findViewById(contentViewId), vkView, false);
+                    changeViews((LinearLayout) findViewById(R.id.main), findViewById(R.id.main_scroll), vkList, false);
                     return;
                 } else//TODO то делать, если requester есть
                 {
 
-                }
+                }*/
+                screenAdapter = new VKScreenAdapter(new MainActivityCallback(), (ViewGroup) findViewById(R.id.main), findViewById(R.id.main_scroll), (VKHSEView) givenView);
                 break;
             case HSEViewTypes.WEB_PAGE:
                 intent = new Intent(Intent.ACTION_VIEW);
@@ -453,7 +457,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                     }
                                 });
                                 anotherViewToAppear.addView(RSSViewToAppear);
-                                changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), anotherViewToAppear, false);
+                                changeViews((ScrollView) findViewById(R.id.main_scroll), findViewById(contentViewId), anotherViewToAppear, false);
                                 currentView = givenView;
                                 break;
                             case ONLY_TITLE:
@@ -566,13 +570,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private void setActionBar()
     {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(currentView.getName());
+        setTitleToActionBar(currentView.getName());
         if (currentView.isMainView() && !isRefreshButtonShown)
         {
             doShowRefreshButton = true;
             isRefreshButtonShown = true;
-            supportInvalidateOptionsMenu();
         } else
         {
             if (!currentView.isMainView() && isRefreshButtonShown)
@@ -580,9 +582,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 doShowRefreshButton = false;
 
                 isRefreshButtonShown = false;
-                supportInvalidateOptionsMenu();
             }
         }
+        supportInvalidateOptionsMenu();
+    }
+
+    private void setTitleToActionBar(String title)
+    {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(title);
     }
 
     private void openPreviousView()
@@ -616,7 +624,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     item.setId(id);
                     viewToAppear.addView(item);
                 }
-                changeViews((ScrollView) findViewById(R.id.scroll_view), findViewById(contentViewId), viewToAppear, true);
+                changeViews((ScrollView) findViewById(R.id.main_scroll), findViewById(contentViewId), viewToAppear, true);
 
                 break;
             default:
@@ -684,7 +692,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         currentView = hseView.getViewByIndex(index);
         View content;
         ScrollView scrollView;
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView = (ScrollView) findViewById(R.id.main_scroll);
         switch (currentView.getHseViewType())  //TODO тут пишу код для переворота экрана
         {
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
@@ -756,7 +764,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 vkView.setWebViewClient(new VkWebView(new VkWebView.VKCallBack()
                 {
                     @Override
-                    public void call(final String token)
+                    public void call(final String accessToken)
                     {
                         Requester requester = new Requester(new Requester.RequestResultCallback()
                         {
@@ -766,7 +774,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                                 String lol = "change me(";//TODO
                             }
                         });
-                        VKRequester vkRequester = new VKRequester(token);
+                        VKRequester vkRequester = new VKRequester(accessToken);
                     }
                 }));
                 vkView.loadUrl(VkWebView.OAUTH);
@@ -808,5 +816,24 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
     }
 
+    public class MainActivityCallback
+    {
+
+        public void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
+        {
+            MainActivity.this.changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
+        }
+
+        public Context getContext()
+        {
+            return MainActivity.this;
+        }
+
+        public void setActionBarTitle(String title)
+        {
+            setTitleToActionBar(title);
+        }
+
+    }
 
 }

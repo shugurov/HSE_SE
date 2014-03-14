@@ -52,9 +52,6 @@ public class VKCommentsAdapter extends BaseAdapter
         {
             convertView = inflater.inflate(R.layout.vk_comment, parent, false);
         }
-        //ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_comment_author_photo);
-        //authorPhoto.setImageBitmap(null);
-        //imageLoader.displayImage(comments[position].getAuthor().getPhoto(), authorPhoto);
         ((TextView) convertView.findViewById(R.id.vk_comment_author_name)).setText(comments[position].getAuthor().getFullName());
         ((TextView) convertView.findViewById(R.id.vk_comment_date)).setText(comments[position].getDate().toString());
         ((TextView) convertView.findViewById(R.id.vk_comment_text)).setText(Html.fromHtml(comments[position].getText()));

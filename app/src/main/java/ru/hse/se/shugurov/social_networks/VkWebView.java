@@ -54,7 +54,7 @@ public class VkWebView extends WebViewClient
 
     public interface VKCallBack
     {
-        void call(String token);
+        void call(String accessToken);
     }
 
 
