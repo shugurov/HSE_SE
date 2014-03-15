@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import java.util.Stack;
 
 import ru.hse.se.shugurov.MainActivity;
+import ru.hse.se.shugurov.ViewsPackage.HSEView;
 
 /**
  * Created by Иван on 14.03.14.
@@ -18,11 +19,13 @@ public abstract class ScreenAdapter
     private MainActivity.MainActivityCallback callback;
     private ViewGroup container;
     private Stack<View> previousViews;
+    private HSEView hseView;
 
-    public ScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView)
+    public ScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView)
     {
         this.callback = callback;
         this.container = container;
+        this.hseView = hseView;
         inflater = LayoutInflater.from(callback.getContext());
         previousViews = new Stack<View>();
         previousViews.add(previousView);
@@ -62,5 +65,10 @@ public abstract class ScreenAdapter
     protected void setActionBarTitle(String title)
     {
         callback.setActionBarTitle(title);
+    }
+
+    protected HSEView getHseView()
+    {
+        return hseView;
     }
 }

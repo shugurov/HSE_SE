@@ -13,6 +13,7 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.MainActivity;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
+import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
 import ru.hse.se.shugurov.social_networks.VKAbstractItem;
 import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;
@@ -28,12 +29,10 @@ public class VKScreenAdapter extends ScreenAdapter
     private static final String ACCESS_TOKEN_TAG = "access_token";
     private static final String SHARED_PREFERENCES_TAG = "social_networks";
     private VKRequester requester;
-    private VKHSEView vkhseView;
 
-    public VKScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, VKHSEView vkhseView)
+    public VKScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView vkhseView)
     {
-        super(callback, container, previousView);
-        this.vkhseView = vkhseView;
+        super(callback, container, previousView, vkhseView);
         SharedPreferences preferences = getContext().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
         String accessToken = preferences.getString(ACCESS_TOKEN_TAG, null);
         if (accessToken == null)
@@ -68,7 +67,7 @@ public class VKScreenAdapter extends ScreenAdapter
     private void showListOfTopics()
     {
         final ListView vkList = (ListView) getLayoutInflater().inflate(R.layout.activity_main_list, getContainer(), false);
-        requester.getTopics(vkhseView.getObjectID(), new Requester.RequestResultCallback()
+        requester.getTopics(getHseView().getObjectID(), new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)
@@ -79,7 +78,7 @@ public class VKScreenAdapter extends ScreenAdapter
                 } else
                 {
                     final VKTopicsAdapter adapter = new VKTopicsAdapter(getContext(), requester.getTopicsAdapter(result));
-                    setActionBarTitle(vkhseView.getName());
+                    setActionBarTitle(getHseView().getName());
                     vkList.setAdapter(adapter);
                     vkList.setOnItemClickListener(new AdapterView.OnItemClickListener()
                     {
@@ -97,7 +96,7 @@ public class VKScreenAdapter extends ScreenAdapter
 
     private void showResponses(int topicID)
     {
-        requester.getComments(vkhseView.getObjectID(), topicID, new Requester.RequestResultCallback()
+        requester.getComments(getHseView().getObjectID(), topicID, new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)//TODO что делать с пустым результатом
@@ -123,5 +122,11 @@ public class VKScreenAdapter extends ScreenAdapter
         SharedPreferences.Editor preferencesEditor = preferences.edit();
         preferencesEditor.putString(ACCESS_TOKEN_TAG, accessToken);
         preferencesEditor.commit();
+    }
+
+    @Override
+    protected VKHSEView getHseView()
+    {
+        return (VKHSEView) super.getHseView();
     }
 }
