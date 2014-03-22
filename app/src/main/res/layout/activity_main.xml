@@ -9,6 +9,5 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <include layout="@layout/activity_main_scroll"></include>
 
 </LinearLayout>

@@ -28,7 +28,10 @@ public abstract class ScreenAdapter
         this.hseView = hseView;
         inflater = LayoutInflater.from(callback.getContext());
         previousViews = new Stack<View>();
-        previousViews.add(previousView);
+        if (previousView != null)
+        {
+            previousViews.add(previousView);
+        }
     }
 
     protected LayoutInflater getLayoutInflater()
@@ -62,13 +65,31 @@ public abstract class ScreenAdapter
         callback.changeViews(container, previousViews.pop(), previousViews.peek(), true);
     }
 
-    protected void setActionBarTitle(String title)
-    {
-        callback.setActionBarTitle(title);
-    }
-
     protected HSEView getHseView()
     {
         return hseView;
     }
+
+    public View getCurrentView()
+    {
+        if (previousViews.size() > 0)
+        {
+            return previousViews.peek();
+        } else
+        {
+            return null;
+        }
+    }
+
+    protected void setView(View view)
+    {
+        container.addView(view);
+        previousViews.add(view);
+    }
+
+    public String getActionBarTitle()
+    {
+        return hseView.getName();
+    }
+
 }

@@ -62,6 +62,46 @@ public class ImageLoader
         return bitmap;
     }
 
+    private boolean imageViewReused(PhotoToLoad photoToLoad)
+    {
+        String tag = imageViews.get(photoToLoad.getImageView());
+        return tag == null || !tag.equals(photoToLoad.getUrl());
+    }
+
+    private InputStream openInputStream(String urlString)
+    {
+        InputStream inputStream = null;
+        try
+        {
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            if (!(connection instanceof HttpURLConnection))
+            {
+                return null;
+            }
+            try
+            {
+                connection.connect();
+            } catch (Exception ex)
+            {
+                return null;
+            }
+            int response = ((HttpURLConnection) connection).getResponseCode();
+            if (response == HttpURLConnection.HTTP_OK)
+            {
+                inputStream = connection.getInputStream();
+            }
+
+        } catch (MalformedURLException e)
+        {
+            e.printStackTrace();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return inputStream;
+    }
+
     private class PhotoToLoad
     {
         private String url;
@@ -83,12 +123,6 @@ public class ImageLoader
             return url;
         }
 
-    }
-
-    private boolean imageViewReused(PhotoToLoad photoToLoad)
-    {
-        String tag = imageViews.get(photoToLoad.getImageView());
-        return tag == null || !tag.equals(photoToLoad.getUrl());
     }
 
     private class LoadBitmapTask extends AsyncTask<PhotoToLoad, Void, Bitmap>
@@ -128,39 +162,5 @@ public class ImageLoader
                 }
             }
         }
-    }
-
-    private InputStream openInputStream(String urlString)
-    {
-        InputStream inputStream = null;
-        try
-        {
-            URL url = new URL(urlString);
-            URLConnection connection = url.openConnection();
-            if (!(connection instanceof HttpURLConnection))
-            {
-                return null;
-            }
-            try
-            {
-                connection.connect();
-            } catch (Exception ex)
-            {
-                return null;
-            }
-            int response = ((HttpURLConnection) connection).getResponseCode();
-            if (response == HttpURLConnection.HTTP_OK)
-            {
-                inputStream = connection.getInputStream();
-            }
-
-        } catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return inputStream;
     }
 }

@@ -78,7 +78,6 @@ public class VKScreenAdapter extends ScreenAdapter
                 } else
                 {
                     final VKTopicsAdapter adapter = new VKTopicsAdapter(getContext(), requester.getTopicsAdapter(result));
-                    setActionBarTitle(getHseView().getName());
                     vkList.setAdapter(adapter);
                     vkList.setOnItemClickListener(new AdapterView.OnItemClickListener()
                     {

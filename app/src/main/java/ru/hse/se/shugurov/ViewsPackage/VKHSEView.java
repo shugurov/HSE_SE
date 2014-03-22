@@ -8,11 +8,6 @@ import org.json.JSONObject;
  */
 public class VKHSEView extends HSEView
 {
-    public String getObjectID()
-    {
-        return objectID;
-    }
-
     private String objectID = "";
 
     protected VKHSEView(JSONObject jsonObject, String index)
@@ -25,5 +20,10 @@ public class VKHSEView extends HSEView
         {
             e.printStackTrace();
         }
+    }
+
+    public String getObjectID()
+    {
+        return objectID;
     }
 }

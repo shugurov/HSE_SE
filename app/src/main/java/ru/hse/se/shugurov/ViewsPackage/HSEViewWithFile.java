@@ -9,17 +9,6 @@ import org.json.JSONObject;
 public class HSEViewWithFile extends HSEView implements HasFile
 {
     private String fileType;
-
-    public String getFileName()
-    {
-        return fileName;
-    }
-
-    public String getFileType()
-    {
-        return fileType;
-    }
-
     private String fileName;
 
     HSEViewWithFile(JSONObject jsonObject, String index)
@@ -41,6 +30,16 @@ public class HSEViewWithFile extends HSEView implements HasFile
             e.printStackTrace();
             fileName = "";
         }
+    }
+
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    public String getFileType()
+    {
+        return fileType;
     }
 
     @Override
