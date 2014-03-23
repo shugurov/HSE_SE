@@ -3,7 +3,6 @@ package ru.hse.se.shugurov.gui;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,31 +25,46 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
     private int screenWidth;
-    private HSEView[] elements;  //TODO может можно удалить это поле
     private ScreenAdapter additionalAdapter;
+    private HSEView currentView;
 
-    public ViewOfOtherViewsAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView, Bundle savedInstanceState)
+    public ViewOfOtherViewsAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView)
     {
         super(callback, container, previousView, hseView);
+        currentView = hseView;
         screenWidth = getScreenWidth();
-        elements = hseView.getViewElements();
-        View content = getLinearLayoutWithScreenItems(elements);
+        View content = getLinearLayoutWithScreenItems(currentView.getViewElements());
         ScrollView scrollView = (ScrollView) getLayoutInflater().inflate(R.layout.activity_main_scroll, getContainer(), false);
         scrollView.addView(content);
-        elements = getHseView().getViewElements();
         setView(scrollView);
+    }
+
+    @Override
+    public void showPreviousView()
+    {
+        if (additionalAdapter != null && additionalAdapter.hasPreviousView())
+        {
+            additionalAdapter.showPreviousView();
+        } else
+        {
+            if (hasPreviousView())
+            {
+                currentView = getHseView().getViewByIndex(currentView.getParentIndex());//TODO сделать из HSEView двусвязный список
+            }
+            super.showPreviousView();
+        }
     }
 
 
     @Override
     public String getActionBarTitle()
     {
-        if (additionalAdapter != null)
+        if (additionalAdapter != null && additionalAdapter.hasPreviousView())
         {
             return additionalAdapter.getActionBarTitle();
         } else
         {
-            return super.getActionBarTitle();
+            return currentView.getName();
         }
     }
 
@@ -167,9 +181,10 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     @Override
     public void onClick(View view)
     {
-        HSEView selectedView = getHseView().getViewElements()[view.getId()];
+        HSEView selectedView = currentView.getViewElements()[view.getId()];
         if (selectedView.getHseViewType() == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
+            currentView = selectedView;
             View nextScreenView = getLinearLayoutWithScreenItems(selectedView.getViewElements());
             ScrollView scrollView = (ScrollView) getLayoutInflater().inflate(R.layout.activity_main_scroll, getContainer(), false);
             scrollView.addView(nextScreenView);
@@ -177,6 +192,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         } else
         {
             additionalAdapter = ScreenFactory.instance().createAdapter(selectedView, getCurrentView());
+            refreshActionBar();
         }
     }
 }

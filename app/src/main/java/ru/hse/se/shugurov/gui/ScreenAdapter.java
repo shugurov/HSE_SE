@@ -57,12 +57,15 @@ public abstract class ScreenAdapter
 
     public boolean hasPreviousView()
     {
-        return (previousViews.size() > 1);
+        return previousViews.size() > 1;
     }
 
     public void showPreviousView()
     {
-        callback.changeViews(container, previousViews.pop(), previousViews.peek(), true);
+        if (hasPreviousView())
+        {
+            callback.changeViews(container, previousViews.pop(), previousViews.peek(), true);
+        }
     }
 
     protected HSEView getHseView()
@@ -90,6 +93,12 @@ public abstract class ScreenAdapter
     public String getActionBarTitle()
     {
         return hseView.getName();
+    }
+
+
+    protected void refreshActionBar()
+    {
+        callback.refreshActionBar();
     }
 
 }

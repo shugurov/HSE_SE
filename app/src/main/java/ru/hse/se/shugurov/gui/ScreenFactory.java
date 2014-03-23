@@ -54,7 +54,7 @@ public class ScreenFactory
                 adapter = new VKScreenAdapter(callback, container, previousView, view);
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                adapter = new ViewOfOtherViewsAdapter(callback, container, previousView, view, savedInstanceState);
+                adapter = new ViewOfOtherViewsAdapter(callback, container, previousView, view);
                 break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");

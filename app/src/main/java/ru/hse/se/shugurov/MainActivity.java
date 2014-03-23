@@ -29,8 +29,6 @@ import ru.hse.se.shugurov.utills.FileManager;
 
 public class MainActivity extends ActionBarActivity implements Observer
 {
-
-
     private HSEView hseView;
     private Downloader task;
     private ProgressDialog progressDialog;
@@ -46,15 +44,10 @@ public class MainActivity extends ActionBarActivity implements Observer
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onBackPressed()
     {
         screenAdapter.showPreviousView();
+        setActionBar();
     }
 
 
@@ -106,6 +99,7 @@ public class MainActivity extends ActionBarActivity implements Observer
                 hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
                 ScreenFactory factory = ScreenFactory.instance();
                 screenAdapter = factory.createAdapter(hseView, null);
+                setActionBar();
                 progressDialog.cancel();
                 break;
         }
@@ -252,6 +246,11 @@ public class MainActivity extends ActionBarActivity implements Observer
         public Context getContext()
         {
             return MainActivity.this;
+        }
+
+        public void refreshActionBar()
+        {
+            setActionBar();
         }
 
     }
