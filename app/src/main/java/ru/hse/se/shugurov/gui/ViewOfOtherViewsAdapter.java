@@ -68,6 +68,20 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         }
     }
 
+    @Override
+    public int getMenuId()
+    {
+        int menuId;
+        if (currentView.isMainView())
+        {
+            menuId = R.menu.refresh_menu;
+        } else
+        {
+            menuId = super.getMenuId();
+        }
+        return menuId;
+    }
+
 
     private LinearLayout getLinearLayoutWithScreenItems(HSEView[] elements)//TODO исправить использование поля indexes
     {

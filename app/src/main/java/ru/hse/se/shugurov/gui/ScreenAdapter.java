@@ -101,4 +101,9 @@ public abstract class ScreenAdapter
         callback.refreshActionBar();
     }
 
+    public int getMenuId()
+    {
+        return -1;
+    }
+
 }

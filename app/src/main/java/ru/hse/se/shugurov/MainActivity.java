@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements Observer
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ScreenFactory.initFactory(new MainActivityCallback(), (ViewGroup) findViewById(R.id.main), savedInstanceState);
+        ScreenFactory.initFactory(new MainActivityCallback(), (ViewGroup) findViewById(R.id.main));
         checkFiles();
     }
 
@@ -54,24 +55,22 @@ public class MainActivity extends ActionBarActivity implements Observer
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        /*MenuInflater inflater = getMenuInflater();
-        if (doShowRefreshButton)
+        if (screenAdapter != null)
         {
-            inflater.inflate(R.menu.refresh_menu, menu);
-        } else
-        {
-            if (doShowAddMessageButton)
+            int menuId = screenAdapter.getMenuId();
+            if (menuId > 0)
             {
-                inflater.inflate(R.menu.message_adding_menu, menu);
+                MenuInflater inflater = getMenuInflater();
+                inflater.inflate(menuId, menu);
             }
-        }*/
-        return true;
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
+        /*switch (item.getItemId())
         {
             case R.id.action_refresh:
                 startProgressDialog();
@@ -81,7 +80,7 @@ public class MainActivity extends ActionBarActivity implements Observer
             case R.id.action_add_message:
                 Toast.makeText(this, "I'm working!", Toast.LENGTH_SHORT).show();
                 break;
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -144,21 +143,7 @@ public class MainActivity extends ActionBarActivity implements Observer
     {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(screenAdapter.getActionBarTitle());
-        /*setTitleToActionBar(currentView.getName());
-        if (currentView.isMainView() && !isRefreshButtonShown)
-        {
-            doShowRefreshButton = true;
-            isRefreshButtonShown = true;
-        } else
-        {
-            if (!currentView.isMainView() && isRefreshButtonShown)
-            {
-                doShowRefreshButton = false;
-
-                isRefreshButtonShown = false;
-            }
-        }
-        supportInvalidateOptionsMenu();*/
+        supportInvalidateOptionsMenu();
     }
 
     private void createAsyncTask(DownloadStatus status)

@@ -43,7 +43,6 @@ public class HSEView
         if (index.length() > 0)
         {
             index = index.substring(0, index.lastIndexOf(END_OF_INDEX_TAG));
-            int position;
             if (index.lastIndexOf(END_OF_INDEX_TAG) >= 0)
             {
                 index = index.substring(0, index.lastIndexOf(END_OF_INDEX_TAG) + 1);
@@ -61,7 +60,7 @@ public class HSEView
                 try
                 {
                     jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
-                    parseJSON(jsonArray, index);
+                    parseJSON(jsonArray);
                 } catch (JSONException e)
                 {
                     e.printStackTrace();
@@ -79,13 +78,6 @@ public class HSEView
         JSONObject jsonObject = new JSONObject(json);
         HSEView viewToReturn;
         viewToReturn = new HSEView(jsonObject, "");
-        return viewToReturn;
-    }
-
-    public static HSEView getView(JSONObject jsonObject, String index)
-    {
-        HSEView viewToReturn;
-        viewToReturn = new HSEView(jsonObject, index);
         return viewToReturn;
     }
 
@@ -187,7 +179,7 @@ public class HSEView
         }
     }
 
-    private void parseJSON(JSONArray jsonArray, String index) throws JSONException
+    private void parseJSON(JSONArray jsonArray) throws JSONException
     {
         ArrayList<HSEView> viewList;
         viewList = new ArrayList<HSEView>();
@@ -195,7 +187,7 @@ public class HSEView
         {
             JSONObject jsonObject;
             jsonObject = jsonArray.getJSONObject(i);
-            int type = -1;
+            int type;
             try
             {
                 type = jsonObject.getInt("type");
@@ -254,9 +246,7 @@ public class HSEView
             return this;
         }
         {
-            String subString;
-            subString = index.substring(0, this.index.length());
-            int a = 5;
+            String subString = index.substring(0, this.index.length());
             if (subString.compareTo(this.index) != 0)
             {
                 return null;
@@ -311,7 +301,7 @@ public class HSEView
         return IS_THE_FIRST_VIEW;
     }
 
-    public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)//TODO дописать то, где ещё файлы подкачиваются
+    public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)
     {
         if (descriptions == null)
         {

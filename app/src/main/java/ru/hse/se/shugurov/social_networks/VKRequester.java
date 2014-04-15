@@ -21,9 +21,9 @@ public class VKRequester
     private static final String VK_TOPIC_ID_TAG = "topic_id";
     private static String REQUEST_BEGINNING = "https://api.vk.com/method/";
     private static String BOARD_GET_TOPICS = "board.getTopics";
-    private String accessToken;
+    private AccessToken accessToken;
 
-    public VKRequester(String accessToken)
+    public VKRequester(AccessToken accessToken)
     {
         this.accessToken = accessToken;
     }
@@ -59,9 +59,9 @@ public class VKRequester
                 int authorID = currentTopic.getInt("created_by");
                 String text = currentTopic.getString("first_comment");
                 int comments = currentTopic.getInt("comments");
-                long date = currentTopic.getLong("created");
+                long date = currentTopic.getLong("updated");
                 VKProfile user = profilesMap.get(authorID);
-                vkBoardTopics[i - 1] = new VKTopic(topicID, user, text, comments, new Date(date));
+                vkBoardTopics[i - 1] = new VKTopic(topicID, user, text, comments, new Date(date * 1000));
             }
 
         } catch (JSONException e)

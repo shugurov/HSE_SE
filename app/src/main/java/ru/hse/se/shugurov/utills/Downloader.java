@@ -25,7 +25,6 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
 {
     private ArrayList<Observer> observers = new ArrayList<Observer>();
     private ArrayList<FileDescription> fileDescriptions;
-    private Context context;
     private FileManager fileManager;
     private DownloadStatus status;
     private String result;
@@ -40,14 +39,12 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
 
     public Downloader(Context context, DownloadStatus status)
     {
-        this.context = context;
         fileManager = new FileManager(context);
         this.status = status;
     }
 
     public Downloader(Context context, ArrayList<FileDescription> fileDescriptions, DownloadStatus status)
     {
-        this.context = context;
         this.fileDescriptions = fileDescriptions;
         fileManager = new FileManager(context);
         this.status = status;
@@ -119,7 +116,7 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
     private InputStream OpenHttpUrlConnection(String urlString)
     {
         InputStream input = null;
-        int response = -1;
+        int response;
         try
         {
             URL url = new URL(urlString);

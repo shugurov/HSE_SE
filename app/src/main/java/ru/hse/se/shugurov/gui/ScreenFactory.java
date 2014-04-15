@@ -1,6 +1,5 @@
 package ru.hse.se.shugurov.gui;
 
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,18 +15,16 @@ public class ScreenFactory
     private static ScreenFactory screenFactory;
     private MainActivity.MainActivityCallback callback;
     private ViewGroup container;
-    private Bundle savedInstanceState;
 
-    private ScreenFactory(MainActivity.MainActivityCallback callback, ViewGroup container, Bundle savedInstanceState)
+    private ScreenFactory(MainActivity.MainActivityCallback callback, ViewGroup container)
     {
         this.callback = callback;
         this.container = container;
-        this.savedInstanceState = savedInstanceState;
     }
 
-    public static void initFactory(MainActivity.MainActivityCallback callback, ViewGroup container, Bundle savedInstanceState)
+    public static void initFactory(MainActivity.MainActivityCallback callback, ViewGroup container)
     {
-        screenFactory = new ScreenFactory(callback, container, savedInstanceState);
+        screenFactory = new ScreenFactory(callback, container);
     }
 
     public static ScreenFactory instance()
@@ -55,6 +52,9 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 adapter = new ViewOfOtherViewsAdapter(callback, container, previousView, view);
+                break;
+            case HSEViewTypes.MAP:
+                adapter = new MapScreenAdapter(callback, container, previousView, view);
                 break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");

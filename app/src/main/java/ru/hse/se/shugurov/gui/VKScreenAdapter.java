@@ -15,11 +15,12 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
+import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.VKAbstractItem;
 import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
-import ru.hse.se.shugurov.social_networks.VkWebView;
+import ru.hse.se.shugurov.social_networks.VkWebClient;
 
 /**
  * Created by Иван on 14.03.14.
@@ -30,18 +31,25 @@ public class VKScreenAdapter extends ScreenAdapter
     private static final String SHARED_PREFERENCES_TAG = "social_networks";
     private VKRequester requester;
 
-    public VKScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView vkhseView)
+    public VKScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView vkHseView)//TODO кнопка назад, когда была регистрация
     {
-        super(callback, container, previousView, vkhseView);
+        super(callback, container, previousView, vkHseView);
         SharedPreferences preferences = getContext().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        String accessToken = preferences.getString(ACCESS_TOKEN_TAG, null);
-        if (accessToken == null)
+        String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
+        if (serializedToken == null)
         {
             makeRequestForAccessToken();
         } else
         {
-            requester = new VKRequester(accessToken);
-            showListOfTopics();
+            AccessToken accessToken = new AccessToken(serializedToken);
+            if (accessToken.hasExpired())
+            {
+                makeRequestForAccessToken();
+            } else
+            {
+                requester = new VKRequester(accessToken);
+                showListOfTopics();
+            }
         }
 
     }
@@ -50,11 +58,11 @@ public class VKScreenAdapter extends ScreenAdapter
     {
         WebView vkView;
         vkView = new WebView(getContext());
-        vkView.loadUrl(VkWebView.OAUTH);
-        vkView.setWebViewClient(new VkWebView(new VkWebView.VKCallBack()
+        vkView.loadUrl(VkWebClient.OAUTH);
+        vkView.setWebViewClient(new VkWebClient(new VkWebClient.VKCallBack()
         {
             @Override
-            public void call(String accessToken)//TODO что делать с пустым токеном
+            public void call(AccessToken accessToken)//TODO что делать с пустым токеном
             {
                 requester = new VKRequester(accessToken);
                 registerAccessTokenInPreferences(accessToken);
@@ -115,11 +123,11 @@ public class VKScreenAdapter extends ScreenAdapter
         });
     }
 
-    private void registerAccessTokenInPreferences(String accessToken)
+    private void registerAccessTokenInPreferences(AccessToken accessToken)
     {
         SharedPreferences preferences = getContext().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
         SharedPreferences.Editor preferencesEditor = preferences.edit();
-        preferencesEditor.putString(ACCESS_TOKEN_TAG, accessToken);
+        preferencesEditor.putString(ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
         preferencesEditor.commit();
     }
 
