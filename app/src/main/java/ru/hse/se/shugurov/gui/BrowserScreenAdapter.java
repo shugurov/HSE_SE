@@ -2,12 +2,9 @@ package ru.hse.se.shugurov.gui;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import ru.hse.se.shugurov.MainActivity;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 
@@ -16,9 +13,9 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
  */
 public class BrowserScreenAdapter extends ScreenAdapter
 {
-    public BrowserScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView)
+    public BrowserScreenAdapter(ActivityCallback callback, HSEView hseView)
     {
-        super(callback, container, previousView, hseView);
+        super(callback, hseView);
         switch (hseView.getHseViewType())
         {
             case HSEViewTypes.INNER_WEB_PAGE:
@@ -33,10 +30,10 @@ public class BrowserScreenAdapter extends ScreenAdapter
     private void showViewWithBrowser()
     {
         WebView webViewToAppear;
-        webViewToAppear = new WebView(getContext());
+        webViewToAppear = new WebView(getActivity());
         webViewToAppear.loadUrl(getHseView().getUrl());
         webViewToAppear.setWebViewClient(new WebViewClient());
-        changeViews(webViewToAppear);
+        //changeFragments(); TODO
     }
 
     private void openBrowser(String url)
@@ -44,6 +41,6 @@ public class BrowserScreenAdapter extends ScreenAdapter
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse(url);
         browserIntent.setData(uri);
-        getContext().startActivity(browserIntent);
+        getActivity().startActivity(browserIntent);
     }
 }

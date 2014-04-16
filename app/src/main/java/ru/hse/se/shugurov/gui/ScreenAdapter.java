@@ -1,71 +1,40 @@
 package ru.hse.se.shugurov.gui;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import java.util.Stack;
-
-import ru.hse.se.shugurov.MainActivity;
+import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 
 /**
  * Created by Иван on 14.03.14.
  */
-public abstract class ScreenAdapter
+public abstract class ScreenAdapter extends Fragment
 {
-    private LayoutInflater inflater;
-    private MainActivity.MainActivityCallback callback;
-    private ViewGroup container;
-    private Stack<View> previousViews;
+    private ActivityCallback callback;
     private HSEView hseView;
 
-    public ScreenAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView)
+    public ScreenAdapter(ActivityCallback callback, HSEView hseView)
     {
         this.callback = callback;
-        this.container = container;
         this.hseView = hseView;
-        inflater = LayoutInflater.from(callback.getContext());
-        previousViews = new Stack<View>();
-        if (previousView != null)
-        {
-            previousViews.add(previousView);
-        }
     }
 
-    protected LayoutInflater getLayoutInflater()
+    public static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)//TODO править доступ и статику
     {
-        return inflater;
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.main, fragmentToAppear);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
-    protected Context getContext()
+    public static void setFragment(FragmentManager manager, Fragment fragmentToAppear)
     {
-        return callback.getContext();
-    }
-
-    protected void changeViews(View viewToAppear)
-    {
-        callback.changeViews(container, previousViews.peek(), viewToAppear, false);
-        previousViews.add(viewToAppear);
-    }
-
-    protected ViewGroup getContainer()
-    {
-        return container;
-    }
-
-    public boolean hasPreviousView()
-    {
-        return previousViews.size() > 1;
-    }
-
-    public void showPreviousView()
-    {
-        if (hasPreviousView())
-        {
-            callback.changeViews(container, previousViews.pop(), previousViews.peek(), true);
-        }
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.main, fragmentToAppear);
+        transaction.commit();
     }
 
     protected HSEView getHseView()
@@ -73,22 +42,6 @@ public abstract class ScreenAdapter
         return hseView;
     }
 
-    public View getCurrentView()
-    {
-        if (previousViews.size() > 0)
-        {
-            return previousViews.peek();
-        } else
-        {
-            return null;
-        }
-    }
-
-    protected void setView(View view)
-    {
-        container.addView(view);
-        previousViews.add(view);
-    }
 
     public String getActionBarTitle()
     {
@@ -96,7 +49,7 @@ public abstract class ScreenAdapter
     }
 
 
-    protected void refreshActionBar()
+    protected void refreshActionBar()//TODO  а надо ли?
     {
         callback.refreshActionBar();
     }
@@ -104,6 +57,21 @@ public abstract class ScreenAdapter
     public int getMenuId()
     {
         return -1;
+    }
+
+    public interface ActivityCallback
+    {
+
+    /*public void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
+    {
+        MainActivity.this.changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
+        setActionBar();
+    }TODO delete*/
+
+        public Context getContext(); //TODO а надо ли вообще?
+
+        public void refreshActionBar();//TODO а здесь ли?
+
     }
 
 }

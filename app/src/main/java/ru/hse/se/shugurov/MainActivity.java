@@ -1,15 +1,14 @@
 package ru.hse.se.shugurov;
 
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
@@ -33,22 +32,35 @@ public class MainActivity extends ActionBarActivity implements Observer
     private HSEView hseView;
     private Downloader task;
     private ProgressDialog progressDialog;
-    private ScreenAdapter screenAdapter;
+    private ScreenAdapter screenAdapter;//TODO почему это поле?
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ScreenFactory.initFactory(new MainActivityCallback(), (ViewGroup) findViewById(R.id.main));
+        ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
+        {
+            @Override
+            public Context getContext()
+            {
+                return MainActivity.this;
+            }
+
+            @Override
+            public void refreshActionBar()
+            {
+                //TODO наверное, что-то делать надо
+            }
+        });
         checkFiles();
     }
 
     @Override
     public void onBackPressed()
     {
-        screenAdapter.showPreviousView();
-        setActionBar();
+        FragmentManager manager = getFragmentManager();
+        manager.popBackStack();
     }
 
 
@@ -97,7 +109,8 @@ public class MainActivity extends ActionBarActivity implements Observer
             case DOWNLOAD_FILES:
                 hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
                 ScreenFactory factory = ScreenFactory.instance();
-                screenAdapter = factory.createAdapter(hseView, null);
+                screenAdapter = factory.createAdapter(hseView);
+                ScreenAdapter.setFragment(getFragmentManager(), screenAdapter);
                 setActionBar();
                 progressDialog.cancel();
                 break;
@@ -129,19 +142,9 @@ public class MainActivity extends ActionBarActivity implements Observer
         viewToAppear.setAnimation(animationAppearing);
     }
 
-    private void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
-    {
-        viewToAppear.setVisibility(View.INVISIBLE);
-        viewToDisappear.setVisibility(View.INVISIBLE);
-        makeViewChangeAnimation(viewToDisappear, viewToAppear, isButtonBackClicked);
-        parentView.removeAllViews();
-        parentView.addView(viewToAppear);
-        viewToAppear.setVisibility(View.VISIBLE);
-    }
-
     private void setActionBar()
     {
-        ActionBar actionBar = getSupportActionBar();
+        android.app.ActionBar actionBar = getActionBar();
         actionBar.setTitle(screenAdapter.getActionBarTitle());
         supportInvalidateOptionsMenu();
     }
@@ -217,27 +220,6 @@ public class MainActivity extends ActionBarActivity implements Observer
             hseView = newView;
             hseView.notifyAboutFiles(this);
         }
-    }
-
-    public class MainActivityCallback
-    {
-
-        public void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
-        {
-            MainActivity.this.changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
-            setActionBar();
-        }
-
-        public Context getContext()
-        {
-            return MainActivity.this;
-        }
-
-        public void refreshActionBar()
-        {
-            setActionBar();
-        }
-
     }
 
 }

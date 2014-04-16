@@ -1,9 +1,5 @@
 package ru.hse.se.shugurov.gui;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import ru.hse.se.shugurov.MainActivity;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 
@@ -13,18 +9,16 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 public class ScreenFactory
 {
     private static ScreenFactory screenFactory;
-    private MainActivity.MainActivityCallback callback;
-    private ViewGroup container;
+    private ScreenAdapter.ActivityCallback callback;
 
-    private ScreenFactory(MainActivity.MainActivityCallback callback, ViewGroup container)
+    private ScreenFactory(ScreenAdapter.ActivityCallback callback)
     {
         this.callback = callback;
-        this.container = container;
     }
 
-    public static void initFactory(MainActivity.MainActivityCallback callback, ViewGroup container)
+    public static void initFactory(ScreenAdapter.ActivityCallback callback)
     {
-        screenFactory = new ScreenFactory(callback, container);
+        screenFactory = new ScreenFactory(callback);
     }
 
     public static ScreenFactory instance()
@@ -32,29 +26,29 @@ public class ScreenFactory
         return screenFactory;
     }
 
-    public ScreenAdapter createAdapter(HSEView view, View previousView)
+    public ScreenAdapter createAdapter(HSEView view)
     {
         ScreenAdapter adapter;
         switch (view.getHseViewType())
         {
             case HSEViewTypes.HTML_CONTENT:
-                adapter = new HTMLScreenAdapter(callback, container, null, view);
+                adapter = new HTMLScreenAdapter(callback, view);
                 break;
             case HSEViewTypes.WEB_PAGE:
             case HSEViewTypes.INNER_WEB_PAGE:
-                adapter = new BrowserScreenAdapter(callback, container, previousView, view);
+                adapter = new BrowserScreenAdapter(callback, view);
                 break;
             case HSEViewTypes.RSS_WRAPPER:
-                adapter = new RSSScreenAdapter(callback, container, previousView, view);
+                adapter = new RSSScreenAdapter(callback, view);
                 break;
             case HSEViewTypes.VK_FORUM:
-                adapter = new VKScreenAdapter(callback, container, previousView, view);
+                adapter = new VKScreenAdapter(callback, view);
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                adapter = new ViewOfOtherViewsAdapter(callback, container, previousView, view);
+                adapter = new ViewOfOtherViewsAdapter(callback, view);
                 break;
             case HSEViewTypes.MAP:
-                adapter = new MapScreenAdapter(callback, container, previousView, view);
+                adapter = new MapScreenAdapter(callback, view);
                 break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");

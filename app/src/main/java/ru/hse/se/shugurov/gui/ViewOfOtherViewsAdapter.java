@@ -3,7 +3,9 @@ package ru.hse.se.shugurov.gui;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -13,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import ru.hse.se.shugurov.MainActivity;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
@@ -25,21 +26,16 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
     private int screenWidth;
-    private ScreenAdapter additionalAdapter;
+    // private ScreenAdapter additionalAdapter; TODO а зачем он тут?
     private HSEView currentView;
 
-    public ViewOfOtherViewsAdapter(MainActivity.MainActivityCallback callback, ViewGroup container, View previousView, HSEView hseView)
+    public ViewOfOtherViewsAdapter(ActivityCallback callback, HSEView hseView)
     {
-        super(callback, container, previousView, hseView);
+        super(callback, hseView);
         currentView = hseView;
-        screenWidth = getScreenWidth();
-        View content = getLinearLayoutWithScreenItems(currentView.getViewElements());
-        ScrollView scrollView = (ScrollView) getLayoutInflater().inflate(R.layout.activity_main_scroll, getContainer(), false);
-        scrollView.addView(content);
-        setView(scrollView);
     }
 
-    @Override
+    /*@Override
     public void showPreviousView()
     {
         if (additionalAdapter != null && additionalAdapter.hasPreviousView())
@@ -53,19 +49,19 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
             }
             super.showPreviousView();
         }
-    }
+    }TODO delete*/
 
 
     @Override
     public String getActionBarTitle()
     {
-        if (additionalAdapter != null && additionalAdapter.hasPreviousView())
+        /*if (additionalAdapter != null && additionalAdapter.hasPreviousView())
         {
             return additionalAdapter.getActionBarTitle();
-        } else
-        {
-            return currentView.getName();
-        }
+        } else TODO change or delete
+        {*/
+        return currentView.getName();
+        //}
     }
 
     @Override
@@ -83,7 +79,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     }
 
 
-    private LinearLayout getLinearLayoutWithScreenItems(HSEView[] elements)//TODO исправить использование поля indexes
+    private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, HSEView[] elements)//TODO исправить использование поля indexes
     {
         int numberOfViewsInRow = 1;
         while (screenWidth / numberOfViewsInRow > (MINIMUM_WIDTH_OF_THE_ELEMENT + 20))
@@ -91,7 +87,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
             numberOfViewsInRow++;
         }
         numberOfViewsInRow--;
-        LinearLayout content = new LinearLayout(getContext());
+        LinearLayout content = new LinearLayout(getActivity());
         content.setOrientation(LinearLayout.VERTICAL);
         int rows = elements.length / numberOfViewsInRow;
         if (elements.length % numberOfViewsInRow != 0)
@@ -102,7 +98,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         for (int i = 0; i < rows; i++)
         {
             LinearLayout linearLayout;
-            linearLayout = new LinearLayout(getContext());
+            linearLayout = new LinearLayout(getActivity());
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
             linearLayout.setPadding(10, 0, 10, 10);
             final ViewGroup[] items;
@@ -114,7 +110,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
 
                 int indexOfCurrentItem;
                 indexOfCurrentItem = i * numberOfViewsInRow + j;
-                items[j] = (ViewGroup) getLayoutInflater().inflate(R.layout.item, null, false);
+                items[j] = (ViewGroup) inflater.inflate(R.layout.item, null, false);
                 ((TextView) items[j].findViewById(R.id.item_text_id)).setText(elements[indexOfCurrentItem].getName());
                 Drawable image = getIconDrawable(elements[indexOfCurrentItem].getHseViewType());
                 ((ImageView) items[j].findViewById(R.id.item_image_id)).setImageDrawable(image);
@@ -135,7 +131,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
 
     private int getScreenWidth()
     {
-        WindowManager windowManager = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE));
+        WindowManager windowManager = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE));
         Display display = windowManager.getDefaultDisplay();
         return display.getWidth();
     }
@@ -187,7 +183,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
             default:
                 throw new IllegalArgumentException("Unknown ID");
         }
-        Resources resources = getContext().getResources();
+        Resources resources = getActivity().getResources();
         return resources.getDrawable(drawableID);
     }
 
@@ -198,15 +194,22 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         HSEView selectedView = currentView.getViewElements()[view.getId()];
         if (selectedView.getHseViewType() == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
-            currentView = selectedView;
-            View nextScreenView = getLinearLayoutWithScreenItems(selectedView.getViewElements());
-            ScrollView scrollView = (ScrollView) getLayoutInflater().inflate(R.layout.activity_main_scroll, getContainer(), false);
-            scrollView.addView(nextScreenView);
-            changeViews(scrollView);
+            ScreenAdapter adapter = ScreenFactory.instance().createAdapter(selectedView);//TODO удалить вообще второй параметр, наверное
+            changeFragments(getActivity().getFragmentManager(), adapter);
         } else
         {
-            additionalAdapter = ScreenFactory.instance().createAdapter(selectedView, getCurrentView());
-            refreshActionBar();
+            /*additionalAdapter = ScreenFactory.instance().createAdapter(selectedView, getCurrentView());
+            refreshActionBar();TODO fix it*/
         }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        screenWidth = getScreenWidth();
+        View content = getLinearLayoutWithScreenItems(inflater, currentView.getViewElements());
+        ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
+        scrollView.addView(content);
+        return scrollView;
     }
 }
