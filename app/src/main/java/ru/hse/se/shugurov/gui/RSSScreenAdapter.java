@@ -1,5 +1,6 @@
 package ru.hse.se.shugurov.gui;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,12 +23,12 @@ public class RSSScreenAdapter extends ScreenAdapter
 {
     public RSSScreenAdapter(ActivityCallback callback, HSEView hseViewRSS)
     {
-        super(callback, hseViewRSS);
+        super(hseViewRSS);
     }
 
-    private View displayListOfRSSItems(final LayoutInflater inflater, final ViewGroup container)
+    private View showListOfRSSItems(final LayoutInflater inflater, final ViewGroup container)
     {
-        HSEViewRSS[] rssItems = getHseView().getConnectedViews();
+        HSEViewRSS[] rssItems = ((HSEViewRSSWrapper) getHseView()).getConnectedViews();
         ListView rssItemsView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         final RSSListAdapter rssListAdapter = new RSSListAdapter(getActivity(), rssItems);
         rssItemsView.setAdapter(rssListAdapter);
@@ -40,7 +41,8 @@ public class RSSScreenAdapter extends ScreenAdapter
                 switch (selectedItem.getType())
                 {
                     case FULL_RSS:
-                        showEntireRSS(inflater, container, selectedItem);
+                        Fragment adapter = ScreenFactory.instance().createFragment(selectedItem);
+                        changeFragments(getFragmentManager(), adapter);
                         break;
                     case ONLY_TITLE:
                         openBrowser(selectedItem.getUrl());
@@ -51,12 +53,6 @@ public class RSSScreenAdapter extends ScreenAdapter
         return rssItemsView;
     }
 
-    @Override
-    protected HSEViewRSSWrapper getHseView()
-    {
-        return (HSEViewRSSWrapper) super.getHseView();
-    }
-
     private void openBrowser(String url)
     {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
@@ -65,7 +61,7 @@ public class RSSScreenAdapter extends ScreenAdapter
         getActivity().startActivity(browserIntent);
     }
 
-    private View showEntireRSS(LayoutInflater inflater, ViewGroup container, final HSEViewRSS hseViewRSS)//TODO это боль и ад,надо править(
+    private View showEntireRSS(LayoutInflater inflater, ViewGroup container)
     {
         View rssLayout = inflater.inflate(R.layout.rss_layout, container, false);
         rssLayout.findViewById(R.id.rss_layout_content).setOnClickListener(new View.OnClickListener()
@@ -73,17 +69,32 @@ public class RSSScreenAdapter extends ScreenAdapter
             @Override
             public void onClick(View v)
             {
-                openBrowser(hseViewRSS.getUrl());
+                openBrowser(getHseView().getUrl());
             }
         });
-        ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(hseViewRSS.getTitle());
-        ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(hseViewRSS.getOmitted());
+        if (getHseView() instanceof HSEViewRSS)
+        {
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(((HSEViewRSS) getHseView()).getTitle());
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(((HSEViewRSS) getHseView()).getOmitted());
+        } else
+        {
+            throw new IllegalStateException("Precondition violated in RssScreenAdapter.showEntireRSS.Inappropriate view type.");
+        }
         return rssLayout;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        return displayListOfRSSItems(inflater, container);
+        if (getHseView() instanceof HSEViewRSSWrapper)
+        {
+            return showListOfRSSItems(inflater, container);
+        } else if (getHseView() instanceof HSEViewRSS)
+        {
+            return showEntireRSS(inflater, container);
+        } else
+        {
+            throw new IllegalStateException("Precondition violated in RssScreenAdapter.onCreateView().Inappropriate view type.");
+        }
     }
 }

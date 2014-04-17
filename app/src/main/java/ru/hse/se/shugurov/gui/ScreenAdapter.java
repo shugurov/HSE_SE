@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.Bundle;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
@@ -13,16 +14,22 @@ import ru.hse.se.shugurov.ViewsPackage.HSEView;
  */
 public abstract class ScreenAdapter extends Fragment
 {
-    private ActivityCallback callback;
+    private static String HSE_VIEW_TAG = "hse_view";
     private HSEView hseView;
 
-    public ScreenAdapter(ActivityCallback callback, HSEView hseView)
+    public ScreenAdapter()
     {
-        this.callback = callback;
-        this.hseView = hseView;
     }
 
-    public static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)//TODO править доступ и статику
+    public ScreenAdapter(HSEView hseView)//TODO а может и от него избавиться?
+    {
+        this.hseView = hseView;
+        Bundle instanceState = new Bundle();
+        instanceState.putSerializable(HSE_VIEW_TAG, hseView);
+        setArguments(instanceState);
+    }
+
+    protected static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
     {
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.main, fragmentToAppear);
@@ -37,6 +44,23 @@ public abstract class ScreenAdapter extends Fragment
         transaction.commit();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null && hseView == null)//TODO возможно, второе условие лишнее
+        {
+            hseView = (HSEView) savedInstanceState.get(HSE_VIEW_TAG);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        outState.putAll(getArguments());
+        super.onSaveInstanceState(outState);
+    }
+
     protected HSEView getHseView()
     {
         return hseView;
@@ -46,13 +70,7 @@ public abstract class ScreenAdapter extends Fragment
     public String getActionBarTitle()
     {
         return hseView.getName();
-    }
-
-
-    protected void refreshActionBar()//TODO  а надо ли?
-    {
-        callback.refreshActionBar();
-    }
+    }//TODO зачем?
 
     public int getMenuId()
     {
@@ -61,12 +79,6 @@ public abstract class ScreenAdapter extends Fragment
 
     public interface ActivityCallback
     {
-
-    /*public void changeViews(ViewGroup parentView, View viewToDisappear, View viewToAppear, boolean isButtonBackClicked)
-    {
-        MainActivity.this.changeViews(parentView, viewToDisappear, viewToAppear, isButtonBackClicked);
-        setActionBar();
-    }TODO delete*/
 
         public Context getContext(); //TODO а надо ли вообще?
 

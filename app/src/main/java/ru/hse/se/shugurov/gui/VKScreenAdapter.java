@@ -33,7 +33,7 @@ public class VKScreenAdapter extends ScreenAdapter
 
     public VKScreenAdapter(ActivityCallback callback, HSEView vkHseView)//TODO кнопка назад, когда была регистрация
     {
-        super(callback, vkHseView);
+        super(vkHseView);
         SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
         String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
         if (serializedToken == null)

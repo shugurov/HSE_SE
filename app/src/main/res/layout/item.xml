@@ -4,8 +4,6 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:orientation="vertical"
-              android:paddingLeft="10dp"
-              android:paddingRight="10dp"
               android:paddingTop="20dp"
     >
 
@@ -22,8 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_launcher"></ImageView>
+            android:layout_gravity="center_horizontal"></ImageView>
 
         <TextView
             android:id="@+id/item_text_id"

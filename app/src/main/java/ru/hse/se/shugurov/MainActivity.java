@@ -1,12 +1,12 @@
 package ru.hse.se.shugurov;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -32,28 +32,30 @@ public class MainActivity extends ActionBarActivity implements Observer
     private HSEView hseView;
     private Downloader task;
     private ProgressDialog progressDialog;
-    private ScreenAdapter screenAdapter;//TODO почему это поле?
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
+        if (savedInstanceState == null)
         {
-            @Override
-            public Context getContext()
+            ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
             {
-                return MainActivity.this;
-            }
+                @Override
+                public Context getContext()
+                {
+                    return MainActivity.this;
+                }
 
-            @Override
-            public void refreshActionBar()
-            {
-                //TODO наверное, что-то делать надо
-            }
-        });
-        checkFiles();
+                @Override
+                public void refreshActionBar()
+                {
+                    //TODO наверное, что-то делать надо
+                }
+            });
+            checkFiles();
+        }
     }
 
     @Override
@@ -67,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements Observer
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        if (screenAdapter != null)
+        /*if (screenAdapter != null)TODO
         {
             int menuId = screenAdapter.getMenuId();
             if (menuId > 0)
@@ -75,7 +77,7 @@ public class MainActivity extends ActionBarActivity implements Observer
                 MenuInflater inflater = getMenuInflater();
                 inflater.inflate(menuId, menu);
             }
-        }
+        }*/
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -109,8 +111,8 @@ public class MainActivity extends ActionBarActivity implements Observer
             case DOWNLOAD_FILES:
                 hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
                 ScreenFactory factory = ScreenFactory.instance();
-                screenAdapter = factory.createAdapter(hseView);
-                ScreenAdapter.setFragment(getFragmentManager(), screenAdapter);
+                Fragment factoryFragment = factory.createFragment(hseView);
+                ScreenAdapter.setFragment(getFragmentManager(), factoryFragment);
                 setActionBar();
                 progressDialog.cancel();
                 break;
@@ -144,9 +146,9 @@ public class MainActivity extends ActionBarActivity implements Observer
 
     private void setActionBar()
     {
-        android.app.ActionBar actionBar = getActionBar();
+        /*android.app.ActionBar actionBar = getActionBar();
         actionBar.setTitle(screenAdapter.getActionBarTitle());
-        supportInvalidateOptionsMenu();
+        supportInvalidateOptionsMenu();TODO*/
     }
 
     private void createAsyncTask(DownloadStatus status)

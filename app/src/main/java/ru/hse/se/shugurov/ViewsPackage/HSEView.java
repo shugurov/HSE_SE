@@ -8,9 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HSEView
+public class HSEView implements Serializable //TODO url зачастую пустой
 {
     public static final String INDEX_OF_THE_MAIN_VIEW = "";
     public static final String SERVER_LINK = "http://promoteeducate1.appspot.com";

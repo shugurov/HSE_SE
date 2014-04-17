@@ -1,8 +1,11 @@
 package ru.hse.se.shugurov.gui;
 
-import android.content.Context;
+import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -22,46 +25,43 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 /**
  * Created by Иван on 15.03.14.
  */
-public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener
+public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener//TODO поправить отступы в отображении
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
-    private int screenWidth;
-    // private ScreenAdapter additionalAdapter; TODO а зачем он тут?
+    private String CURRENT_VIEW_TAG = "current_view";
     private HSEView currentView;
 
-    public ViewOfOtherViewsAdapter(ActivityCallback callback, HSEView hseView)
+    public ViewOfOtherViewsAdapter()
     {
-        super(callback, hseView);
+    }
+
+    public ViewOfOtherViewsAdapter(HSEView hseView)
+    {
+        super(hseView);
         currentView = hseView;
     }
 
-    /*@Override
-    public void showPreviousView()
+    @Override
+    public void onCreate(Bundle savedInstanceState)
     {
-        if (additionalAdapter != null && additionalAdapter.hasPreviousView())
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null)
         {
-            additionalAdapter.showPreviousView();
-        } else
-        {
-            if (hasPreviousView())
-            {
-                currentView = getHseView().getViewByIndex(currentView.getParentIndex());//TODO сделать из HSEView двусвязный список
-            }
-            super.showPreviousView();
+            currentView = (HSEView) savedInstanceState.get(CURRENT_VIEW_TAG);
         }
-    }TODO delete*/
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(CURRENT_VIEW_TAG, currentView);
+    }
 
     @Override
     public String getActionBarTitle()
     {
-        /*if (additionalAdapter != null && additionalAdapter.hasPreviousView())
-        {
-            return additionalAdapter.getActionBarTitle();
-        } else TODO change or delete
-        {*/
         return currentView.getName();
-        //}
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     }
 
 
-    private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, HSEView[] elements)//TODO исправить использование поля indexes
+    private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, HSEView[] elements, int screenWidth)
     {
         int numberOfViewsInRow = 1;
         while (screenWidth / numberOfViewsInRow > (MINIMUM_WIDTH_OF_THE_ELEMENT + 20))
@@ -129,17 +129,10 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         return content;
     }
 
-    private int getScreenWidth()
-    {
-        WindowManager windowManager = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE));
-        Display display = windowManager.getDefaultDisplay();
-        return display.getWidth();
-    }
-
     private Drawable getIconDrawable(int HSEViewType) throws IllegalArgumentException
     {
         int drawableID;
-        switch (HSEViewType)
+        switch (HSEViewType)//TODO pdf image is incorrect
         {
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 drawableID = R.drawable.section10;
@@ -192,22 +185,49 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     public void onClick(View view)
     {
         HSEView selectedView = currentView.getViewElements()[view.getId()];
-        if (selectedView.getHseViewType() == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
+        Fragment nextFragment = ScreenFactory.instance().createFragment(selectedView);
+        if (nextFragment != null)
         {
-            ScreenAdapter adapter = ScreenFactory.instance().createAdapter(selectedView);//TODO удалить вообще второй параметр, наверное
-            changeFragments(getActivity().getFragmentManager(), adapter);
+            changeFragments(getActivity().getFragmentManager(), nextFragment);
+        }
+    }
+
+    @TargetApi(13)
+    private int getScreenSizeAfterAPI13(Display display)
+    {
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;
+    }
+
+    @SuppressWarnings("deprecation")
+    private int getScreenSizeBeforeAPI13(Display display)
+    {
+        return display.getWidth();
+    }
+
+    private int getScreenWidth()
+    {
+        WindowManager windowManager = getActivity().getWindowManager();
+        Display display = windowManager.getDefaultDisplay();
+        if (Build.VERSION.SDK_INT >= 13)
+        {
+            return getScreenSizeAfterAPI13(display);
         } else
         {
-            /*additionalAdapter = ScreenFactory.instance().createAdapter(selectedView, getCurrentView());
-            refreshActionBar();TODO fix it*/
+            return getScreenSizeBeforeAPI13(display);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        screenWidth = getScreenWidth();
-        View content = getLinearLayoutWithScreenItems(inflater, currentView.getViewElements());
+        int screenWidth = container.getWidth();
+        if (screenWidth == 0)
+        {
+            screenWidth = getScreenWidth();
+        }
+        View content = getLinearLayoutWithScreenItems(inflater, currentView.getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
         return scrollView;

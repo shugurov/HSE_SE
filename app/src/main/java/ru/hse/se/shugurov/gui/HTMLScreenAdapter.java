@@ -1,8 +1,13 @@
 package ru.hse.se.shugurov.gui;
 
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.os.Bundle;
+import android.text.Html;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
+import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.utills.FileManager;
 
@@ -13,19 +18,17 @@ public class HTMLScreenAdapter extends ScreenAdapter
 {
     public HTMLScreenAdapter(ActivityCallback callback, HSEView hseView)
     {
-        super(callback, hseView);
-        showHTML();
+        super(hseView);
     }
 
-    private void showHTML()
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)//TODO подумать над считыаанием в отдельном потоке
     {
         FileManager fileManager = new FileManager(getActivity());
         String HTMLContent = fileManager.getFileContent(getHseView().getKey());
-        String mime = "text/html";
-        String encoding = "utf-8";
-        WebView webView;
-        webView = new WebView(getActivity());
-        webView.loadDataWithBaseURL(null, HTMLContent, mime, encoding, null);
-        webView.setWebViewClient(new WebViewClient());
+        View root = inflater.inflate(R.layout.html_layout, container, false);
+        TextView viewForHTML = (TextView) root.findViewById(R.id.html_content);
+        viewForHTML.setText(Html.fromHtml(HTMLContent));
+        return root;//TODO почему пропускаются некоторые теги?(
     }
 }
