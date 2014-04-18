@@ -1,6 +1,5 @@
 package ru.hse.se.shugurov.gui;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,7 +20,11 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewRSSWrapper;
  */
 public class RSSScreenAdapter extends ScreenAdapter
 {
-    public RSSScreenAdapter(ActivityCallback callback, HSEView hseViewRSS)
+    public RSSScreenAdapter()
+    {
+    }
+
+    public RSSScreenAdapter(HSEView hseViewRSS)
     {
         super(hseViewRSS);
     }
@@ -41,8 +44,7 @@ public class RSSScreenAdapter extends ScreenAdapter
                 switch (selectedItem.getType())
                 {
                     case FULL_RSS:
-                        Fragment adapter = ScreenFactory.instance().createFragment(selectedItem);
-                        changeFragments(getFragmentManager(), adapter);
+                        ScreenFactory.instance().showFragment(selectedItem);
                         break;
                     case ONLY_TITLE:
                         openBrowser(selectedItem.getUrl());

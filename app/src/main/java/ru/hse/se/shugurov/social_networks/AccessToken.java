@@ -41,7 +41,7 @@ public class AccessToken
 
     public boolean hasExpired()
     {
-        long currentTime = System.nanoTime();
+        long currentTime = System.currentTimeMillis();
         return currentTime >= expirationTime;
     }
 

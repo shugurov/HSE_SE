@@ -16,7 +16,11 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class HTMLScreenAdapter extends ScreenAdapter
 {
-    public HTMLScreenAdapter(ActivityCallback callback, HSEView hseView)
+    public HTMLScreenAdapter()
+    {
+    }
+
+    public HTMLScreenAdapter(HSEView hseView)
     {
         super(hseView);
     }

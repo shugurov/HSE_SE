@@ -1,13 +1,14 @@
 package ru.hse.se.shugurov.gui;
 
 
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.widget.AdapterView;
+import android.webkit.WebViewFragment;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,56 +26,43 @@ import ru.hse.se.shugurov.social_networks.VkWebClient;
 /**
  * Created by Иван on 14.03.14.
  */
-public class VKScreenAdapter extends ScreenAdapter
+public class VKScreenAdapter extends ScreenAdapter//TODO а нужен ли main_list вообще?
 {
     private static final String ACCESS_TOKEN_TAG = "access_token";
     private static final String SHARED_PREFERENCES_TAG = "social_networks";
     private VKRequester requester;
 
-    public VKScreenAdapter(ActivityCallback callback, HSEView vkHseView)//TODO кнопка назад, когда была регистрация
+    public VKScreenAdapter(HSEView vkHseView)//TODO кнопка назад, когда была регистрация
     {
         super(vkHseView);
-        SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
-        if (serializedToken == null)
-        {
-            makeRequestForAccessToken();
-        } else
-        {
-            AccessToken accessToken = new AccessToken(serializedToken);
-            if (accessToken.hasExpired())
-            {
-                makeRequestForAccessToken();
-            } else
-            {
-                requester = new VKRequester(accessToken);
-                //showListOfTopics(); TODO
-            }
-        }
-
     }
 
     private void makeRequestForAccessToken()
     {
-        WebView vkView;
-        vkView = new WebView(getActivity());
-        vkView.loadUrl(VkWebClient.OAUTH);
-        vkView.setWebViewClient(new VkWebClient(new VkWebClient.VKCallBack()
+        WebViewFragment webViewFragment = new WebViewFragment()
         {
             @Override
-            public void call(AccessToken accessToken)//TODO что делать с пустым токеном
+            public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
             {
-                requester = new VKRequester(accessToken);
-                registerAccessTokenInPreferences(accessToken);
-                //showListOfTopics(); TODO
+                View result = super.onCreateView(inflater, container, savedInstanceState);
+                getWebView().setWebViewClient(new VkWebClient(new VkWebClient.VKCallBack()
+                {
+                    @Override
+                    public void call(AccessToken accessToken)
+                    {
+                        requester = new VKRequester(accessToken);
+                        registerAccessTokenInPreferences(accessToken);
+                        setTopicsAdapter(showListFragment());
+                    }
+                }));
+                return result;
             }
-        }));
-        //changeFragments(); TODO
+        };
+        //changeFragments(getFragmentManager(), webViewFragment); TODO
     }
 
-    private void showListOfTopics(final LayoutInflater inflater, final ViewGroup container)
+    private void setTopicsAdapter(final ListFragment listFragment)
     {
-        final ListView vkList = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         requester.getTopics(getHseView().getObjectID(), new Requester.RequestResultCallback()
         {
             @Override
@@ -86,19 +74,20 @@ public class VKScreenAdapter extends ScreenAdapter
                 } else
                 {
                     final VKTopicsAdapter adapter = new VKTopicsAdapter(getActivity(), requester.getTopicsAdapter(result));
-                    vkList.setAdapter(adapter);
-                    vkList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                    listFragment.setListAdapter(adapter);
+                    /*listFragment.set(new AdapterView.OnItemClickListener()
                     {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id)
                         {
                             showResponses(inflater, container, adapter.getItem(position).getTopicID());
                         }
-                    });
+                    });TODO */
                 }
             }
         });
         //changeFragments(); TODO
+        //changeFragments(getFragmentManager(), listFragment);
     }
 
     private void showResponses(final LayoutInflater inflater, final ViewGroup container, int topicID)
@@ -135,5 +124,35 @@ public class VKScreenAdapter extends ScreenAdapter
     protected VKHSEView getHseView()
     {
         return (VKHSEView) super.getHseView();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
+        String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
+        if (serializedToken == null)
+        {
+            makeRequestForAccessToken();
+        } else
+        {
+            AccessToken accessToken = new AccessToken(serializedToken);
+            if (accessToken.hasExpired())
+            {
+                makeRequestForAccessToken();
+            } else
+            {
+                requester = new VKRequester(accessToken);
+                setTopicsAdapter(showListFragment());
+            }
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    private ListFragment showListFragment()
+    {
+        ListFragment listFragment = new ListFragment();
+        // changeFragments(getFragmentManager(), listFragment); TODO
+        return listFragment;
     }
 }

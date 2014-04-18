@@ -1,9 +1,8 @@
 package ru.hse.se.shugurov;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -27,7 +26,7 @@ import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
 
-public class MainActivity extends ActionBarActivity implements Observer
+public class MainActivity extends ActionBarActivity implements Observer//TODO в "студентам  бакалавриата" ад(
 {
     private HSEView hseView;
     private Downloader task;
@@ -36,24 +35,24 @@ public class MainActivity extends ActionBarActivity implements Observer
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
+        {
+            @Override
+            public Activity getActivity()
+            {
+                return MainActivity.this;
+            }
+
+            @Override
+            public void refreshActionBar()
+            {
+                //TODO наверное, что-то делать надо
+            }
+        }, savedInstanceState == null);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null)
         {
-            ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
-            {
-                @Override
-                public Context getContext()
-                {
-                    return MainActivity.this;
-                }
-
-                @Override
-                public void refreshActionBar()
-                {
-                    //TODO наверное, что-то делать надо
-                }
-            });
             checkFiles();
         }
     }
@@ -110,10 +109,8 @@ public class MainActivity extends ActionBarActivity implements Observer
                 break;
             case DOWNLOAD_FILES:
                 hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
-                ScreenFactory factory = ScreenFactory.instance();
-                Fragment factoryFragment = factory.createFragment(hseView);
-                ScreenAdapter.setFragment(getFragmentManager(), factoryFragment);
-                setActionBar();
+                ScreenFactory.instance().showFragment(hseView);
+                setActionBar();//TODO wtf?
                 progressDialog.cancel();
                 break;
         }

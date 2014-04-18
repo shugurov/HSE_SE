@@ -1,7 +1,6 @@
 package ru.hse.se.shugurov.gui;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -25,7 +24,7 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 /**
  * Created by Иван on 15.03.14.
  */
-public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener//TODO поправить отступы в отображении
+public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener//TODO поправить отступы в отображении, интересные статьи
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
     private String CURRENT_VIEW_TAG = "current_view";
@@ -97,10 +96,8 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         int idOfCurrentView = 0;
         for (int i = 0; i < rows; i++)
         {
-            LinearLayout linearLayout;
-            linearLayout = new LinearLayout(getActivity());
+            LinearLayout linearLayout = new LinearLayout(getActivity());
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayout.setPadding(10, 0, 10, 10);
             final ViewGroup[] items;
             int currentAmount = elements.length - i * numberOfViewsInRow >= numberOfViewsInRow ? numberOfViewsInRow : (elements.length - i * numberOfViewsInRow) % numberOfViewsInRow;
             items = new ViewGroup[currentAmount];
@@ -117,7 +114,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 items[j].setId(idOfCurrentView);
                 idOfCurrentView++;
                 items[j].setOnClickListener(this);
-                items[j].setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / numberOfViewsInRow - 20, ViewGroup.LayoutParams.MATCH_PARENT));
+                items[j].setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / numberOfViewsInRow, ViewGroup.LayoutParams.MATCH_PARENT));
             }
             for (ViewGroup item : items)
             {
@@ -132,16 +129,19 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     private Drawable getIconDrawable(int HSEViewType) throws IllegalArgumentException
     {
         int drawableID;
-        switch (HSEViewType)//TODO pdf image is incorrect
+        switch (HSEViewType)
         {
-            case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                drawableID = R.drawable.section10;
+            case HSEViewTypes.INNER_WEB_PAGE:
+                drawableID = R.drawable.section1;
+                break;
+            case HSEViewTypes.WEB_PAGE:
+                drawableID = R.drawable.section2;
                 break;
             case HSEViewTypes.FILE:
-                drawableID = R.drawable.section13;
+                drawableID = R.drawable.section3;
                 break;
-            case HSEViewTypes.FAQ:
-                drawableID = R.drawable.section7;
+            case HSEViewTypes.HTML_CONTENT:
+                drawableID = R.drawable.section4;
                 break;
             case HSEViewTypes.FACEBOOK:
                 drawableID = R.drawable.section5;
@@ -149,29 +149,26 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
                 drawableID = R.drawable.section6;
                 break;
-            case HSEViewTypes.INNER_WEB_PAGE:
-                drawableID = R.drawable.section1;
-                break;
-            case HSEViewTypes.HTML_CONTENT:
-                drawableID = R.drawable.section4;
-                break;
-            case HSEViewTypes.WEB_PAGE:
-                drawableID = R.drawable.section2;
-                break;
             case HSEViewTypes.VK_FORUM:
                 drawableID = R.drawable.section6;
                 break;
-            case HSEViewTypes.EVENTS:
-                drawableID = R.drawable.section9;
+            case HSEViewTypes.FAQ:
+                drawableID = R.drawable.section7;
                 break;
             case HSEViewTypes.RSS_WRAPPER:
                 drawableID = R.drawable.section8;
                 break;
-            case HSEViewTypes.MAP:
-                drawableID = R.drawable.section13;
+            case HSEViewTypes.EVENTS:
+                drawableID = R.drawable.section9;
+                break;
+            case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
+                drawableID = R.drawable.section10;
                 break;
             case HSEViewTypes.LINKEDIN:
                 drawableID = R.drawable.section12;
+                break;
+            case HSEViewTypes.MAP:
+                drawableID = R.drawable.section13;
                 break;
             default:
                 throw new IllegalArgumentException("Unknown ID");
@@ -185,11 +182,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     public void onClick(View view)
     {
         HSEView selectedView = currentView.getViewElements()[view.getId()];
-        Fragment nextFragment = ScreenFactory.instance().createFragment(selectedView);
-        if (nextFragment != null)
-        {
-            changeFragments(getActivity().getFragmentManager(), nextFragment);
-        }
+        ScreenFactory.instance().showFragment(selectedView);
     }
 
     @TargetApi(13)

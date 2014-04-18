@@ -1,6 +1,8 @@
 package ru.hse.se.shugurov.gui;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.webkit.WebViewFragment;
 
 import com.google.android.gms.maps.MapFragment;
 
+import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 
@@ -21,15 +24,17 @@ public class ScreenFactory
 {
     private static ScreenFactory screenFactory;
     private ScreenAdapter.ActivityCallback callback;
+    private boolean isFirstFragment = true;
 
-    private ScreenFactory(ScreenAdapter.ActivityCallback callback)
+    private ScreenFactory(ScreenAdapter.ActivityCallback callback, boolean isFirstFragment)
     {
         this.callback = callback;
+        this.isFirstFragment = isFirstFragment;
     }
 
-    public static void initFactory(ScreenAdapter.ActivityCallback callback)
+    public static void initFactory(ScreenAdapter.ActivityCallback callback, boolean isFirstFragment)
     {
-        screenFactory = new ScreenFactory(callback);
+        screenFactory = new ScreenFactory(callback, isFirstFragment);
     }
 
     public static ScreenFactory instance()
@@ -37,17 +42,17 @@ public class ScreenFactory
         return screenFactory;
     }
 
-    public Fragment createFragment(final HSEView view)
+    public void showFragment(final HSEView view)
     {
         Fragment adapter;
         switch (view.getHseViewType())
         {
             case HSEViewTypes.HTML_CONTENT:
-                adapter = new HTMLScreenAdapter(callback, view);
+                adapter = new HTMLScreenAdapter(view);
                 break;
             case HSEViewTypes.WEB_PAGE:
                 openBrowser(view.getUrl());
-                adapter = null;//TODO
+                adapter = null;
                 break;
             case HSEViewTypes.INNER_WEB_PAGE:
                 adapter = new WebViewFragment()
@@ -64,10 +69,10 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.RSS:
             case HSEViewTypes.RSS_WRAPPER:
-                adapter = new RSSScreenAdapter(callback, view);
+                adapter = new RSSScreenAdapter(view);
                 break;
             case HSEViewTypes.VK_FORUM:
-                adapter = new VKScreenAdapter(callback, view);
+                adapter = new VKScreenAdapter(view);
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 adapter = new ViewOfOtherViewsAdapter(view);
@@ -78,7 +83,19 @@ public class ScreenFactory
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");
         }
-        return adapter;
+
+        if (adapter != null)
+        {
+            FragmentManager manager = callback.getActivity().getFragmentManager();
+            if (isFirstFragment)
+            {
+                setFragment(manager, adapter);
+                isFirstFragment = false;
+            } else
+            {
+                changeFragments(manager, adapter);
+            }
+        }
     }
 
     private void openBrowser(String url)//TODO а стоит ли этому быть тут?
@@ -86,6 +103,21 @@ public class ScreenFactory
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse(url);
         browserIntent.setData(uri);
-        callback.getContext().startActivity(browserIntent);
+        callback.getActivity().startActivity(browserIntent);
+    }
+
+    private void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
+    {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.main, fragmentToAppear);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    private void setFragment(FragmentManager manager, Fragment fragmentToAppear)
+    {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.main, fragmentToAppear);
+        transaction.commit();
     }
 }

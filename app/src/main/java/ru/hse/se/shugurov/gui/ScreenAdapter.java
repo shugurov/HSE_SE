@@ -1,12 +1,9 @@
 package ru.hse.se.shugurov.gui;
 
+import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.os.Bundle;
 
-import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.ViewsPackage.HSEView;
 
 /**
@@ -21,7 +18,7 @@ public abstract class ScreenAdapter extends Fragment
     {
     }
 
-    public ScreenAdapter(HSEView hseView)//TODO а может и от него избавиться?
+    public ScreenAdapter(HSEView hseView)
     {
         this.hseView = hseView;
         Bundle instanceState = new Bundle();
@@ -29,7 +26,7 @@ public abstract class ScreenAdapter extends Fragment
         setArguments(instanceState);
     }
 
-    protected static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
+    /*protected static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
     {
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.main, fragmentToAppear);
@@ -42,7 +39,7 @@ public abstract class ScreenAdapter extends Fragment
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.main, fragmentToAppear);
         transaction.commit();
-    }
+    }TODO delete*/
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -80,7 +77,7 @@ public abstract class ScreenAdapter extends Fragment
     public interface ActivityCallback
     {
 
-        public Context getContext(); //TODO а надо ли вообще?
+        public Activity getActivity(); //TODO а надо ли вообще?
 
         public void refreshActionBar();//TODO а здесь ли?
 
