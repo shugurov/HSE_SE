@@ -10,16 +10,10 @@ public class VKHSEView extends HSEView
 {
     private String objectID = "";
 
-    protected VKHSEView(JSONObject jsonObject, String index)
+    protected VKHSEView(JSONObject jsonObject) throws JSONException
     {
-        super(jsonObject, index);
-        try
-        {
-            objectID = jsonObject.getString("objectId");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        super(jsonObject);
+        objectID = jsonObject.getString("objectId");
     }
 
     public String getObjectID()

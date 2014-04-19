@@ -10,17 +10,11 @@ public class HSEViewHtmlContent extends HSEView implements HasFile
 {
     private String html;
 
-    HSEViewHtmlContent(JSONObject jsonObject, String index)
+    HSEViewHtmlContent(JSONObject jsonObject) throws JSONException
     {
-        super(jsonObject, index);
-        try
-        {
-            html = jsonObject.getString("html");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-            html = "";
-        }
+        super(jsonObject);
+        html = jsonObject.getString("html");
+        url = "";
     }
 
     @Override

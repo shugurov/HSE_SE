@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -27,7 +24,8 @@ import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
 
 public class MainActivity extends ActionBarActivity implements Observer//TODO в "студентам  бакалавриата" ад(
-{
+{//TODO а не слишком ли много оперативки жрёт?
+    private static String JSON_FILE_NAME = "json";
     private HSEView hseView;
     private Downloader task;
     private ProgressDialog progressDialog;
@@ -108,37 +106,18 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
                 checkFiles();
                 break;
             case DOWNLOAD_FILES:
-                hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
+                try
+                {
+                    hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
+                } catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
                 ScreenFactory.instance().showFragment(hseView);
                 setActionBar();//TODO wtf?
                 progressDialog.cancel();
                 break;
         }
-    }
-
-
-    private void makeViewChangeAnimation(View viewToHide, View viewToAppear, boolean isButtonBackClicked)
-    {
-        Animation animationDisappearing;
-        if (isButtonBackClicked)
-        {
-            animationDisappearing = AnimationUtils.loadAnimation(this, R.anim.content_disappearing_movement_to_the_right);
-        } else
-        {
-            animationDisappearing = AnimationUtils.loadAnimation(this, R.anim.content_disappearing_movement_to_the_left);
-        }
-        animationDisappearing.reset();
-        viewToHide.setAnimation(animationDisappearing);
-        Animation animationAppearing;
-        if (isButtonBackClicked)
-        {
-            animationAppearing = AnimationUtils.loadAnimation(this, R.anim.content_appearing_movement_to_the_right);
-        } else
-        {
-            animationAppearing = AnimationUtils.loadAnimation(this, R.anim.content_appearing_movement_to_the_left);
-        }
-        animationAppearing.reset();
-        viewToAppear.setAnimation(animationAppearing);
     }
 
     private void setActionBar()
@@ -163,14 +142,14 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
     private void checkFiles()
     {
         FileManager fileManager = new FileManager(this);
-        if (fileManager.doesExist("json"))
+        if (fileManager.doesExist(JSON_FILE_NAME))
         {
-            FileInputStream fileInputStream = fileManager.openFile("json");
-            if (fileInputStream == null)
+            FileInputStream fileInputStream = fileManager.openFile(JSON_FILE_NAME);
+            if (fileInputStream == null)//TODO к чему бы это?
             {
                 startProgressDialog();
                 createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-                task.execute(new FileDescription("json", HSEView.JSON_LINK));
+                task.execute(new FileDescription(JSON_FILE_NAME, HSEView.JSON_LINK));
             } else
             {
                 setJsonField();
@@ -183,7 +162,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
         } else
         {
             createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-            task.execute(new FileDescription("json", HSEView.JSON_LINK));
+            task.execute(new FileDescription(JSON_FILE_NAME, HSEView.JSON_LINK));
         }
     }
 
@@ -198,27 +177,37 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
     private void setJsonField()//TODO может разнести проверку json и файлов в разные методы?
     {
         FileManager fileManager = new FileManager(this);
-        FileInputStream fileInputStream = fileManager.openFile("json");
+        FileInputStream fileInputStream = fileManager.openFile(JSON_FILE_NAME);
         if (fileInputStream == null)
         {
             Toast.makeText(this, "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
 
         } else
         {
-            String json = fileManager.getFileContent("json");
+            String json = fileManager.getFileContent(JSON_FILE_NAME);
             HSEView newView;
             try
             {
                 newView = HSEView.getView(json);
             } catch (JSONException e)
             {
-                e.printStackTrace();
-                Toast.makeText(this, "Неизвестная ошибка", Toast.LENGTH_SHORT).show();
+                handleJsonException();
                 return;
             }
             hseView = newView;
-            hseView.notifyAboutFiles(this);
+            try
+            {
+                hseView.notifyAboutFiles(this);
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private void handleJsonException()
+    {
+        Toast.makeText(this, "Ощибка загрузки контента", Toast.LENGTH_SHORT).show();
     }
 
 }

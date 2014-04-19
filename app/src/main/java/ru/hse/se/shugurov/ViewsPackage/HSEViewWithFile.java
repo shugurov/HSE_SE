@@ -11,36 +11,22 @@ public class HSEViewWithFile extends HSEView implements HasFile
     private String fileType;
     private String fileName;
 
-    HSEViewWithFile(JSONObject jsonObject, String index)
+    HSEViewWithFile(JSONObject jsonObject) throws JSONException
     {
-        super(jsonObject, index);
-        try
-        {
-            fileType = jsonObject.getString("filetype");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-            fileType = "";
-        }
-        try
-        {
-            fileName = jsonObject.getString("filename");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-            fileName = "";
-        }
+        super(jsonObject);
+        fileType = jsonObject.getString("filetype");
+        fileName = jsonObject.getString("filename");
     }
 
     public String getFileName()
     {
         return fileName;
-    }
+    }//TODO не использую никак
 
     public String getFileType()
     {
         return fileType;
-    }
+    }//TODO не использую никак
 
     @Override
     public FileDescription getFileDescription()

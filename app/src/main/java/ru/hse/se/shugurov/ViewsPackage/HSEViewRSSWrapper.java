@@ -15,57 +15,29 @@ import ru.hse.se.shugurov.utills.FileManager;
 public class HSEViewRSSWrapper extends HSEView implements HasFile
 {
 
-    private String url;
-    private HSEViewRSS[] conecctedViews;
+    private String url;//TODO а почему тут отдельное url?
+    private HSEViewRSS[] childViews;
 
 
-    HSEViewRSSWrapper(JSONObject jsonObject, String index)
+    HSEViewRSSWrapper(JSONObject jsonObject) throws JSONException
     {
-        super(jsonObject, index);
+        super(jsonObject);
         this.url = HSEView.SERVER_LINK + "/api/structure/rss/" + getKey();
     }
 
     @Override
-    public void notifyAboutFiles(Context context)
+    public void notifyAboutFiles(Context context) throws JSONException
     {
         FileManager fileManager = new FileManager(context);
         String content = fileManager.getFileContent(getKey());  //TODO а можно ли использовать key как идентификатор?
-        JSONObject jsonObject = null;   //TODO не забыть чистить старые файлы!!!! но не тут, а вообще
-        try
+        JSONObject jsonObject;   //TODO не забыть чистить старые файлы!!!! но не тут, а вообще
+        jsonObject = new JSONObject(content);
+        JSONArray jsonArray = jsonObject.getJSONArray("entries");
+        childViews = new HSEViewRSS[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++)
         {
-            jsonObject = new JSONObject(content);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-            return;
+            childViews[i] = new HSEViewRSS(jsonArray.getJSONObject(i));
         }
-        JSONArray jsonArray = null;
-        try
-        {
-            jsonArray = jsonObject.getJSONArray("entries");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-            return;
-        }
-        if (jsonArray != null)
-        {
-            conecctedViews = new HSEViewRSS[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                try
-                {
-                    conecctedViews[i] = new HSEViewRSS(jsonArray.getJSONObject(i), this.getIndex() + new Integer(i).toString() + HSEView.END_OF_INDEX_TAG);
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        } else
-        {
-            conecctedViews = new HSEViewRSS[0];
-        }
-        int a = 7;
     }
 
 
@@ -77,6 +49,6 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
 
     public HSEViewRSS[] getConnectedViews()
     {
-        return conecctedViews;
+        return childViews;
     }
 }

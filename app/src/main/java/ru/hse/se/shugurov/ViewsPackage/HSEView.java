@@ -2,7 +2,6 @@ package ru.hse.se.shugurov.ViewsPackage;
 
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,26 +10,21 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HSEView implements Serializable //TODO url зачастую пустой
+public class HSEView implements Serializable
 {
-    public static final String INDEX_OF_THE_MAIN_VIEW = "";
     public static final String SERVER_LINK = "http://promoteeducate1.appspot.com";
-    public static final String JSON_LINK = "http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f";
-    protected static final String END_OF_INDEX_TAG = "e";
+    public static final String JSON_LINK = "http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f";//TODO спрятать в xml
     private static final String SECTIONS_TAG_IN_JSON = "sections";
     private static boolean isFirstView = true;
-    final String JSON_EXCEPTION = "json_exception"; //TODO
     protected String url; //TODO инкапсулировать получение url в подклассы
     protected int hseViewType;
     private boolean IS_THE_FIRST_VIEW;
     private String name;
     private String key;
     private String description;
-    private String index;
-    private String parentIndex;
     private HSEView[] childViews;
 
-    protected HSEView(JSONObject jsonObject, String index)
+    protected HSEView(JSONObject jsonObject) throws JSONException
     {
         if (isFirstView)
         {
@@ -40,45 +34,19 @@ public class HSEView implements Serializable //TODO url зачастую пус�
             IS_THE_FIRST_VIEW = false;
         }
         getUsualDescriptionOfTheView(jsonObject);
-        this.index = index;
-        if (index.length() > 0)
+        if (hseViewType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
-            index = index.substring(0, index.lastIndexOf(END_OF_INDEX_TAG));
-            if (index.lastIndexOf(END_OF_INDEX_TAG) >= 0)
-            {
-                index = index.substring(0, index.lastIndexOf(END_OF_INDEX_TAG) + 1);
-                this.parentIndex = index;
-            } else
-            {
-                this.parentIndex = INDEX_OF_THE_MAIN_VIEW;
-            }
-
-        }
-        switch (this.hseViewType)
-        {
-            case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                JSONArray jsonArray;
-                try
-                {
-                    jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
-                    parseJSON(jsonArray);
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
-                    Log.e(JSON_EXCEPTION, "inside HSEView(JSONObject jsonObject)");
-                }
-                break;
-            default:
-                break;
+            JSONArray jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
+            parseJSON(jsonArray);
         }
     }
 
     public static HSEView getView(String json) throws JSONException
     {
-        isFirstView = true; //TODO удалить, наверное
+        isFirstView = true;
         JSONObject jsonObject = new JSONObject(json);
         HSEView viewToReturn;
-        viewToReturn = new HSEView(jsonObject, "");
+        viewToReturn = new HSEView(jsonObject);
         return viewToReturn;
     }
 
@@ -107,28 +75,7 @@ public class HSEView implements Serializable //TODO url зачастую пус�
         return description;
     }
 
-    public String getIndex()
-    {
-        return index;
-    }
-
-    public String getParentIndex()
-    {
-        if (!IS_THE_FIRST_VIEW)
-        {
-            return parentIndex;
-        } else
-        {
-            return INDEX_OF_THE_MAIN_VIEW;
-        }
-    }
-
-    public HSEView[] getChildViews()
-    {
-        return childViews;
-    }
-
-    private void getUsualDescriptionOfTheView(JSONObject jsonObject)
+    private void getUsualDescriptionOfTheView(JSONObject jsonObject) throws JSONException
     {
 
         hseViewType = -1;
@@ -146,38 +93,10 @@ public class HSEView implements Serializable //TODO url зачастую пус�
                 e.printStackTrace();
             }
         }
-        url = "";
-        try
-        {
-            url = jsonObject.getString("url");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        key = "";
-        try
-        {
-            key = jsonObject.getString("key");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        description = "";
-        try
-        {
-            description = jsonObject.getString("description");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        name = "";
-        try
-        {
-            name = jsonObject.getString("name");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        url = jsonObject.getString("url");
+        key = jsonObject.getString("key");
+        description = jsonObject.getString("description");
+        name = jsonObject.getString("name");
     }
 
     private void parseJSON(JSONArray jsonArray) throws JSONException
@@ -188,35 +107,27 @@ public class HSEView implements Serializable //TODO url зачастую пус�
         {
             JSONObject jsonObject;
             jsonObject = jsonArray.getJSONObject(i);
-            int type;
-            try
-            {
-                type = jsonObject.getInt("type");
-            } catch (JSONException e)
-            {
-                e.printStackTrace();
-                Log.e(JSON_EXCEPTION, "unknown type");
-                type = -1;
-            }
-            String newIndex;
-            newIndex = this.index + i + END_OF_INDEX_TAG;
+            int type = jsonObject.getInt("type");
             switch (type) //TODO дописать новые вьюхи с отдельными классами
             {
                 case HSEViewTypes.FILE:
-                    viewList.add(new HSEViewWithFile(jsonObject, newIndex));
+                    viewList.add(new HSEViewWithFile(jsonObject));
                     break;
                 case HSEViewTypes.HTML_CONTENT:
-                    viewList.add(new HSEViewHtmlContent(jsonObject, newIndex));
+                    viewList.add(new HSEViewHtmlContent(jsonObject));
                     break;
                 case HSEViewTypes.RSS_WRAPPER:
-                    viewList.add(new HSEViewRSSWrapper(jsonObject, newIndex));
+                    viewList.add(new HSEViewRSSWrapper(jsonObject));
                     break;
                 case HSEViewTypes.VK_FORUM:
                 case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                    viewList.add(new VKHSEView(jsonObject, newIndex));
+                    viewList.add(new VKHSEView(jsonObject));
+                    break;
+                case HSEViewTypes.MAP:
+                    viewList.add(new MapScreen(jsonObject));
                     break;
                 default:
-                    viewList.add(new HSEView(jsonObject, newIndex));
+                    viewList.add(new HSEView(jsonObject));
             }
 
         }
@@ -237,70 +148,14 @@ public class HSEView implements Serializable //TODO url зачастую пус�
 
     public HSEView[] getViewElements()
     {
-        return this.childViews.clone();
+        return this.childViews;
     }
 
-    public HSEView getViewByIndex(String index)
-    {
-        if (index.compareTo(this.index) == 0)
-        {
-            return this;
-        }
-        {
-            String subString = index.substring(0, this.index.length());
-            if (subString.compareTo(this.index) != 0)
-            {
-                return null;
-            } else
-            {
-                subString = index.substring(this.index.length());
-                int position;
-                position = subString.indexOf(END_OF_INDEX_TAG);
-                if (position < 0)
-                {
-                    return null;
-                } else
-                {
-                    int digitalIndex;
-                    try
-                    {
-                        subString = subString.substring(0, position);
-                        digitalIndex = Integer.parseInt(subString);
-                    } catch (Exception e)
-                    {
-                        return null;
-                    }
-                    switch (hseViewType)
-                    {
-                        case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                            if (digitalIndex >= this.childViews.length)
-                            {
-                                return null;
-                            } else
-                            {
-                                return this.childViews[digitalIndex].getViewByIndex(index);
-                            }
-                        case HSEViewTypes.RSS_WRAPPER:
-                            HSEViewRSS[] connectedViews = ((HSEViewRSSWrapper) this).getConnectedViews();
-                            if (digitalIndex >= connectedViews.length)
-                            {
-                                return null;
-                            } else
-                            {
-                                return connectedViews[digitalIndex];
-                            }
-                        default:
-                            return null;
-                    }
-                }
-            }
-        }
-    }
 
     public boolean isMainView()
     {
         return IS_THE_FIRST_VIEW;
-    }
+    } //TODO а надо ли?
 
     public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)
     {
@@ -323,7 +178,7 @@ public class HSEView implements Serializable //TODO url зачастую пус�
         }
     }
 
-    public void notifyAboutFiles(Context context)
+    public void notifyAboutFiles(Context context) throws JSONException
     {
         if (hseViewType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {

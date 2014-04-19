@@ -22,51 +22,15 @@ public class HSEViewRSS extends HSEView
     private String entryId = "";
     private HSERSSType type;
 
-    HSEViewRSS(JSONObject jsonObject, String index)
+    HSEViewRSS(JSONObject jsonObject) throws JSONException
     {
-        super(jsonObject, index);
-        try
-        {
-            title = jsonObject.getString(TITLE_TAG);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            omitted = jsonObject.getString(OMITTED_TAG);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            summary = jsonObject.getString(SUMMARY_TAG);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            url = jsonObject.getString(LINK_TAG);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            updatedAt = jsonObject.getString(UPDATED_AT_TAG);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        try
-        {
-            entryId = jsonObject.getString(ENTRY_ID);
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
+        super(jsonObject);
+        title = jsonObject.getString(TITLE_TAG);
+        omitted = jsonObject.getString(OMITTED_TAG);
+        summary = jsonObject.getString(SUMMARY_TAG);
+        url = jsonObject.getString(LINK_TAG);
+        updatedAt = jsonObject.getString(UPDATED_AT_TAG);
+        entryId = jsonObject.getString(ENTRY_ID);
         if (omitted.equals(NULL_TAG))
         {
             type = HSERSSType.ONLY_TITLE;
@@ -98,19 +62,19 @@ public class HSEViewRSS extends HSEView
     public String getUpdatedAt()
     {
         return updatedAt;
-    }
+    }//TODO а нужно ли?
 
     public String getEntryId()
     {
         return entryId;
-    }
+    }//TODO а нужно ли?
 
     public HSERSSType getType()
     {
         return type;
     }
 
-    private void clearStyle()
+    private void clearStyle()//TODO wtf?
     {
         int startIndex = summary.indexOf("<style");
         int endIndex = summary.indexOf("</style>");
