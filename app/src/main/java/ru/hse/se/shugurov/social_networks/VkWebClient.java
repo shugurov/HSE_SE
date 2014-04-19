@@ -69,5 +69,4 @@ public class VkWebClient extends WebViewClient
         void call(AccessToken accessToken);
     }
 
-
 }

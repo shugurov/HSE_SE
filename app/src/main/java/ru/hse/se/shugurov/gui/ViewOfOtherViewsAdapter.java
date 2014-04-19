@@ -27,8 +27,6 @@ import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
 public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener//TODO поправить отступы в отображении, интересные статьи
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
-    private String CURRENT_VIEW_TAG = "current_view";
-    private HSEView currentView;
 
     public ViewOfOtherViewsAdapter()
     {
@@ -37,46 +35,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     public ViewOfOtherViewsAdapter(HSEView hseView)
     {
         super(hseView);
-        currentView = hseView;
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null)
-        {
-            currentView = (HSEView) savedInstanceState.get(CURRENT_VIEW_TAG);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(CURRENT_VIEW_TAG, currentView);
-    }
-
-    @Override
-    public String getActionBarTitle()
-    {
-        return currentView.getName();
-    }
-
-    @Override
-    public int getMenuId()
-    {
-        int menuId;
-        if (currentView.isMainView())
-        {
-            menuId = R.menu.refresh_menu;
-        } else
-        {
-            menuId = super.getMenuId();
-        }
-        return menuId;
-    }
-
 
     private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, HSEView[] elements, int screenWidth)
     {
@@ -181,7 +140,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
     @Override
     public void onClick(View view)
     {
-        HSEView selectedView = currentView.getViewElements()[view.getId()];
+        HSEView selectedView = getHseView().getViewElements()[view.getId()];
         ScreenFactory.instance().showFragment(selectedView);
     }
 
@@ -220,7 +179,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         {
             screenWidth = getScreenWidth();
         }
-        View content = getLinearLayoutWithScreenItems(inflater, currentView.getViewElements(), screenWidth);
+        View content = getLinearLayoutWithScreenItems(inflater, getHseView().getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
         return scrollView;

@@ -26,21 +26,6 @@ public abstract class ScreenAdapter extends Fragment
         setArguments(instanceState);
     }
 
-    /*protected static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
-    {
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.main, fragmentToAppear);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    public static void setFragment(FragmentManager manager, Fragment fragmentToAppear)
-    {
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.main, fragmentToAppear);
-        transaction.commit();
-    }TODO delete*/
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -72,7 +57,7 @@ public abstract class ScreenAdapter extends Fragment
     public int getMenuId()
     {
         return -1;
-    }
+    }//TODO что это вообще?
 
     public interface ActivityCallback
     {
