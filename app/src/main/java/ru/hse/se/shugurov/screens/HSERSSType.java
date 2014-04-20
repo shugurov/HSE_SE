@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 /**
  * Created by Иван on 28.10.13.

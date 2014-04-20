@@ -11,9 +11,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
-import ru.hse.se.shugurov.ViewsPackage.HSEViewRSS;
-import ru.hse.se.shugurov.ViewsPackage.HSEViewRSSWrapper;
+import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.HSEViewRSS;
+import ru.hse.se.shugurov.screens.HSEViewRSSWrapper;
 
 /**
  * Created by Иван on 15.03.14.

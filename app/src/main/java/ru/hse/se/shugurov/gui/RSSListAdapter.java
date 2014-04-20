@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.ViewsPackage.HSEViewRSS;
+import ru.hse.se.shugurov.screens.HSEViewRSS;
 
 /**
  * Created by Иван on 15.03.14.
@@ -41,6 +41,7 @@ public class RSSListAdapter extends BaseAdapter
     {
         return position;
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent)

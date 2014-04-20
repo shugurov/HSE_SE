@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 import org.json.JSONException;
 import org.json.JSONObject;

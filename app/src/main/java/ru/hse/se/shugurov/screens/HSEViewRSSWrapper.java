@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 import android.content.Context;
 
@@ -15,14 +15,12 @@ import ru.hse.se.shugurov.utills.FileManager;
 public class HSEViewRSSWrapper extends HSEView implements HasFile
 {
 
-    private String url;//TODO а почему тут отдельное url?
     private HSEViewRSS[] childViews;
-
 
     HSEViewRSSWrapper(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject);
-        this.url = HSEView.SERVER_LINK + "/api/structure/rss/" + getKey();
+        url = HSEView.SERVER_LINK + "/api/structure/rss/" + getKey();
     }
 
     @Override

@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
-import ru.hse.se.shugurov.ViewsPackage.VKHSEView;
+import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.VKHSEView;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.VKAbstractItem;
 import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;

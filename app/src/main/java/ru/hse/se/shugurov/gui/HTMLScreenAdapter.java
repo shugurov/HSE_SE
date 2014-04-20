@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
+import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.FileManager;
 
 /**

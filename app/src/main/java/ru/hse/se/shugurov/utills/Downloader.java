@@ -13,9 +13,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import ru.hse.se.shugurov.ViewsPackage.FileDescription;
 import ru.hse.se.shugurov.observer.Observable;
 import ru.hse.se.shugurov.observer.Observer;
+import ru.hse.se.shugurov.screens.FileDescription;
 
 
 /**
@@ -180,9 +180,9 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
         {
             return null;
         }
-        int BUFFER_SIZE = 2000;
+        int BUFFER_SIZE = 2000;//
         InputStreamReader reader = new InputStreamReader(input);
-        char[] inputBuffer = new char[BUFFER_SIZE];
+        char[] inputBuffer = new char[BUFFER_SIZE];//TODO оптимизировать считывание
         int charRead;
         String content = "";
         try

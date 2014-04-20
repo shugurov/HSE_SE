@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 
 import android.content.Context;
@@ -15,24 +15,19 @@ public class HSEView implements Serializable
     public static final String SERVER_LINK = "http://promoteeducate1.appspot.com";
     public static final String JSON_LINK = "http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f";//TODO спрятать в xml
     private static final String SECTIONS_TAG_IN_JSON = "sections";
-    private static boolean isFirstView = true;
     protected String url; //TODO инкапсулировать получение url в подклассы
     protected int hseViewType;
-    private boolean IS_THE_FIRST_VIEW;
+    private boolean isMainView;
     private String name;
-    private String key;
-    private String description;
+    private String key; //TODO а для чего он?
     private HSEView[] childViews;
+
+    protected HSEView()
+    {
+    }
 
     protected HSEView(JSONObject jsonObject) throws JSONException
     {
-        if (isFirstView)
-        {
-            IS_THE_FIRST_VIEW = true;
-        } else
-        {
-            IS_THE_FIRST_VIEW = false;
-        }
         getUsualDescriptionOfTheView(jsonObject);
         if (hseViewType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
@@ -43,10 +38,8 @@ public class HSEView implements Serializable
 
     public static HSEView getView(String json) throws JSONException
     {
-        isFirstView = true;
         JSONObject jsonObject = new JSONObject(json);
-        HSEView viewToReturn;
-        viewToReturn = new HSEView(jsonObject);
+        HSEView viewToReturn = new HSEView(jsonObject);
         return viewToReturn;
     }
 
@@ -70,32 +63,24 @@ public class HSEView implements Serializable
         return key;
     }
 
-    public String getDescription()
-    {
-        return description;
-    }
-
     private void getUsualDescriptionOfTheView(JSONObject jsonObject) throws JSONException
     {
 
         hseViewType = -1;
-        if (isFirstView)
+        if (jsonObject.has("type"))
         {
-            hseViewType = HSEViewTypes.VIEW_OF_OTHER_VIEWS;
-            isFirstView = false;
+            hseViewType = jsonObject.getInt("type");
+            isMainView = false;
         } else
         {
-            try
-            {
-                hseViewType = jsonObject.getInt("type");
-            } catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
+            isMainView = true;
+            hseViewType = HSEViewTypes.VIEW_OF_OTHER_VIEWS;
         }
-        url = jsonObject.getString("url");
+        if (jsonObject.has("url"))
+        {
+            url = jsonObject.getString("url");
+        }
         key = jsonObject.getString("key");
-        description = jsonObject.getString("description");
         name = jsonObject.getString("name");
     }
 
@@ -154,7 +139,7 @@ public class HSEView implements Serializable
 
     public boolean isMainView()
     {
-        return IS_THE_FIRST_VIEW;
+        return isMainView;
     } //TODO а надо ли?
 
     public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)

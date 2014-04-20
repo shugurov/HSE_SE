@@ -14,11 +14,11 @@ import org.json.JSONException;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-import ru.hse.se.shugurov.ViewsPackage.FileDescription;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
 import ru.hse.se.shugurov.gui.ScreenAdapter;
 import ru.hse.se.shugurov.gui.ScreenFactory;
 import ru.hse.se.shugurov.observer.Observer;
+import ru.hse.se.shugurov.screens.FileDescription;
+import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;

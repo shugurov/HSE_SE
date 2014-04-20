@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
+import ru.hse.se.shugurov.screens.HSEView;
 
 /**
  * Created by Иван on 14.03.14.

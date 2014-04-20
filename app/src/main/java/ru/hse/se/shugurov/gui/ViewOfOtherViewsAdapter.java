@@ -18,8 +18,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
-import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
+import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.HSEViewTypes;
 
 /**
  * Created by Иван on 15.03.14.

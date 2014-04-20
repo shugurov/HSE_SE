@@ -6,25 +6,20 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebViewFragment;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.ViewsPackage.HSEView;
-import ru.hse.se.shugurov.ViewsPackage.HSEViewTypes;
-import ru.hse.se.shugurov.ViewsPackage.MapScreen;
-import ru.hse.se.shugurov.ViewsPackage.MarkerWrapper;
+import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.HSEViewTypes;
+import ru.hse.se.shugurov.screens.MapScreen;
 
 /**
  * Created by Иван on 15.03.14.
  */
-public class ScreenFactory
+public class ScreenFactory//TODO экран с браузером падает при перевороте
 {
     private static ScreenFactory screenFactory;
     private ScreenAdapter.ActivityCallback callback;
@@ -82,27 +77,7 @@ public class ScreenFactory
                 adapter = new ViewOfOtherViewsAdapter(view);
                 break;
             case HSEViewTypes.MAP: //TODO может спрятать в отдельный класс?
-                adapter = new MapFragment()
-                {
-
-                    @Override
-                    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-                    {
-                        View resultView = super.onCreateView(inflater, container, savedInstanceState);
-                        MarkerWrapper[] markers = ((MapScreen) view).getMarkers();
-                        GoogleMap googleMap = getMap();
-                        for (MarkerWrapper marker : markers)
-                        {
-                            googleMap.addMarker(marker.getMarker());
-                            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                            //BEGIN TODO
-                            String info = marker.getMarker().getPosition().toString();
-                            Log.d("map", info);
-                            //END TODO
-                        }
-                        return resultView;
-                    }
-                };
+                adapter = new MapScreenAdapter((MapScreen) view);
                 break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");

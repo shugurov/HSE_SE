@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 
 public interface HSEViewTypes

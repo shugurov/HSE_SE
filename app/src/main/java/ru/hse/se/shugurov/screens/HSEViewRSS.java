@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,9 +22,8 @@ public class HSEViewRSS extends HSEView
     private String entryId = "";
     private HSERSSType type;
 
-    HSEViewRSS(JSONObject jsonObject) throws JSONException
+    HSEViewRSS(JSONObject jsonObject) throws JSONException//TODO меня печалит пустой конструктор
     {
-        super(jsonObject);
         title = jsonObject.getString(TITLE_TAG);
         omitted = jsonObject.getString(OMITTED_TAG);
         summary = jsonObject.getString(SUMMARY_TAG);

@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.ViewsPackage;
+package ru.hse.se.shugurov.screens;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,7 +9,7 @@ import org.json.JSONObject;
  */
 public class MapScreen extends HSEView
 {
-    private MarkerWrapper[] markers;
+    private transient MarkerWrapper[] markers;
 
     protected MapScreen(JSONObject jsonObject) throws JSONException
     {
