@@ -1,15 +1,11 @@
 package ru.hse.se.shugurov.gui;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.WebViewFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
@@ -22,18 +18,18 @@ import ru.hse.se.shugurov.screens.MapScreen;
 public class ScreenFactory//TODO экран с браузером падает при перевороте
 {
     private static ScreenFactory screenFactory;
-    private ScreenAdapter.ActivityCallback callback;
+    private FragmentActivity activity;
     private boolean isFirstFragment = true;
 
-    private ScreenFactory(ScreenAdapter.ActivityCallback callback, boolean isFirstFragment)
+    private ScreenFactory(FragmentActivity activity, boolean isFirstFragment)
     {
-        this.callback = callback;
+        this.activity = activity;
         this.isFirstFragment = isFirstFragment;
     }
 
-    public static void initFactory(ScreenAdapter.ActivityCallback callback, boolean isFirstFragment)
+    public static void initFactory(FragmentActivity activity, boolean isFirstFragment)
     {
-        screenFactory = new ScreenFactory(callback, isFirstFragment);
+        screenFactory = new ScreenFactory(activity, isFirstFragment);
     }
 
     public static ScreenFactory instance()
@@ -54,17 +50,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 adapter = null;
                 break;
             case HSEViewTypes.INNER_WEB_PAGE:
-                adapter = new WebViewFragment()
-                {
-
-                    @Override
-                    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-                    {
-                        View resultView = super.onCreateView(inflater, container, savedInstanceState);
-                        getWebView().loadUrl(view.getUrl());
-                        return resultView;
-                    }
-                };
+                adapter = new InternalWebScreenAdapter(view);
                 break;
             case HSEViewTypes.RSS:
             case HSEViewTypes.RSS_WRAPPER:
@@ -76,8 +62,11 @@ public class ScreenFactory//TODO экран с браузером падает �
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 adapter = new ViewOfOtherViewsAdapter(view);
                 break;
-            case HSEViewTypes.MAP: //TODO может спрятать в отдельный класс?
+            case HSEViewTypes.MAP:
                 adapter = new MapScreenAdapter((MapScreen) view);
+                break;
+            case HSEViewTypes.EVENTS:
+                adapter = new EventScreenAdapter(view);
                 break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");
@@ -85,7 +74,7 @@ public class ScreenFactory//TODO экран с браузером падает �
 
         if (adapter != null)
         {
-            FragmentManager manager = callback.getActivity().getFragmentManager();
+            android.support.v4.app.FragmentManager manager = activity.getSupportFragmentManager();
             if (isFirstFragment)
             {
                 setFragment(manager, adapter);
@@ -102,12 +91,13 @@ public class ScreenFactory//TODO экран с браузером падает �
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse(url);
         browserIntent.setData(uri);
-        callback.getActivity().startActivity(browserIntent);
+        activity.startActivity(browserIntent);
     }
 
     private void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
     {
         FragmentTransaction transaction = manager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.content_appearing_movement_to_the_left, R.anim.content_disappearing_movement_to_the_left, R.anim.content_appearing_movement_to_the_right, R.anim.content_disappearing_movement_to_the_right);
         transaction.replace(R.id.main, fragmentToAppear);
         transaction.addToBackStack(null);
         transaction.commit();

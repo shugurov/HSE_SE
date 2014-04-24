@@ -1,9 +1,11 @@
 package ru.hse.se.shugurov.gui;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
 
+import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
 
 /**
@@ -21,51 +23,56 @@ public abstract class ScreenAdapter extends Fragment
     public ScreenAdapter(HSEView hseView)
     {
         this.hseView = hseView;
-        Bundle instanceState = new Bundle();
-        instanceState.putSerializable(HSE_VIEW_TAG, hseView);
-        setArguments(instanceState);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && hseView == null)//TODO возможно, второе условие лишнее
+        if (savedInstanceState != null && hseView == null)
         {
             hseView = (HSEView) savedInstanceState.get(HSE_VIEW_TAG);
         }
     }
 
+    private void configureActionBar()
+    {
+        getActivity().setTitle(hseView.getName());
+        if (hseView.isMainView())
+        {
+            setHasOptionsMenu(true);
+        } else
+        {
+            setHasOptionsMenu(false);
+        }
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        configureActionBar();
+
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        outState.putAll(getArguments());
+        outState.putSerializable(HSE_VIEW_TAG, hseView);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        menu.clear();
+        inflater.inflate(R.menu.refresh_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     protected HSEView getHseView()
     {
         return hseView;
-    }
-
-
-    public String getActionBarTitle()
-    {
-        return hseView.getName();
-    }//TODO зачем?
-
-    public int getMenuId()
-    {
-        return -1;
-    }//TODO что это вообще?
-
-    public interface ActivityCallback
-    {
-
-        public Activity getActivity(); //TODO а надо ли вообще?
-
-        public void refreshActionBar();//TODO а здесь ли?
-
     }
 
 }

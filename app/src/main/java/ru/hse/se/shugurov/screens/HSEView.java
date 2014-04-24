@@ -111,6 +111,9 @@ public class HSEView implements Serializable
                 case HSEViewTypes.MAP:
                     viewList.add(new MapScreen(jsonObject));
                     break;
+                case HSEViewTypes.EVENTS:
+                    viewList.add(new EventScreen(jsonObject));
+                    break;
                 default:
                     viewList.add(new HSEView(jsonObject));
             }
@@ -163,13 +166,13 @@ public class HSEView implements Serializable
         }
     }
 
-    public void notifyAboutFiles(Context context) throws JSONException
+    public final void notifyAboutFileDownloading(Context context) throws JSONException
     {
         if (hseViewType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
             for (HSEView view : childViews)
             {
-                view.notifyAboutFiles(context);
+                view.notifyAboutFileDownloading(context);
             }
         }
     }

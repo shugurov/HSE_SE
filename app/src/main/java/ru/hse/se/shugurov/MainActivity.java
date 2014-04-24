@@ -1,9 +1,8 @@
 package ru.hse.se.shugurov;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +13,6 @@ import org.json.JSONException;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 
-import ru.hse.se.shugurov.gui.ScreenAdapter;
 import ru.hse.se.shugurov.gui.ScreenFactory;
 import ru.hse.se.shugurov.observer.Observer;
 import ru.hse.se.shugurov.screens.FileDescription;
@@ -33,20 +31,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        ScreenFactory.initFactory(new ScreenAdapter.ActivityCallback()
-        {
-            @Override
-            public Activity getActivity()
-            {
-                return MainActivity.this;
-            }
-
-            @Override
-            public void refreshActionBar()
-            {
-                //TODO наверное, что-то делать надо
-            }
-        }, savedInstanceState == null);
+        ScreenFactory.initFactory(this, savedInstanceState == null);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null)
@@ -58,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
     @Override
     public void onBackPressed()
     {
-        FragmentManager manager = getFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         manager.popBackStack();
     }
 
@@ -82,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
     public boolean onOptionsItemSelected(MenuItem item)
     {
         /*switch (item.getItemId())
-        {
+        {TODO
             case R.id.action_refresh:
                 startProgressDialog();
                 createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
@@ -108,23 +93,15 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
             case DOWNLOAD_FILES:
                 try
                 {
-                    hseView.notifyAboutFiles(this);//TODO что и как тут проиходит?(
+                    hseView.notifyAboutFileDownloading(this);//TODO что и как тут проиходит?(
                 } catch (JSONException e)
                 {
                     e.printStackTrace();
                 }
                 ScreenFactory.instance().showFragment(hseView);
-                setActionBar();//TODO wtf?
                 progressDialog.cancel();
                 break;
         }
-    }
-
-    private void setActionBar()
-    {
-        /*android.app.ActionBar actionBar = getActionBar();
-        actionBar.setTitle(screenAdapter.getActionBarTitle());
-        supportInvalidateOptionsMenu();TODO*/
     }
 
     private void createAsyncTask(DownloadStatus status)
@@ -197,7 +174,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
             hseView = newView;
             try
             {
-                hseView.notifyAboutFiles(this);
+                hseView.notifyAboutFileDownloading(this);
             } catch (JSONException e)
             {
                 e.printStackTrace();

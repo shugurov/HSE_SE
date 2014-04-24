@@ -1,6 +1,5 @@
 package ru.hse.se.shugurov.screens;
 
-import android.os.Parcel;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,7 +36,7 @@ public class MarkerWrapper implements Serializable/*Parcelable//TODO осмот�
         marker.title(title);
     }
 
-    public MarkerWrapper(Parcel parcel)//TODO wtf?
+    /*public MarkerWrapper(Parcel parcel)//TODO wtf?
     {
         Object[] inputObjects = new Object[5];
         parcel.readArray(ClassLoader.getSystemClassLoader());
@@ -46,7 +45,7 @@ public class MarkerWrapper implements Serializable/*Parcelable//TODO осмот�
         url = (String) inputObjects[2];
         phone = (String) inputObjects[3];
         marker = (MarkerOptions) inputObjects[4];
-    }
+    }*/
 
     public MarkerOptions getMarker()
     {

@@ -29,7 +29,7 @@ public class HTMLScreenAdapter extends ScreenAdapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)//TODO подумать над считыаанием в отдельном потоке
     {
         FileManager fileManager = new FileManager(getActivity());
-        String HTMLContent = fileManager.getFileContent(getHseView().getKey());
+        String HTMLContent = fileManager.getFileContent(getHseView().getKey());//TODO то есть тут я храню на диске, а не в памяти
         View root = inflater.inflate(R.layout.html_layout, container, false);
         TextView viewForHTML = (TextView) root.findViewById(R.id.html_content);
         viewForHTML.setText(Html.fromHtml(HTMLContent));

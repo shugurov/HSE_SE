@@ -24,6 +24,12 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
     }
 
     @Override
+    public FileDescription getFileDescription()
+    {
+        return new FileDescription(getKey(), url);
+    }
+
+    @Override
     public void notifyAboutFiles(Context context) throws JSONException
     {
         FileManager fileManager = new FileManager(context);
@@ -36,13 +42,6 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
         {
             childViews[i] = new HSEViewRSS(jsonArray.getJSONObject(i));
         }
-    }
-
-
-    @Override
-    public FileDescription getFileDescription()
-    {
-        return new FileDescription(getKey(), url);
     }
 
     public HSEViewRSS[] getConnectedViews()

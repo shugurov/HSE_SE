@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 
 import ru.hse.se.shugurov.screens.MapScreen;
 import ru.hse.se.shugurov.screens.MarkerWrapper;
@@ -14,9 +14,8 @@ import ru.hse.se.shugurov.screens.MarkerWrapper;
 /**
  * Created by Иван on 20.04.2014.
  */
-public class MapScreenAdapter extends MapFragment
+public class MapScreenAdapter extends SupportMapFragment
 {
-    private final static String SCREEN_TAG = "map_screen";
     private MarkerWrapper[] markerWrappers = new MarkerWrapper[0];//TODO yбрать это создание
 
     public MapScreenAdapter()
@@ -26,6 +25,9 @@ public class MapScreenAdapter extends MapFragment
     public MapScreenAdapter(MapScreen hseView)
     {
         markerWrappers = hseView.getMarkers();
+        //Bundle instanceState = new Bundle();
+        //instanceState.putParcelable("ololo", new Student("", "", ""));
+        //setArguments(instanceState);
     }
 
     @Override
@@ -54,7 +56,8 @@ public class MapScreenAdapter extends MapFragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
+        //outState.putAll(getArguments());
         super.onSaveInstanceState(outState);
-        outState.putSerializable("ser", markerWrappers[0]);
+        //outState.putSerializable("ser", new Student());
     }
 }
