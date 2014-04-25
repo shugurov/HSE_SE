@@ -4,13 +4,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import ru.hse.se.shugurov.observer.Observable;
@@ -27,24 +27,18 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
     private ArrayList<FileDescription> fileDescriptions;
     private FileManager fileManager;
     private DownloadStatus status;
-    private String result;
-    private String url;
-
-    public Downloader(String url)
-    {
-        result = "";
-        status = DownloadStatus.DOWNLOAD_WITHOUT_SAVING;
-        this.url = url;
-    }
+    private Context context;
 
     public Downloader(Context context, DownloadStatus status)
     {
+        this.context = context;
         fileManager = new FileManager(context);
         this.status = status;
     }
 
     public Downloader(Context context, ArrayList<FileDescription> fileDescriptions, DownloadStatus status)
     {
+        this.context = context;
         this.fileDescriptions = fileDescriptions;
         fileManager = new FileManager(context);
         this.status = status;
@@ -53,40 +47,27 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
     @Override
     protected Void doInBackground(FileDescription... fileToDownloads)
     {
-        switch (status)
+        if (fileToDownloads.length != 0)
         {
-            case DOWNLOAD_WITHOUT_SAVING:
-                if (fileToDownloads == null)
+            for (FileDescription description : fileToDownloads)
+            {
+                downloadFile(description);
+                Log.d("download", description.getName());
+            }
+        } else
+        {
+            if (fileDescriptions != null)
+            {
+                for (FileDescription description : fileDescriptions)
                 {
-                    return null;
-                } else
-                {
-                    result = downloadFromTheInternet(url);
-                }
-                break;
-            default:
-                if (fileToDownloads.length != 0)
-                {
-                    for (FileDescription description : fileToDownloads)
+                    Log.d("download", "check " + description.getName());
+                    if (!fileManager.doesExist(description.getName()))
                     {
                         downloadFile(description);
-                        Log.d("download", description.getName());
+                        Log.d("download", "download " + description.getName());
                     }
-                } else
-                {
-                    if (fileDescriptions != null)
-                    {
-                        for (FileDescription description : fileDescriptions)
-                        {
-                            Log.d("download", "check " + description.getName());
-                            if (!fileManager.doesExist(description.getName()))
-                            {
-                                downloadFile(description);
-                                Log.d("download", "download " + description.getName());
-                            }
-                        }//TODO удалять старые файлы, но не тут
-                    }
-                }
+                }//TODO удалять старые файлы, но не тут
+            }
         }
         return null;
     }
@@ -104,16 +85,7 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
         this.notifyObservers();
     }
 
-    private void downloadFile(FileDescription description)
-    {
-        String content = downloadFromTheInternet(description.getUrl());
-        if (content != null)
-        {
-            fileManager.createFile(description.getName(), content);
-        }
-    }
-
-    private InputStream OpenHttpUrlConnection(String urlString)
+   /* private InputStream OpenHttpUrlConnection(String urlString) TODO
     {
         InputStream input = null;
         int response;
@@ -140,7 +112,7 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
             e.printStackTrace();
         }
         return input;
-    }
+    }*/
 
     @Override
     public void addObserver(Observer observer)
@@ -168,43 +140,52 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
         return status;
     }
 
-    public String getResult()
-    {
-        return result;
-    }
+//    private String downloadFromTheInternet(String url) TODO
+//    {
+//        InputStream input = OpenHttpUrlConnection(url);
+//        if (input == null)
+//        {
+//            return null;
+//        }
+//        int BUFFER_SIZE = 2000;//
+//        InputStreamReader reader = new InputStreamReader(input);
+//        char[] inputBuffer = new char[BUFFER_SIZE];
+//        int charRead;
+//        String content = "";
+//        try
+//        {
+//            while ((charRead = reader.read(inputBuffer)) > 0)
+//            {
+//                String readString = String.copyValueOf(inputBuffer, 0, charRead);
+//                content += readString;
+//            }
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//            try
+//            {
+//                input.close();
+//            } catch (IOException e1)
+//            {
+//                e1.printStackTrace();
+//            }
+//            return null;
+//        }
+//        return content;
+//    }
 
-    private String downloadFromTheInternet(String url)
+    private void downloadFile(FileDescription description)
     {
-        InputStream input = OpenHttpUrlConnection(url);
-        if (input == null)
-        {
-            return null;
-        }
-        int BUFFER_SIZE = 2000;//
-        InputStreamReader reader = new InputStreamReader(input);
-        char[] inputBuffer = new char[BUFFER_SIZE];//TODO оптимизировать считывание
-        int charRead;
-        String content = "";
+        HttpClient client = new DefaultHttpClient();
         try
         {
-            while ((charRead = reader.read(inputBuffer)) > 0)
-            {
-                String readString = String.copyValueOf(inputBuffer, 0, charRead);
-                content += readString;
-                inputBuffer = new char[BUFFER_SIZE];
-            }
+            HttpEntity entity = client.execute(new HttpGet(description.getUrl())).getEntity();
+            OutputStream outputStream = context.openFileOutput(description.getName(), Context.MODE_WORLD_READABLE);
+            entity.writeTo(outputStream);
+            outputStream.close();
         } catch (IOException e)
         {
             e.printStackTrace();
-            try
-            {
-                input.close();
-            } catch (IOException e1)
-            {
-                e1.printStackTrace();
-            }
-            return null;
         }
-        return content;
     }
 }

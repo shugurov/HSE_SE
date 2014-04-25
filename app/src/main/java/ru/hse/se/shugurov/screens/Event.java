@@ -1,37 +1,28 @@
 package ru.hse.se.shugurov.screens;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Иван on 24.04.2014.
  */
-public class Event
+public class Event extends HSEView implements Serializable
 {
-    private final String name;
-    private final String url;
-    private final String telephone;
-    private final String address;
-    private final Date date;
-    private final String description;
+    private String telephone;
+    private String address;
+    private Date date;
 
-    public Event(String name, String url, String telephone, String address, long date, String description)
+    public Event(JSONObject eventObject) throws JSONException
     {
-        this.name = name;
-        this.url = url;
-        this.telephone = telephone;
-        this.address = address;
-        this.date = new Date(date);
-        this.description = description;
-    }
-
-    public String getDescription()
-    {
-        return description;
-    }
-
-    public String getName()
-    {
-        return name;
+        super(eventObject);
+        url = eventObject.getString("url");
+        telephone = eventObject.getString("phone");
+        address = eventObject.getString("address");
+        long dateNumber = eventObject.getLong("date");
+        date = new Date(dateNumber);
     }
 
     public String getUrl()

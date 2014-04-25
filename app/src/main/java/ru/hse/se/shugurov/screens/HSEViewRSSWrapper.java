@@ -14,9 +14,6 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class HSEViewRSSWrapper extends HSEView implements HasFile
 {
-
-    private HSEViewRSS[] childViews;
-
     HSEViewRSSWrapper(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject);
@@ -29,23 +26,19 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
         return new FileDescription(getKey(), url);
     }
 
-    @Override
-    public void notifyAboutFiles(Context context) throws JSONException
+
+    public HSEViewRSS[] getRSS(Context context) throws JSONException
     {
         FileManager fileManager = new FileManager(context);
-        String content = fileManager.getFileContent(getKey());  //TODO а можно ли использовать key как идентификатор?
-        JSONObject jsonObject;   //TODO не забыть чистить старые файлы!!!! но не тут, а вообще
+        String content = fileManager.getFileContent(getKey());
+        JSONObject jsonObject;
         jsonObject = new JSONObject(content);
         JSONArray jsonArray = jsonObject.getJSONArray("entries");
-        childViews = new HSEViewRSS[jsonArray.length()];
+        HSEViewRSS[] childViews = new HSEViewRSS[jsonArray.length()];
         for (int i = 0; i < jsonArray.length(); i++)
         {
             childViews[i] = new HSEViewRSS(jsonArray.getJSONObject(i));
         }
-    }
-
-    public HSEViewRSS[] getConnectedViews()
-    {
         return childViews;
     }
 }

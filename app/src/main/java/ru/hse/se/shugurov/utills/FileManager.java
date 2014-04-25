@@ -100,8 +100,6 @@ public class FileManager
             e.printStackTrace();
             return false;
         }
-        String[] files = context.fileList();
-        int a = 7;
         return true;
     }
 

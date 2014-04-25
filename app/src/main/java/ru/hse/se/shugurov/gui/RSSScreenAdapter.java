@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.HSEViewRSS;
@@ -31,7 +33,14 @@ public class RSSScreenAdapter extends ScreenAdapter
 
     private View showListOfRSSItems(final LayoutInflater inflater, final ViewGroup container)
     {
-        HSEViewRSS[] rssItems = ((HSEViewRSSWrapper) getHseView()).getConnectedViews();
+        HSEViewRSS[] rssItems = new HSEViewRSS[0];
+        try
+        {
+            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS(getActivity());//TODO
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
         ListView rssItemsView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         final RSSListAdapter rssListAdapter = new RSSListAdapter(getActivity(), rssItems);
         rssItemsView.setAdapter(rssListAdapter);

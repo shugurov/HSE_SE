@@ -15,12 +15,13 @@ public class HSEView implements Serializable
     public static final String SERVER_LINK = "http://promoteeducate1.appspot.com";
     public static final String JSON_LINK = "http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f";//TODO спрятать в xml
     private static final String SECTIONS_TAG_IN_JSON = "sections";
-    protected String url; //TODO инкапсулировать получение url в подклассы
+    protected String url;
     protected int hseViewType;
     private boolean isMainView;
     private String name;
-    private String key; //TODO а для чего он?
+    private String key;
     private HSEView[] childViews;
+    private String description;
 
     protected HSEView()
     {
@@ -71,6 +72,7 @@ public class HSEView implements Serializable
         {
             hseViewType = jsonObject.getInt("type");
             isMainView = false;
+            description = jsonObject.getString("description");
         } else
         {
             isMainView = true;
@@ -80,7 +82,10 @@ public class HSEView implements Serializable
         {
             url = jsonObject.getString("url");
         }
-        key = jsonObject.getString("key");
+        if (jsonObject.has("key"))
+        {
+            key = jsonObject.getString("key");
+        }
         name = jsonObject.getString("name");
     }
 
@@ -175,5 +180,10 @@ public class HSEView implements Serializable
                 view.notifyAboutFileDownloading(context);
             }
         }
+    }
+
+    public String getDescription()
+    {
+        return description;
     }
 }

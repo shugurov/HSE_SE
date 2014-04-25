@@ -1,5 +1,6 @@
 package ru.hse.se.shugurov.gui;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -7,9 +8,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import java.io.File;
+
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.HSEViewTypes;
+import ru.hse.se.shugurov.screens.HSEViewWithFile;
 import ru.hse.se.shugurov.screens.MapScreen;
 
 /**
@@ -68,6 +72,10 @@ public class ScreenFactory//TODO экран с браузером падает �
             case HSEViewTypes.EVENTS:
                 adapter = new EventScreenAdapter(view);
                 break;
+            case HSEViewTypes.FILE:
+                adapter = null;
+                openFile((HSEViewWithFile) view);
+                break;
             default:
                 throw new IllegalArgumentException("Can't create adapter for this view type");
         }
@@ -108,5 +116,27 @@ public class ScreenFactory//TODO экран с браузером падает �
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.main, fragmentToAppear);
         transaction.commit();
+    }
+
+    private void openFile(HSEViewWithFile fileView)
+    {
+        File file = new File(activity.getFilesDir().getAbsolutePath() + "/" + fileView.getFileName());
+        if (file.exists())
+        {
+            Intent target = new Intent(Intent.ACTION_VIEW);
+            target.setDataAndType(Uri.fromFile(file), fileView.getFileType());
+            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            Intent chooser = Intent.createChooser(target, "Open a file");
+            try
+            {
+                activity.startActivity(chooser);
+            } catch (ActivityNotFoundException e)
+            {
+                // Instruct the user to install a PDF reader here, or something TODO
+            }
+
+        }//TODO то делать,если не существует?
+
+
     }
 }

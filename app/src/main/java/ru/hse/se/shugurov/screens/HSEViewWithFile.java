@@ -1,7 +1,5 @@
 package ru.hse.se.shugurov.screens;
 
-import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,9 +34,4 @@ public class HSEViewWithFile extends HSEView implements HasFile
         return new FileDescription(fileName, SERVER_LINK + getUrl());
     }
 
-    @Override
-    public void notifyAboutFiles(Context context) throws JSONException
-    {
-
-    }
 }
