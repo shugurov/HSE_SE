@@ -148,7 +148,7 @@ public class HSEView implements Serializable
     public boolean isMainView()
     {
         return isMainView;
-    } //TODO а надо ли?
+    }
 
     public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)
     {

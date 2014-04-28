@@ -4,8 +4,6 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -22,7 +20,7 @@ import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
 
 public class MainActivity extends ActionBarActivity implements Observer//TODO в "студентам  бакалавриата" ад(
-{//TODO а не слишком ли много оперативки жрёт?
+{
     private static String JSON_FILE_NAME = "json";
     private HSEView hseView;
     private Downloader task;
@@ -47,40 +45,6 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
         manager.popBackStack();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        /*if (screenAdapter != null)TODO
-        {
-            int menuId = screenAdapter.getMenuId();
-            if (menuId > 0)
-            {
-                MenuInflater inflater = getMenuInflater();
-                inflater.inflate(menuId, menu);
-            }
-        }*/
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        /*switch (item.getItemId())
-        {TODO
-            case R.id.action_refresh:
-                startProgressDialog();
-                createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-                task.execute(new FileDescription("json", HSEView.JSON_LINK));
-                return true;
-            case R.id.action_add_message:
-                Toast.makeText(this, "I'm working!", Toast.LENGTH_SHORT).show();
-                break;
-        }*/
-        return super.onOptionsItemSelected(item);
-    }
-
-
     @Override
     public void update()
     {
@@ -93,7 +57,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
             case DOWNLOAD_FILES:
                 try
                 {
-                    hseView.notifyAboutFileDownloading(this);//TODO что и как тут проиходит?(
+                    hseView.notifyAboutFileDownloading(this);
                 } catch (JSONException e)
                 {
                     e.printStackTrace();

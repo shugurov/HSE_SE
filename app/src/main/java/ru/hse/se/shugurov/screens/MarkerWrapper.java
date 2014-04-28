@@ -1,29 +1,36 @@
 package ru.hse.se.shugurov.screens;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.Serializable;
 
 /**
  * Created by Иван on 19.04.2014.
  */
-public class MarkerWrapper implements Serializable/*Parcelable//TODO осмотреть на snippet*/
+public class MarkerWrapper implements Parcelable //TODO осмотреть на snippet
 {
-    private final String address;
-    private final int actionType; //TODO что это?
-    private final String url;
-    private final String phone;
-    private transient MarkerOptions marker;
-
-    public MarkerWrapper()//TODO delete
+    public static Creator<MarkerWrapper> CREATOR = new Creator<MarkerWrapper>()
     {
-        address = null;
-        actionType = 0;
-        url = null;
-        phone = null;
-    }
+        @Override
+        public MarkerWrapper createFromParcel(Parcel source)
+        {
+            return new MarkerWrapper(source);
+        }
+
+        @Override
+        public MarkerWrapper[] newArray(int size)
+        {
+            return new MarkerWrapper[size];
+        }
+    };
+    private String address;
+    private int actionType; //TODO что это?
+    private String url;
+    private String phone;
+    private MarkerOptions marker;
 
     public MarkerWrapper(String title, String url, int actionType, String phone, double latitude, double longitude, String address)
     {
@@ -36,16 +43,10 @@ public class MarkerWrapper implements Serializable/*Parcelable//TODO осмот�
         marker.title(title);
     }
 
-    /*public MarkerWrapper(Parcel parcel)//TODO wtf?
+    private MarkerWrapper(Parcel parcel)
     {
-        Object[] inputObjects = new Object[5];
-        parcel.readArray(ClassLoader.getSystemClassLoader());
-        address = (String) inputObjects[0];
-        actionType = (Integer) inputObjects[1];
-        url = (String) inputObjects[2];
-        phone = (String) inputObjects[3];
-        marker = (MarkerOptions) inputObjects[4];
-    }*/
+
+    }
 
     public MarkerOptions getMarker()
     {
@@ -77,7 +78,7 @@ public class MarkerWrapper implements Serializable/*Parcelable//TODO осмот�
         return phone;
     }
 
-    /*@Override
+    @Override
     public int describeContents()
     {
         return 0;
@@ -86,6 +87,6 @@ public class MarkerWrapper implements Serializable/*Parcelable//TODO осмот�
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        dest.writeArray(new Object[]{address, actionType, url, phone, marker});
-    }TODO*/
+
+    }
 }

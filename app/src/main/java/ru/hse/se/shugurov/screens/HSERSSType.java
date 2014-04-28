@@ -3,7 +3,7 @@ package ru.hse.se.shugurov.screens;
 /**
  * Created by Иван on 28.10.13.
  */
-public enum HSERSSType//TODO может спрятать отсюда в какой-нибудь класс?
+public enum HSERSSType
 {
     FULL_RSS, ONLY_TITLE
 }

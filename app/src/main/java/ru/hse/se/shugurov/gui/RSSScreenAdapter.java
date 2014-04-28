@@ -36,7 +36,7 @@ public class RSSScreenAdapter extends ScreenAdapter
         HSEViewRSS[] rssItems = new HSEViewRSS[0];
         try
         {
-            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS(getActivity());//TODO
+            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS(getActivity());
         } catch (JSONException e)
         {
             e.printStackTrace();

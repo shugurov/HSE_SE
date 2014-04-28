@@ -26,13 +26,13 @@ public class HTMLScreenAdapter extends ScreenAdapter
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)//TODO подумать над считыаанием в отдельном потоке
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         FileManager fileManager = new FileManager(getActivity());
-        String HTMLContent = fileManager.getFileContent(getHseView().getKey());//TODO то есть тут я храню на диске, а не в памяти
+        String HTMLContent = fileManager.getFileContent(getHseView().getKey());
         View root = inflater.inflate(R.layout.html_layout, container, false);
         TextView viewForHTML = (TextView) root.findViewById(R.id.html_content);
         viewForHTML.setText(Html.fromHtml(HTMLContent));
-        return root;//TODO почему пропускаются некоторые теги?(
+        return root;
     }
 }

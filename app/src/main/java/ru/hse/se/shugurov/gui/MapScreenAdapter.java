@@ -16,7 +16,8 @@ import ru.hse.se.shugurov.screens.MarkerWrapper;
  */
 public class MapScreenAdapter extends SupportMapFragment
 {
-    private MarkerWrapper[] markerWrappers = new MarkerWrapper[0];//TODO yбрать это создание
+    private static final String MARKERS_TAG = "markers";
+    private MarkerWrapper[] markerWrappers;
 
     public MapScreenAdapter()
     {
@@ -25,19 +26,17 @@ public class MapScreenAdapter extends SupportMapFragment
     public MapScreenAdapter(MapScreen hseView)
     {
         markerWrappers = hseView.getMarkers();
-        //Bundle instanceState = new Bundle();
-        //instanceState.putParcelable("ololo", new Student("", "", ""));
-        //setArguments(instanceState);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        /*if (savedInstanceState != null && hseView == null)
+        if (savedInstanceState != null)
         {
-            hseView = (MapScreen)savedInstanceState.get(SCREEN_TAG);
-        }*/
+            markerWrappers = (MarkerWrapper[]) savedInstanceState.getParcelableArray(MARKERS_TAG);
+            savedInstanceState.remove(MARKERS_TAG);
+        }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -56,8 +55,8 @@ public class MapScreenAdapter extends SupportMapFragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        //outState.putAll(getArguments());
         super.onSaveInstanceState(outState);
-        //outState.putSerializable("ser", new Student());
+        outState.putParcelableArray(MARKERS_TAG, markerWrappers);
+
     }
 }

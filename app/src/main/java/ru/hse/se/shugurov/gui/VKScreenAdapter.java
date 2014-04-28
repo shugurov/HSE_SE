@@ -43,7 +43,7 @@ public class VKScreenAdapter extends ScreenAdapter//TODO а нужен ли main
         {
             @Override
             public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-            {
+            {//TODO (
                 View result = super.onCreateView(inflater, container, savedInstanceState);
                 getWebView().setWebViewClient(new VkWebClient(new VkWebClient.VKCallBack()
                 {
