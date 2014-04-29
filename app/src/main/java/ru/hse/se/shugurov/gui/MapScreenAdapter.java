@@ -1,12 +1,16 @@
 package ru.hse.se.shugurov.gui;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLngBounds;
 
 import ru.hse.se.shugurov.screens.MapScreen;
 import ru.hse.se.shugurov.screens.MarkerWrapper;
@@ -29,6 +33,13 @@ public class MapScreenAdapter extends SupportMapFragment
     }
 
     @Override
+    public void onAttach(Activity activity)
+    {
+        super.onAttach(activity);
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState)
     {
         if (savedInstanceState != null)
@@ -43,14 +54,30 @@ public class MapScreenAdapter extends SupportMapFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View resultView = super.onCreateView(inflater, container, savedInstanceState);
-        GoogleMap googleMap = getMap();
+        final GoogleMap googleMap = getMap();
+        LatLngBounds.Builder builder = LatLngBounds.builder();
         for (MarkerWrapper marker : markerWrappers)
         {
             googleMap.addMarker(marker.getMarker());
+            builder.include(marker.getMarker().getPosition());
             googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
+        googleMap.setMyLocationEnabled(true);
+        final LatLngBounds bounds = builder.build();
+        if (savedInstanceState == null)
+        {
+            resultView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener()
+            {
+                @Override
+                public void onGlobalLayout()
+                {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50));
+                }
+            });
         }
         return resultView;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState)

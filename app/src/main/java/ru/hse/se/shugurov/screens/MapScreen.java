@@ -32,11 +32,26 @@ public class MapScreen extends HSEView
         String title = markerObject.getString("title");
         String url = markerObject.getString("url");
         String phone = markerObject.getString("phone");
-        int actionType = markerObject.getInt("actionType");
+        MarkerWrapper.ActionTypes actionType;
+        switch (markerObject.getInt("actionType"))
+        {
+            case 1:
+                actionType = MarkerWrapper.ActionTypes.DO_NOTHING;
+                break;
+            case 2:
+                actionType = MarkerWrapper.ActionTypes.OPEN_EXTERNAL_MAPS;
+                break;
+            case 3:
+                actionType = MarkerWrapper.ActionTypes.OPEN_URL;
+                break;
+            default:
+                throw new IllegalArgumentException("Precondition violated in MapScreen.parseMarker(). " + "Marker json object has unknown action type");
+        }
         JSONObject locationObject = markerObject.getJSONObject("location");
         Double latitude = locationObject.getDouble("lat");
         Double longitude = locationObject.getDouble("lng");
         String address = markerObject.getString("address");
+
         return new MarkerWrapper(title, url, actionType, phone, latitude, longitude, address);
     }
 

@@ -27,12 +27,12 @@ public class MarkerWrapper implements Parcelable //TODO осмотреть на 
         }
     };
     private String address;
-    private int actionType; //TODO что это?
+    private ActionTypes actionType;
     private String url;
     private String phone;
     private MarkerOptions marker;
 
-    public MarkerWrapper(String title, String url, int actionType, String phone, double latitude, double longitude, String address)
+    public MarkerWrapper(String title, String url, ActionTypes actionType, String phone, double latitude, double longitude, String address)
     {
         this.actionType = actionType;
         this.url = url;
@@ -41,6 +41,16 @@ public class MarkerWrapper implements Parcelable //TODO осмотреть на 
         marker = new MarkerOptions();
         marker.position(new LatLng(latitude, longitude));
         marker.title(title);
+        switch (actionType)
+        {
+            case DO_NOTHING:
+            case OPEN_EXTERNAL_MAPS:
+                marker.snippet(address);
+                break;
+            case OPEN_URL:
+                marker.snippet(String.format("%s\n%s\n%s", address, phone, url)); //TODO \n does not work
+                break;
+        }
     }
 
     private MarkerWrapper(Parcel parcel)
@@ -63,7 +73,7 @@ public class MarkerWrapper implements Parcelable //TODO осмотреть на 
         return address;
     }
 
-    public int getActionType()
+    public ActionTypes getActionType()
     {
         return actionType;
     }
@@ -88,5 +98,10 @@ public class MarkerWrapper implements Parcelable //TODO осмотреть на 
     public void writeToParcel(Parcel dest, int flags)
     {
 
+    }
+
+    public enum ActionTypes
+    {
+        DO_NOTHING, OPEN_EXTERNAL_MAPS, OPEN_URL;
     }
 }

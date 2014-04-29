@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -125,14 +126,13 @@ public class ScreenFactory//TODO экран с браузером падает �
         {
             Intent target = new Intent(Intent.ACTION_VIEW);
             target.setDataAndType(Uri.fromFile(file), fileView.getFileType());
-            target.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             Intent chooser = Intent.createChooser(target, "Open a file");
             try
             {
                 activity.startActivity(chooser);
             } catch (ActivityNotFoundException e)
             {
-                // Instruct the user to install a PDF reader here, or something TODO
+                Toast.makeText(activity, "Нет приложений, способных открыть этот тип фалов", Toast.LENGTH_SHORT).show();
             }
 
         }//TODO то делать,если не существует?
