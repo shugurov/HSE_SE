@@ -11,7 +11,7 @@ import ru.hse.se.shugurov.utills.FileManager;
 /**
  * Created by Иван on 24.04.2014.
  */
-public class EventScreen extends HSEView implements HasFile
+public class EventScreen extends HSEView implements HasFile//TODo kill lazy initialization
 {
     private final static String URL_BEGINNING = "http://promoteeducate1.appspot.com/api/structure/events/"; //TODO убрать отсюда
     private Event[] events;
@@ -36,7 +36,7 @@ public class EventScreen extends HSEView implements HasFile
             String content = fileManager.getFileContent(getKey());
             JSONObject jsonObject;
             jsonObject = new JSONObject(content);
-            JSONArray jsonArray = jsonObject.getJSONArray("entries");
+            JSONArray jsonArray = jsonObject.getJSONArray("events");
             events = new Event[jsonArray.length()];
             for (int i = 0; i < jsonArray.length(); i++)
             {

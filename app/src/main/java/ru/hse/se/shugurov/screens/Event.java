@@ -22,7 +22,7 @@ public class Event extends HSEView implements Serializable
         telephone = eventObject.getString("phone");
         address = eventObject.getString("address");
         long dateNumber = eventObject.getLong("date");
-        date = new Date(dateNumber);
+        date = new Date(dateNumber * 1000);
     }
 
     public String getUrl()

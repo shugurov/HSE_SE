@@ -12,6 +12,7 @@ import android.widget.Toast;
 import java.io.File;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.screens.EventScreen;
 import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.HSEViewTypes;
 import ru.hse.se.shugurov.screens.HSEViewWithFile;
@@ -71,7 +72,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 adapter = new MapScreenAdapter((MapScreen) view);
                 break;
             case HSEViewTypes.EVENTS:
-                adapter = new EventScreenAdapter(view);
+                adapter = new EventScreenAdapter((EventScreen) view);
                 break;
             case HSEViewTypes.FILE:
                 adapter = null;

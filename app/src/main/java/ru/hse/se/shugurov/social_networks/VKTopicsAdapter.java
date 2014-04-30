@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
-import java.util.Locale;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.utills.ImageLoader;
@@ -24,7 +23,7 @@ public class VKTopicsAdapter extends BaseAdapter
     private VKTopic[] topics;
     private LayoutInflater inflater;
     private ImageLoader imageLoader;
-    private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+    private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
     public VKTopicsAdapter(Context context, VKTopic[] topics)
     {

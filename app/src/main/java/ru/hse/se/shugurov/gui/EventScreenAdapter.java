@@ -1,15 +1,16 @@
 package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.SupportMapFragment;
+import org.json.JSONException;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.EventScreen;
 
 /**
  * Created by Иван on 22.04.2014.
@@ -20,19 +21,23 @@ public class EventScreenAdapter extends ScreenAdapter
     {
     }
 
-    public EventScreenAdapter(HSEView hseView)
+    public EventScreenAdapter(EventScreen eventScreen)
     {
-        super(hseView);
+        super(eventScreen);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View eventView = inflater.inflate(R.layout.event, container, false);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.add(R.id.event_container, new SupportMapFragment());
-        transaction.commit();
-        return eventView;
+        ListView listView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
+        try
+        {
+            listView.setAdapter(new EventsListAdapter(((EventScreen) getHseView()).getEvents(getActivity()), getActivity()));
+        } catch (JSONException e)
+        {
+            Toast.makeText(getActivity(), "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();
+        }
+        return listView;
     }
 
 

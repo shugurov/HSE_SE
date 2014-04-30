@@ -72,8 +72,7 @@ public class HSEView implements Serializable
         {
             hseViewType = jsonObject.getInt("type");
             isMainView = false;
-            description = jsonObject.getString("description");
-        } else
+        } else if (jsonObject.has(SECTIONS_TAG_IN_JSON))
         {
             isMainView = true;
             hseViewType = HSEViewTypes.VIEW_OF_OTHER_VIEWS;
@@ -87,6 +86,10 @@ public class HSEView implements Serializable
             key = jsonObject.getString("key");
         }
         name = jsonObject.getString("name");
+        if (jsonObject.has("description"))
+        {
+            description = jsonObject.getString("description");
+        }
     }
 
     private void parseJSON(JSONArray jsonArray) throws JSONException
@@ -98,7 +101,7 @@ public class HSEView implements Serializable
             JSONObject jsonObject;
             jsonObject = jsonArray.getJSONObject(i);
             int type = jsonObject.getInt("type");
-            switch (type) //TODO дописать новые вьюхи с отдельными классами
+            switch (type)
             {
                 case HSEViewTypes.FILE:
                     viewList.add(new HSEViewWithFile(jsonObject));
