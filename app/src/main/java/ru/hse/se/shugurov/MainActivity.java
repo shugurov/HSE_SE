@@ -18,6 +18,7 @@ import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
+import ru.hse.se.shugurov.utills.ImageLoader;
 
 public class MainActivity extends ActionBarActivity implements Observer//TODO в "студентам  бакалавриата" ад(
 {
@@ -36,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
         {
             checkFiles();
         }
+        ImageLoader.initialize(this);
     }
 
     @Override

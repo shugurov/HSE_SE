@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">Отделение ПИ</string>
+    <string name="google_api_key">AIzaSyBASO0EQAFn-n3QDwDzMyAFfc36NYSmqS4</string>
+    <string name="google_static_map">http://maps.googleapis.com/maps/api/staticmap?center=%s</string>
 
 </resources>

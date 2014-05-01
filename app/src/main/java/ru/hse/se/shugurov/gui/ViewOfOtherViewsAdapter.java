@@ -57,10 +57,9 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         {
             LinearLayout linearLayout = new LinearLayout(getActivity());
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-            final ViewGroup[] items;
-            int currentAmount = elements.length - i * numberOfViewsInRow >= numberOfViewsInRow ? numberOfViewsInRow : (elements.length - i * numberOfViewsInRow) % numberOfViewsInRow;
-            items = new ViewGroup[currentAmount];
-            for (int j = 0; j < currentAmount; j++)
+            int currentQuantity = elements.length - i * numberOfViewsInRow >= numberOfViewsInRow ? numberOfViewsInRow : (elements.length - i * numberOfViewsInRow) % numberOfViewsInRow;
+            final ViewGroup[] items = new ViewGroup[currentQuantity];
+            for (int j = 0; j < currentQuantity; j++)
             {
 
 
@@ -73,13 +72,13 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 items[j].setId(idOfCurrentView);
                 idOfCurrentView++;
                 items[j].setOnClickListener(this);
-                items[j].setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / numberOfViewsInRow, ViewGroup.LayoutParams.MATCH_PARENT));
+                items[j].setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / numberOfViewsInRow, ViewGroup.LayoutParams.MATCH_PARENT));//TODO to make them quadratic?
             }
             for (ViewGroup item : items)
             {
                 linearLayout.addView(item);
             }
-            content.addView(linearLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            content.addView(linearLayout, i, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
         return content;
@@ -182,6 +181,6 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         View content = getLinearLayoutWithScreenItems(inflater, getHseView().getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
-        return scrollView;
+        return scrollView;//TODO
     }
 }

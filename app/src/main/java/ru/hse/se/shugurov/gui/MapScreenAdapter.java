@@ -51,14 +51,14 @@ public class MapScreenAdapter extends SupportMapFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)//TODO  shall try to do it in onActivityCreated
     {
         View resultView = super.onCreateView(inflater, container, savedInstanceState);
         final GoogleMap googleMap = getMap();
         LatLngBounds.Builder builder = LatLngBounds.builder();
         for (MarkerWrapper marker : markerWrappers)
         {
-            googleMap.addMarker(marker.getMarker());
+            googleMap.addMarker(marker.getMarker());//TODO в эмуляторе тут упало(
             builder.include(marker.getMarker().getPosition());
             googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
@@ -77,7 +77,6 @@ public class MapScreenAdapter extends SupportMapFragment
         }
         return resultView;
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState)

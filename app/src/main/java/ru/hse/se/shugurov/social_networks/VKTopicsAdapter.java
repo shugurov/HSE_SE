@@ -29,7 +29,7 @@ public class VKTopicsAdapter extends BaseAdapter
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
-        imageLoader = new ImageLoader(context);
+        imageLoader = ImageLoader.instance();
     }
 
     @Override

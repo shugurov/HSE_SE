@@ -23,14 +23,25 @@ import java.util.WeakHashMap;
  */
 public class ImageLoader
 {
+    private static ImageLoader instance;
     private LruCache<String, Bitmap> memoryCache;
     private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 
-    public ImageLoader(Context context)
+    private ImageLoader(Context context)
     {
         int memoryClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
         int cacheSize = 1024 * 1024 * memoryClass / 8;
         memoryCache = new LruCache(cacheSize);
+    }
+
+    public static void initialize(Context context)
+    {
+        instance = new ImageLoader(context);
+    }
+
+    public static ImageLoader instance()
+    {
+        return instance;
     }
 
     public void displayImage(String url, ImageView imageView)

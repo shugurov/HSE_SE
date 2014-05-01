@@ -18,14 +18,14 @@
         android:textStyle="bold"/>
 
     <ImageView
+        android:id="@+id/event_map"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:adjustViewBounds="true"
         android:maxHeight="180dp"
         android:maxWidth="320dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_launcher"/>
+        android:scaleType="fitXY"/>
 
     <TextView
         android:id="@+id/event_address"

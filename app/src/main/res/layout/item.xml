@@ -4,14 +4,15 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:orientation="vertical"
+              android:paddingBottom="20dp"
               android:paddingLeft="10dp"
               android:paddingRight="10dp"
-              android:paddingTop="20dp"
-    >
+              android:paddingTop="20dp">
 
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:background="#882200"
         android:orientation="vertical"
@@ -21,22 +22,20 @@
             android:id="@+id/item_image_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center_horizontal"></ImageView>
+            android:layout_gravity="center_horizontal"/>
 
         <TextView
             android:id="@+id/item_text_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/item_image_id"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
+            android:lines="2"
             android:maxLines="2"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             android:textColor="#FFFFFF"
-            ></TextView>
+            />
 
     </LinearLayout>
 

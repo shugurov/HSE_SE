@@ -9,22 +9,19 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
  * Created by Иван on 26.02.14.
  */
-public class VKCommentsAdapter extends BaseAdapter
+public class VKCommentsAdapter extends BaseAdapter//TODO does not show pictures
 {
     private LayoutInflater inflater;
     private VKAbstractItem[] comments;
-    private ImageLoader imageLoader;
 
     public VKCommentsAdapter(Context context, VKAbstractItem[] comments)
     {
         this.comments = comments;
         inflater = LayoutInflater.from(context);
-        imageLoader = new ImageLoader(context);
     }
 
     @Override
