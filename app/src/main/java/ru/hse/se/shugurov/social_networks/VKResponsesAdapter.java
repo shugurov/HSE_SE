@@ -6,11 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
  * Created by Иван on 26.02.14.
@@ -19,6 +21,7 @@ public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures
 {
     private LayoutInflater inflater;
     private VKAbstractItem[] comments;
+    private ImageLoader imageLoader = ImageLoader.instance();
 
     public VKResponsesAdapter(Context context, VKAbstractItem[] comments)
     {
@@ -55,6 +58,9 @@ public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
         ((TextView) convertView.findViewById(R.id.vk_comment_date)).setText(format.format(comments[position].getDate()));
         ((TextView) convertView.findViewById(R.id.vk_comment_text)).setText(Html.fromHtml(comments[position].getText()));
+        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_comment_author_photo);
+        authorPhoto.setImageBitmap(null);
+        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), authorPhoto);
         return convertView;
     }
 }

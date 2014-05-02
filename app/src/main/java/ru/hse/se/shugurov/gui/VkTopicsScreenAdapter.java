@@ -45,7 +45,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState)//TODO fix comments number
     {
         View resultView = super.onCreateView(inflater, container, savedInstanceState);
         final VKRequester requester = new VKRequester(accessToken);
