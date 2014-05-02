@@ -14,7 +14,7 @@ import ru.hse.se.shugurov.utills.FileManager;
 /**
  * Created by Иван on 15.03.14.
  */
-public class HTMLScreenAdapter extends ScreenAdapter
+public class HTMLScreenAdapter extends ScreenAdapter//TODO apply multithreading
 {
     public HTMLScreenAdapter()
     {
@@ -36,3 +36,4 @@ public class HTMLScreenAdapter extends ScreenAdapter
         return root;
     }
 }
+

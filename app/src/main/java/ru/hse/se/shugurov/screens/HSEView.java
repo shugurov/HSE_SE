@@ -12,8 +12,6 @@ import java.util.ArrayList;
 
 public class HSEView implements Serializable
 {
-    public static final String SERVER_LINK = "http://promoteeducate1.appspot.com";
-    public static final String JSON_LINK = "http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f";//TODO спрятать в xml
     private static final String SECTIONS_TAG_IN_JSON = "sections";
     protected String url;
     protected int hseViewType;
@@ -29,18 +27,23 @@ public class HSEView implements Serializable
 
     protected HSEView(JSONObject jsonObject) throws JSONException
     {
-        getUsualDescriptionOfTheView(jsonObject);
+        parseUsualDescriptionOfTheView(jsonObject);
+    }
+
+    protected HSEView(JSONObject jsonObject, String serverURL) throws JSONException
+    {
+        parseUsualDescriptionOfTheView(jsonObject);
         if (hseViewType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
         {
             JSONArray jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
-            parseJSON(jsonArray);
+            parseJSON(jsonArray, serverURL);
         }
     }
 
-    public static HSEView getView(String json) throws JSONException
+    public static HSEView getView(String json, String serverURL) throws JSONException
     {
         JSONObject jsonObject = new JSONObject(json);
-        HSEView viewToReturn = new HSEView(jsonObject);
+        HSEView viewToReturn = new HSEView(jsonObject, serverURL);
         return viewToReturn;
     }
 
@@ -64,7 +67,7 @@ public class HSEView implements Serializable
         return key;
     }
 
-    private void getUsualDescriptionOfTheView(JSONObject jsonObject) throws JSONException
+    private void parseUsualDescriptionOfTheView(JSONObject jsonObject) throws JSONException
     {
 
         hseViewType = -1;
@@ -92,7 +95,7 @@ public class HSEView implements Serializable
         }
     }
 
-    private void parseJSON(JSONArray jsonArray) throws JSONException
+    private void parseJSON(JSONArray jsonArray, String serverURL) throws JSONException
     {
         ArrayList<HSEView> viewList;
         viewList = new ArrayList<HSEView>();
@@ -104,26 +107,26 @@ public class HSEView implements Serializable
             switch (type)
             {
                 case HSEViewTypes.FILE:
-                    viewList.add(new HSEViewWithFile(jsonObject));
+                    viewList.add(new HSEViewWithFile(jsonObject, serverURL));
                     break;
                 case HSEViewTypes.HTML_CONTENT:
-                    viewList.add(new HSEViewHtmlContent(jsonObject));
+                    viewList.add(new HSEViewHtmlContent(jsonObject, serverURL));
                     break;
                 case HSEViewTypes.RSS_WRAPPER:
-                    viewList.add(new HSEViewRSSWrapper(jsonObject));
+                    viewList.add(new HSEViewRSSWrapper(jsonObject, serverURL));
                     break;
                 case HSEViewTypes.VK_FORUM:
                 case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                    viewList.add(new VKHSEView(jsonObject));
+                    viewList.add(new VKHSEView(jsonObject, serverURL));
                     break;
                 case HSEViewTypes.MAP:
-                    viewList.add(new MapScreen(jsonObject));
+                    viewList.add(new MapScreen(jsonObject, serverURL));
                     break;
                 case HSEViewTypes.EVENTS:
-                    viewList.add(new EventScreen(jsonObject));
+                    viewList.add(new EventScreen(jsonObject, serverURL));
                     break;
                 default:
-                    viewList.add(new HSEView(jsonObject));
+                    viewList.add(new HSEView(jsonObject, serverURL));
             }
 
         }

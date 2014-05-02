@@ -11,15 +11,12 @@ import ru.hse.se.shugurov.utills.FileManager;
 /**
  * Created by Иван on 24.04.2014.
  */
-public class EventScreen extends HSEView implements HasFile//TODo kill lazy initialization
+public class EventScreen extends HSEView implements HasFile
 {
-    private final static String URL_BEGINNING = "http://promoteeducate1.appspot.com/api/structure/events/"; //TODO убрать отсюда
-    private Event[] events;
-
-    public EventScreen(JSONObject jsonObject) throws JSONException
+    public EventScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         super(jsonObject);
-        url = URL_BEGINNING + getKey();
+        url = serverURL + "/api/structure/events/" + getKey();
     }
 
     @Override
@@ -30,22 +27,16 @@ public class EventScreen extends HSEView implements HasFile//TODo kill lazy init
 
     public Event[] getEvents(Context context) throws JSONException
     {
-        if (events == null)
+        FileManager fileManager = new FileManager(context);
+        String content = fileManager.getFileContent(getKey());
+        JSONObject jsonObject;
+        jsonObject = new JSONObject(content);
+        JSONArray jsonArray = jsonObject.getJSONArray("events");
+        Event[] events = new Event[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++)
         {
-            FileManager fileManager = new FileManager(context);
-            String content = fileManager.getFileContent(getKey());
-            JSONObject jsonObject;
-            jsonObject = new JSONObject(content);
-            JSONArray jsonArray = jsonObject.getJSONArray("events");
-            events = new Event[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++)
-            {
-                events[i] = new Event(jsonArray.getJSONObject(i));
-            }
-            return events;
-        } else
-        {
-            return events;
+            events[i] = new Event(jsonArray.getJSONObject(i));
         }
+        return events;
     }
 }

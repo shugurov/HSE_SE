@@ -48,7 +48,7 @@ public class MarkerWrapper implements Parcelable //TODO осмотреть на 
                 marker.snippet(address);
                 break;
             case OPEN_URL:
-                marker.snippet(String.format("%s\n%s\n%s", address, phone, url)); //TODO \n does not work
+                marker.snippet(url); //TODO implement it correctly
                 break;
         }
     }

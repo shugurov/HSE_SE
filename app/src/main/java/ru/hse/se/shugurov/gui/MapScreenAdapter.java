@@ -1,6 +1,5 @@
 package ru.hse.se.shugurov.gui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +20,9 @@ import ru.hse.se.shugurov.screens.MarkerWrapper;
 public class MapScreenAdapter extends SupportMapFragment
 {
     private static final String MARKERS_TAG = "markers";
+    private static final String TITLE_TAG = "title";
     private MarkerWrapper[] markerWrappers;
+    private String title;
 
     public MapScreenAdapter()
     {
@@ -30,13 +31,7 @@ public class MapScreenAdapter extends SupportMapFragment
     public MapScreenAdapter(MapScreen hseView)
     {
         markerWrappers = hseView.getMarkers();
-    }
-
-    @Override
-    public void onAttach(Activity activity)
-    {
-        super.onAttach(activity);
-
+        this.title = hseView.getName();
     }
 
     @Override
@@ -45,13 +40,15 @@ public class MapScreenAdapter extends SupportMapFragment
         if (savedInstanceState != null)
         {
             markerWrappers = (MarkerWrapper[]) savedInstanceState.getParcelableArray(MARKERS_TAG);
+            title = savedInstanceState.getString(TITLE_TAG);
             savedInstanceState.remove(MARKERS_TAG);
         }
         super.onCreate(savedInstanceState);
+        getActivity().setTitle(title);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)//TODO  shall try to do it in onActivityCreated
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View resultView = super.onCreateView(inflater, container, savedInstanceState);
         final GoogleMap googleMap = getMap();
@@ -83,6 +80,6 @@ public class MapScreenAdapter extends SupportMapFragment
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(MARKERS_TAG, markerWrappers);
-
+        outState.putString(TITLE_TAG, title);
     }
 }

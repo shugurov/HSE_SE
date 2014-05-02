@@ -99,7 +99,7 @@ public class VKRequester
             for (int i = 1; i < jsonComments.length(); i++)
             {
                 JSONObject currentComment = jsonComments.getJSONObject(i);
-                long date = currentComment.getLong("date");
+                long date = currentComment.getLong("date") * 1000;
                 String text = currentComment.getString("text");
                 int authorID = currentComment.getInt("from_id");
                 VKProfile profile = profilesMap.get(authorID);

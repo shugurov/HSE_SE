@@ -20,7 +20,7 @@ import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
-public class MainActivity extends ActionBarActivity implements Observer//TODO в "студентам  бакалавриата" ад(
+public class MainActivity extends ActionBarActivity implements Observer
 {
     private static String JSON_FILE_NAME = "json";
     private HSEView hseView;
@@ -84,6 +84,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
 
     private void checkFiles()
     {
+        String jsonUrl = getString(R.string.json_url);
         FileManager fileManager = new FileManager(this);
         if (fileManager.doesExist(JSON_FILE_NAME))
         {
@@ -92,11 +93,12 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
             {
                 startProgressDialog();
                 createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-                task.execute(new FileDescription(JSON_FILE_NAME, HSEView.JSON_LINK));
+                task.execute(new FileDescription(JSON_FILE_NAME, jsonUrl));
             } else
             {
                 setJsonField();
                 ArrayList<FileDescription> files = new ArrayList<FileDescription>();
+                String serverURL = getString(R.string.server_url);
                 hseView.getDescriptionsOfFiles(files);
                 startProgressDialog();
                 createAsyncTask(files, DownloadStatus.DOWNLOAD_FILES);
@@ -105,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
         } else
         {
             createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
-            task.execute(new FileDescription(JSON_FILE_NAME, HSEView.JSON_LINK));
+            task.execute(new FileDescription(JSON_FILE_NAME, jsonUrl));
         }
     }
 
@@ -131,7 +133,7 @@ public class MainActivity extends ActionBarActivity implements Observer//TODO в
             HSEView newView;
             try
             {
-                newView = HSEView.getView(json);
+                newView = HSEView.getView(json, getString(R.string.server_url));
             } catch (JSONException e)
             {
                 handleJsonException();

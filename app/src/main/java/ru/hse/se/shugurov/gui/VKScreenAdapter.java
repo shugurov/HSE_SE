@@ -1,43 +1,39 @@
 package ru.hse.se.shugurov.gui;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebViewFragment;
-import android.widget.ListView;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.VKHSEView;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKAbstractItem;
-import ru.hse.se.shugurov.social_networks.VKCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 import ru.hse.se.shugurov.social_networks.VkWebClient;
 
 /**
  * Created by Иван on 14.03.14.
  */
-public class VKScreenAdapter extends ScreenAdapter//TODO а нужен ли main_list вообще?
+public class VKScreenAdapter extends ScreenAdapter
 {
-    private static final String ACCESS_TOKEN_TAG = "access_token";
     private static final String SHARED_PREFERENCES_TAG = "social_networks";
     private VKRequester requester;
+    private AccessToken accessToken;
+
+    public VKScreenAdapter()
+    {
+    }
 
     public VKScreenAdapter(HSEView vkHseView)//TODO кнопка назад, когда была регистрация
     {
         super(vkHseView);
     }
 
-    private void makeRequestForAccessToken()
+   /* private void makeRequestForAccessToken()
     {
         WebViewFragment webViewFragment = new WebViewFragment()
         {
@@ -58,67 +54,32 @@ public class VKScreenAdapter extends ScreenAdapter//TODO а нужен ли main
                 return result;
             }
         };
-        //changeFragments(getFragmentManager(), webViewFragment); TODO
-    }
-
-    private void setTopicsAdapter(final ListFragment listFragment)
-    {
-        requester.getTopics(getHseView().getObjectID(), new Requester.RequestResultCallback()
+        VkWebClient  vkWebClient= new VkWebClient(new VkWebClient.VKCallBack()
         {
             @Override
-            public void pushResult(String result)
+            public void call(AccessToken accessToken)
             {
-                if (result == null)
-                {
-                    Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
-                } else
-                {
-                    final VKTopicsAdapter adapter = new VKTopicsAdapter(getActivity(), requester.getTopicsAdapter(result));
-                    listFragment.setListAdapter(adapter);
-                    /*listFragment.set(new AdapterView.OnItemClickListener()
-                    {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                        {
-                            showResponses(inflater, container, adapter.getItem(position).getTopicID());
-                        }
-                    });TODO */
-                }
+
             }
         });
-        //changeFragments(); TODO
-        //changeFragments(getFragmentManager(), listFragment);
-    }
+        InternalWebPage internalWebPage = new InternalWebPage(VkWebClient.OAUTH, vkWebClient);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(internalWebPage, null);
+        transaction.commit();
+        //changeFragments(getFragmentManager(), webViewFragment);
+    }TODO I don't save access token*/
 
-    private void showResponses(final LayoutInflater inflater, final ViewGroup container, int topicID)
-    {
-        requester.getComments(getHseView().getObjectID(), topicID, new Requester.RequestResultCallback()
-        {
-            @Override
-            public void pushResult(String result)//TODO что делать с пустым результатом
-            {
-                VKAbstractItem[] comments = requester.getComments(result);
-                if (comments == null)
-                {
-                    //TODO что делать, если массив комментариев пуст?
-                } else
-                {
-                    VKCommentsAdapter vkCommentsAdapter = new VKCommentsAdapter(getActivity(), comments);
-                    ListView responsesListView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
-                    responsesListView.setAdapter(vkCommentsAdapter);
-                    //changeFragments(); TODO
-                }
-            }
-        });
-    }
 
-    private void registerAccessTokenInPreferences(AccessToken accessToken)
+
+
+    /*private void registerAccessTokenInPreferences(AccessToken accessToken)
     {
         SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
         SharedPreferences.Editor preferencesEditor = preferences.edit();
         preferencesEditor.putString(ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
         preferencesEditor.commit();
-    }
+    } TODO*/
 
     @Override
     protected VKHSEView getHseView()
@@ -129,30 +90,52 @@ public class VKScreenAdapter extends ScreenAdapter//TODO а нужен ли main
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
-        String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
+        //SharedPreferences preferences = getActivity().getSharedPreferences(SHARED_PREFERENCES_TAG, Context.MODE_PRIVATE);
+        /*String serializedToken = preferences.getString(ACCESS_TOKEN_TAG, null);
         if (serializedToken == null)
         {
-            makeRequestForAccessToken();
+            return getAccessToken(inflater, container);
         } else
         {
             AccessToken accessToken = new AccessToken(serializedToken);
             if (accessToken.hasExpired())
             {
-                makeRequestForAccessToken();
+                return getAccessToken(inflater, container);
             } else
             {
                 requester = new VKRequester(accessToken);
                 setTopicsAdapter(showListFragment());
             }
-        }
-        return super.onCreateView(inflater, container, savedInstanceState);
+        }*/
+        //return super.onCreateView(inflater, container, savedInstanceState); TODO
+        return getAccessToken(inflater, container);//TODO delete
+
     }
 
-    private ListFragment showListFragment()
+    private WebView getAccessToken(LayoutInflater inflater, final ViewGroup container)//TODO apply token saving
     {
-        ListFragment listFragment = new ListFragment();
-        // changeFragments(getFragmentManager(), listFragment); TODO
-        return listFragment;
+        final WebView webView = (WebView) inflater.inflate(R.layout.internal_web_view, container, false);
+        VkWebClient vkWebClient = new VkWebClient(new VkWebClient.VKCallBack()
+        {
+            @Override
+            public void call(AccessToken accessToken)
+            {
+                if (accessToken == null)
+                {
+                    Toast.makeText(getActivity(), "Null", Toast.LENGTH_SHORT).show();//TODO delete
+                    getFragmentManager().popBackStack();
+                } else
+                {
+                    //BEGIN TODO
+                    Toast.makeText(getActivity(), "Not null", Toast.LENGTH_SHORT).show();
+                    ScreenFactory.changeFragments(getFragmentManager(), new VkTopicsScreenAdapter(getHseView().getObjectID(), accessToken));
+                    //END TODO
+                }
+            }
+        });
+        webView.setWebViewClient(vkWebClient);
+        webView.loadUrl(VkWebClient.OAUTH);
+        return webView;
     }
+
 }

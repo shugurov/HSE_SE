@@ -1,12 +1,13 @@
 package ru.hse.se.shugurov.social_networks;
 
 
+import java.io.Serializable;
 import java.util.StringTokenizer;
 
 /**
  * Created by Иван on 24.03.2014.
  */
-public class AccessToken
+public class AccessToken implements Serializable
 {
     private final String accessToken;
     private final long expirationTime;

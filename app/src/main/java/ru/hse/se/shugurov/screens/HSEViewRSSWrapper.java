@@ -14,10 +14,10 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class HSEViewRSSWrapper extends HSEView implements HasFile
 {
-    HSEViewRSSWrapper(JSONObject jsonObject) throws JSONException
+    HSEViewRSSWrapper(JSONObject jsonObject, String serverURL) throws JSONException
     {
-        super(jsonObject);
-        url = HSEView.SERVER_LINK + "/api/structure/rss/" + getKey();
+        super(jsonObject, serverURL);
+        url = serverURL + "/api/structure/rss/" + getKey();
     }
 
     @Override

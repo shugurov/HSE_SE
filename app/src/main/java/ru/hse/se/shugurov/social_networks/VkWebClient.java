@@ -29,7 +29,7 @@ public class VkWebClient extends WebViewClient
     @Override
     public boolean shouldOverrideUrlLoading(final WebView webView, String url)
     {
-        if (url.startsWith("http://oauth.vk.com/blank.html") || url.startsWith("https://oauth.vk.com/blank.html"))//TODO поменять на константы
+        if (url.startsWith("http://oauth.vk.com/blank.html") || url.startsWith("https://oauth.vk.com/blank.html"))
         {
             AccessToken accessToken = getAccessToken(url);
             callBack.call(accessToken);
@@ -38,14 +38,19 @@ public class VkWebClient extends WebViewClient
         return false;
     }
 
-    private AccessToken getAccessToken(String link)//а что возвращается при ошибке?
+    private AccessToken getAccessToken(String link)
     {
-        String token = parseForArgument(link, ACCESS_TOKEN_TAG);
-        String expiresInString = parseForArgument(link, "expires_in");
-        return new AccessToken(token, Long.parseLong(expiresInString));
+        AccessToken receivedToken = null;
+        if (link.indexOf("denied") < 0)
+        {
+            String token = parseForArgument(link, ACCESS_TOKEN_TAG);
+            String expiresInString = parseForArgument(link, "expires_in");
+            receivedToken = new AccessToken(token, Long.parseLong(expiresInString));
+        }
+        return receivedToken;
     }
 
-    private String parseForArgument(String link, String argument) //TODO make it private!
+    private String parseForArgument(String link, String argument)
     {
         String expression = String.format("%s=(.*?)(&|$)+", argument);
         Pattern pattern = Pattern.compile(expression);

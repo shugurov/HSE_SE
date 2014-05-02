@@ -11,11 +11,12 @@ public class HSEViewWithFile extends HSEView implements HasFile
     private String fileType;
     private String fileName;
 
-    HSEViewWithFile(JSONObject jsonObject) throws JSONException
+    HSEViewWithFile(JSONObject jsonObject, String serverUrl) throws JSONException
     {
-        super(jsonObject);
+        super(jsonObject, serverUrl);
         fileType = jsonObject.getString("filetype");
         fileName = jsonObject.getString("filename");
+        url = serverUrl + url;
     }
 
     public String getFileName()
@@ -31,7 +32,7 @@ public class HSEViewWithFile extends HSEView implements HasFile
     @Override
     public FileDescription getFileDescription()
     {
-        return new FileDescription(fileName, SERVER_LINK + getUrl());
+        return new FileDescription(fileName, getUrl());
     }
 
 }

@@ -43,6 +43,15 @@ public class ScreenFactory//TODO экран с браузером падает �
         return screenFactory;
     }
 
+    public static void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
+    {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.content_appearing_movement_to_the_left, R.anim.content_disappearing_movement_to_the_left, R.anim.content_appearing_movement_to_the_right, R.anim.content_disappearing_movement_to_the_right);
+        transaction.replace(R.id.main, fragmentToAppear);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     public void showFragment(final HSEView view)
     {
         Fragment adapter;
@@ -102,15 +111,6 @@ public class ScreenFactory//TODO экран с браузером падает �
         Uri uri = Uri.parse(url);
         browserIntent.setData(uri);
         activity.startActivity(browserIntent);
-    }
-
-    private void changeFragments(FragmentManager manager, Fragment fragmentToAppear)
-    {
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.content_appearing_movement_to_the_left, R.anim.content_disappearing_movement_to_the_left, R.anim.content_appearing_movement_to_the_right, R.anim.content_disappearing_movement_to_the_right);
-        transaction.replace(R.id.main, fragmentToAppear);
-        transaction.addToBackStack(null);
-        transaction.commit();
     }
 
     private void setFragment(FragmentManager manager, Fragment fragmentToAppear)

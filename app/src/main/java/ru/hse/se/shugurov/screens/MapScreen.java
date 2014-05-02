@@ -11,9 +11,9 @@ public class MapScreen extends HSEView
 {
     private transient MarkerWrapper[] markers;
 
-    protected MapScreen(JSONObject jsonObject) throws JSONException
+    protected MapScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
-        super(jsonObject);
+        super(jsonObject, serverURL);
         JSONArray markersArray = jsonObject.getJSONArray("markers");
         parseMarkers(markersArray);
     }

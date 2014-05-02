@@ -8,19 +8,17 @@ import org.json.JSONObject;
  */
 public class HSEViewHtmlContent extends HSEView implements HasFile
 {
-    private String html;
 
-    HSEViewHtmlContent(JSONObject jsonObject) throws JSONException
+    HSEViewHtmlContent(JSONObject jsonObject, String serverURL) throws JSONException
     {
-        super(jsonObject);
-        html = jsonObject.getString("html");
-        url = "";
+        super(jsonObject, serverURL);
+        url = serverURL + jsonObject.getString("html");
     }
 
     @Override
     public FileDescription getFileDescription()
     {
-        return new FileDescription(getKey(), SERVER_LINK + html);
+        return new FileDescription(getKey(), getUrl());
     }
 
 }

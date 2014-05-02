@@ -18,7 +18,7 @@ public class Event extends HSEView implements Serializable
     public Event(JSONObject eventObject) throws JSONException
     {
         super(eventObject);
-        url = eventObject.getString("url");
+        url = eventObject.getString("url");//TODO what for?
         telephone = eventObject.getString("phone");
         address = eventObject.getString("address");
         long dateNumber = eventObject.getLong("date");
