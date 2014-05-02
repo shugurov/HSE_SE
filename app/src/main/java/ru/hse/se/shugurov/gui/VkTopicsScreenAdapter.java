@@ -72,8 +72,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
                         topics = new VKTopic[0];
                     } else
                     {
-                        topics = requester.getTopics(result);
-                        setAdapter();
+                        fillList(result, requester);
                     }
                 }
             });
@@ -83,6 +82,28 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
         }
 
         return resultView;
+    }
+
+    private void fillList(final String result, final VKRequester requester)
+    {
+        Runnable parsing = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                topics = requester.getTopics(result);
+                getActivity().runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        setAdapter();
+                    }
+                });
+            }
+        };
+        new Thread(parsing).start();
+
     }
 
     @Override

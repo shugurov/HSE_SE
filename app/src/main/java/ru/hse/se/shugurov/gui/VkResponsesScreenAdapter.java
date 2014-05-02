@@ -14,10 +14,8 @@ import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
-{//TODO images
-    //TODO multithreading
-    //TODO title
+public class VkResponsesScreenAdapter extends ListFragment
+{
     private final static String GROUP_ID_TAG = "vk_group_id_responses";
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
     private final static String ACCESS_TOKEN_TAG = "vk_access_token_responses";
@@ -26,6 +24,7 @@ public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
     private int topicId;
     private AccessToken accessToken;
     private String groupName;
+    private VKAbstractItem[] comments;
 
     public VkResponsesScreenAdapter()
     {
@@ -57,23 +56,49 @@ public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
     {
         getActivity().setTitle(groupName);
         super.onViewCreated(view, savedInstanceState);
-        final VKRequester requester = new VKRequester(accessToken);
-        requester.getComments(groupId, topicId, new Requester.RequestResultCallback()
+        if (comments == null)
+        {
+            final VKRequester requester = new VKRequester(accessToken);
+            requester.getComments(groupId, topicId, new Requester.RequestResultCallback()
+            {
+                @Override
+                public void pushResult(String result)//TODO что делать с пустым результатом
+                {
+                    parseResponses(result, requester);
+                }
+            });
+        } else
+        {
+            setAdapter();
+        }
+    }
+
+    private void parseResponses(final String result, final VKRequester requester)
+    {
+        Runnable parsing = new Runnable()
         {
             @Override
-            public void pushResult(String result)//TODO что делать с пустым результатом
+            public void run()
             {
-                VKAbstractItem[] comments = requester.getComments(result);
-                if (comments == null)
+                comments = requester.getComments(result);
+                getActivity().runOnUiThread(new Runnable()
                 {
-                    //TODO что делать, если массив комментариев пуст?
-                } else
-                {
-                    VKResponsesAdapter vkResponsesAdapter = new VKResponsesAdapter(getActivity(), comments);
-                    setListAdapter(vkResponsesAdapter);
-                }
+                    @Override
+                    public void run()
+                    {
+                        setAdapter();
+                    }
+                });
             }
-        });
+        };
+        new Thread(parsing).start();
+
+    }
+
+    private void setAdapter()
+    {
+        VKResponsesAdapter vkResponsesAdapter = new VKResponsesAdapter(getActivity(), comments);
+        setListAdapter(vkResponsesAdapter);
     }
 
     @Override
