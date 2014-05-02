@@ -2,9 +2,7 @@ package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
@@ -41,23 +39,10 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState)
+    public void onViewCreated(View view, Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null)
-        {
-            groupId = savedInstanceState.getString(GROUP_ID_TAG);
-            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
-            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
-            topics = (VKTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState)//TODO fix comments number
-    {
+        super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle(groupName);
-        View resultView = super.onCreateView(inflater, container, savedInstanceState);
         if (topics == null)
         {
             final VKRequester requester = new VKRequester(accessToken);
@@ -80,9 +65,21 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
         {
             setAdapter();
         }
-
-        return resultView;
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null)
+        {
+            groupId = savedInstanceState.getString(GROUP_ID_TAG);
+            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
+            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
+            topics = (VKTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
+        }
+    }
+
 
     private void fillList(final String result, final VKRequester requester)
     {

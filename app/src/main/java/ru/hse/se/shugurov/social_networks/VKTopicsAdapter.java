@@ -61,9 +61,9 @@ public class VKTopicsAdapter extends BaseAdapter
         imageLoader.displayImage(topics[position].getAuthor().getPhoto(), authorPhoto);
         ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthor().getFullName()));
         ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
-        ((TextView) convertView.findViewById(R.id.vk_topic_comments)).setText(Integer.toString(topics[position].getComments()));
+        ((TextView) convertView.findViewById(R.id.vk_comments)).setText(Integer.toString(topics[position].getComments()));
         String date = format.format(getItem(position).getDate());
-        ((TextView) convertView.findViewById(R.id.vk_topic_date)).setText(date);
+        ((TextView) convertView.findViewById(R.id.vk_date)).setText(date);
         return convertView;
     }
 

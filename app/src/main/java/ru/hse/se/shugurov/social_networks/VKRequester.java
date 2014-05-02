@@ -13,14 +13,15 @@ import ru.hse.se.shugurov.Requester;
 /**
  * Created by Иван on 11.02.14.
  */
-public class VKRequester
+public class VKRequester//TODO fix throwing exceptions here, naming conventions
 {
     private static final String ACCESS_TOKEN_TAG = "access_token";
     private static final String GROUP_ID_TAG = "group_id";
     private static final String BOARD_GET_COMMENTS = "board.getComments";
     private static final String VK_TOPIC_ID_TAG = "topic_id";
-    private static String REQUEST_BEGINNING = "https://api.vk.com/method/";
-    private static String BOARD_GET_TOPICS = "board.getTopics";
+    private static final String REQUEST_BEGINNING = "https://api.vk.com/method/";
+    private static final String BOARD_GET_TOPICS = "board.getTopics";
+    private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extendet=1";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
@@ -36,9 +37,9 @@ public class VKRequester
         requester.execute(request);
     }
 
-    public VKTopic[] getTopics(String data)
+    public VKTopic[] getTopics(String topicsJson)
     {
-        if (data == null)
+        if (topicsJson == null)
         {
             return null;
         }
@@ -46,7 +47,7 @@ public class VKRequester
         Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
         try
         {
-            JSONObject jsonObject = new JSONObject(data);
+            JSONObject jsonObject = new JSONObject(topicsJson);
             JSONObject responseObject = jsonObject.getJSONObject("response");
             JSONArray profiles = responseObject.getJSONArray("profiles");
             parseProfiles(profilesMap, profiles);
@@ -80,9 +81,9 @@ public class VKRequester
         requester.execute(request);
     }
 
-    public VKAbstractItem[] getComments(String data)
+    public VKAbstractItem[] getComments(String commentsJson)
     {
-        if (data == null)
+        if (commentsJson == null)
         {
             return null;
         }
@@ -90,7 +91,7 @@ public class VKRequester
         Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
         try
         {
-            JSONObject jsonObject = new JSONObject(data);
+            JSONObject jsonObject = new JSONObject(commentsJson);
             JSONObject responseObject = jsonObject.getJSONObject("response");
             JSONArray profiles = responseObject.getJSONArray("profiles");
             parseProfiles(profilesMap, profiles);
@@ -112,6 +113,42 @@ public class VKRequester
             return null;
         }
         return comments;
+    }
+
+    public void getWallPosts(String groupId, Requester.RequestResultCallback callback)
+    {
+        Requester requester = new Requester(callback);
+        String url = String.format(WALL_GET_POSTS, groupId);
+        requester.execute(url);
+    }
+
+    public VkWallPost[] getWallPosts(String wallPostJson)
+    {
+        VkWallPost[] posts = null;
+        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
+        try
+        {
+            JSONObject jsonObject = new JSONObject(wallPostJson);
+            JSONObject responseObject = jsonObject.getJSONObject("response");
+            JSONArray profiles = responseObject.getJSONArray("profiles");
+            parseProfiles(profilesMap, profiles);
+            JSONArray jsonComments = responseObject.getJSONArray("comments");
+            posts = new VkWallPost[jsonComments.length() - 1];
+            for (int i = 1; i < jsonComments.length(); i++)
+            {
+                JSONObject currentComment = jsonComments.getJSONObject(i);
+                long date = currentComment.getLong("date") * 1000;
+                String text = currentComment.getString("text");
+                int authorID = currentComment.getInt("from_id");
+                VKProfile profile = profilesMap.get(authorID);
+                posts[i - 1] = new VkWallPost(profile, text, new Date(date));
+            }
+            parseProfiles(profilesMap, profiles);
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return posts;
     }
 
     private void parseProfiles(Map<Integer, VKProfile> profilesMap, JSONArray profiles)

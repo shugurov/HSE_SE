@@ -83,8 +83,15 @@ public class ScreenFactory//TODO экран с браузером падает �
                 AccessToken vkAccessToken = getVkAccessToken(vkhseView);
                 if (vkAccessToken != null)
                 {
-                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
-                    changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
+                    adapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
+                }
+                break;
+            case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
+                vkhseView = (VKHSEView) view;
+                vkAccessToken = getVkAccessToken(vkhseView);//TODo incorrect events will happen if access token is not available
+                if (vkAccessToken != null)
+                {
+                    adapter = new VkWallPostScreen(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
                 }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
