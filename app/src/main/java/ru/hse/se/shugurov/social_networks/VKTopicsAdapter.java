@@ -22,14 +22,13 @@ public class VKTopicsAdapter extends BaseAdapter
 {
     private VKTopic[] topics;
     private LayoutInflater inflater;
-    private ImageLoader imageLoader;
+    private ImageLoader imageLoader = ImageLoader.instance();
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
     public VKTopicsAdapter(Context context, VKTopic[] topics)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
-        imageLoader = ImageLoader.instance();
     }
 
     @Override
@@ -73,7 +72,7 @@ public class VKTopicsAdapter extends BaseAdapter
         int lastFigure = numberOfComments % 100;
         switch (lastFigure)
         {
-            case 2://TODO
+            case 2://TODO fix these dreadful lines
             case 3:
             case 4:
             case 32:

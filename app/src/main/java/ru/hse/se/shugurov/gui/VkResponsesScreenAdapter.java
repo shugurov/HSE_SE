@@ -17,22 +17,26 @@ import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
 {//TODO images
     //TODO multithreading
-    private static String GROUP_ID_TAG = "vk_group_id_responses";
-    private static String TOPIC_ID_TAG = "vk_topic_id_responses";
-    private static String ACCESS_TOKEN_TAG = "vk_access_token_responses";
+    //TODO title
+    private final static String GROUP_ID_TAG = "vk_group_id_responses";
+    private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
+    private final static String ACCESS_TOKEN_TAG = "vk_access_token_responses";
+    private final static String GROUP_NAME_TAG = "vk_group_name_responses";
     private String groupId;
     private int topicId;
     private AccessToken accessToken;
+    private String groupName;
 
     public VkResponsesScreenAdapter()
     {
     }
 
-    public VkResponsesScreenAdapter(String groupID, int topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
+    public VkResponsesScreenAdapter(String groupName, String groupID, int topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
     {
         this.groupId = groupID;
         this.topicId = topicId;
         this.accessToken = accessToken;
+        this.groupName = groupName;
     }
 
     @Override
@@ -44,12 +48,14 @@ public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
             groupId = savedInstanceState.getString(GROUP_ID_TAG);
             topicId = savedInstanceState.getInt(TOPIC_ID_TAG);
             accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
+            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
         }
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
+        getActivity().setTitle(groupName);
         super.onViewCreated(view, savedInstanceState);
         final VKRequester requester = new VKRequester(accessToken);
         requester.getComments(groupId, topicId, new Requester.RequestResultCallback()
@@ -77,6 +83,7 @@ public class VkResponsesScreenAdapter extends ListFragment//TODO dates!!!
         outState.putString(GROUP_ID_TAG, groupId);
         outState.putInt(TOPIC_ID_TAG, topicId);
         outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
+        outState.putString(GROUP_NAME_TAG, groupName);
     }
 
 

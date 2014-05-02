@@ -1,7 +1,9 @@
 package ru.hse.se.shugurov.gui;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -17,15 +19,21 @@ import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.HSEViewTypes;
 import ru.hse.se.shugurov.screens.HSEViewWithFile;
 import ru.hse.se.shugurov.screens.MapScreen;
+import ru.hse.se.shugurov.screens.VKHSEView;
+import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.VkWebClient;
 
 /**
  * Created by Иван on 15.03.14.
  */
 public class ScreenFactory//TODO экран с браузером падает при перевороте
 {
+    private static final String SHARED_PREFERENCES_TAG_SOCIAL = "social_networks";
+    private static final String VK_ACCESS_TOKEN_TAG = "vk_access_token";
     private static ScreenFactory screenFactory;
     private FragmentActivity activity;
     private boolean isFirstFragment = true;
+    private AuthorizationFragment authorizationFragment;
 
     private ScreenFactory(FragmentActivity activity, boolean isFirstFragment)
     {
@@ -54,7 +62,7 @@ public class ScreenFactory//TODO экран с браузером падает �
 
     public void showFragment(final HSEView view)
     {
-        Fragment adapter;
+        Fragment adapter = null;
         switch (view.getHseViewType())
         {
             case HSEViewTypes.HTML_CONTENT:
@@ -62,7 +70,6 @@ public class ScreenFactory//TODO экран с браузером падает �
                 break;
             case HSEViewTypes.WEB_PAGE:
                 openBrowser(view.getUrl());
-                adapter = null;
                 break;
             case HSEViewTypes.INNER_WEB_PAGE:
                 adapter = new InternalWebScreenAdapter(view);
@@ -72,7 +79,13 @@ public class ScreenFactory//TODO экран с браузером падает �
                 adapter = new RSSScreenAdapter(view);
                 break;
             case HSEViewTypes.VK_FORUM:
-                adapter = new VKScreenAdapter(view);
+                VKHSEView vkhseView = (VKHSEView) view;
+                AccessToken vkAccessToken = getVkAccessToken(vkhseView);
+                if (vkAccessToken != null)
+                {
+                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
+                    changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
+                }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 adapter = new ViewOfOtherViewsAdapter(view);
@@ -84,7 +97,6 @@ public class ScreenFactory//TODO экран с браузером падает �
                 adapter = new EventScreenAdapter((EventScreen) view);
                 break;
             case HSEViewTypes.FILE:
-                adapter = null;
                 openFile((HSEViewWithFile) view);
                 break;
             default:
@@ -96,7 +108,7 @@ public class ScreenFactory//TODO экран с браузером падает �
             android.support.v4.app.FragmentManager manager = activity.getSupportFragmentManager();
             if (isFirstFragment)
             {
-                setFragment(manager, adapter);
+                setFragment(adapter);
                 isFirstFragment = false;
             } else
             {
@@ -113,9 +125,9 @@ public class ScreenFactory//TODO экран с браузером падает �
         activity.startActivity(browserIntent);
     }
 
-    private void setFragment(FragmentManager manager, Fragment fragmentToAppear)
+    private void setFragment(Fragment fragmentToAppear)
     {
-        FragmentTransaction transaction = manager.beginTransaction();
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.main, fragmentToAppear);
         transaction.commit();
     }
@@ -137,7 +149,52 @@ public class ScreenFactory//TODO экран с браузером падает �
             }
 
         }//TODO то делать,если не существует?
+    }
 
+    private AccessToken getVkAccessToken(VKHSEView vkhseView)
+    {
+        AccessToken accessToken = null;
+        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
+        String serializedToken = preferences.getString(VK_ACCESS_TOKEN_TAG, null);
+        if (serializedToken == null)
+        {
+            requestVkToken(vkhseView);
+        } else
+        {
+            accessToken = new AccessToken(serializedToken);
+            if (accessToken.hasExpired())
+            {
+                requestVkToken(vkhseView);
+            }
+        }
 
+        return accessToken;
+    }
+
+    private void requestVkToken(final VKHSEView vkhseView)
+    {
+        authorizationFragment = new AuthorizationFragment(VkWebClient.OAUTH, new AuthorizationFragment.AccessTokenRequest()
+        {
+            @Override
+            public void receiveToken(AccessToken accessToken)
+            {
+                if (accessToken == null)
+                {
+                    activity.getSupportFragmentManager().popBackStack();
+                } else
+                {
+                    SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
+                    SharedPreferences.Editor preferencesEditor = preferences.edit();
+                    preferencesEditor.putString(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
+                    preferencesEditor.commit();
+                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), accessToken);
+                    FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                    transaction.remove(authorizationFragment);
+                    transaction.commit();
+                    changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
+                }
+            }
+        });
+        changeFragments(activity.getSupportFragmentManager(), authorizationFragment);
     }
 }

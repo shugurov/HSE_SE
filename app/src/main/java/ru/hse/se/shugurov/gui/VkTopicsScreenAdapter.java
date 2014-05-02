@@ -11,6 +11,7 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.VKRequester;
+import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 
 /**
@@ -18,19 +19,25 @@ import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
  */
 public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adapter?
 {
-    private static String GROUP_ID_TAG = "vk_group_id_topics";
-    private static String ACCESS_TOKEN_TAG = "vk_access_token_topics";
+    private final static String GROUP_ID_TAG = "vk_group_id_topics";
+    private final static String ACCESS_TOKEN_TAG = "vk_access_token_topics";
+    private final static String GROUP_NAME_TAG = "vk_group_name_topics";
+    private final static String VK_TOPICS_TAG = "vk_topics_array";
     private String groupId;
+    private String groupName;
     private AccessToken accessToken;
+    private VKTopic[] topics;
+    private VKTopicsAdapter adapter;
 
     public VkTopicsScreenAdapter()
     {
     }
 
-    public VkTopicsScreenAdapter(String groupId, AccessToken accessToken)
+    public VkTopicsScreenAdapter(String groupName, String groupId, AccessToken accessToken)
     {
         this.groupId = groupId;
         this.accessToken = accessToken;
+        this.groupName = groupName;
     }
 
     @Override
@@ -41,38 +48,62 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
         {
             groupId = savedInstanceState.getString(GROUP_ID_TAG);
             accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
+            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
+            topics = (VKTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState)//TODO fix comments number
     {
+        getActivity().setTitle(groupName);
         View resultView = super.onCreateView(inflater, container, savedInstanceState);
-        final VKRequester requester = new VKRequester(accessToken);
-        requester.getTopics(groupId, new Requester.RequestResultCallback()
+        if (topics == null)
+        {
+            final VKRequester requester = new VKRequester(accessToken);
+            requester.getTopics(groupId, new Requester.RequestResultCallback()
+            {
+                @Override
+                public void pushResult(String result)
+                {
+                    if (result == null)
+                    {
+                        Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                        topics = new VKTopic[0];
+                    } else
+                    {
+                        topics = requester.getTopics(result);
+                        setAdapter();
+                    }
+                }
+            });
+        } else
+        {
+            setAdapter();
+        }
+
+        return resultView;
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
-            public void pushResult(String result)
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                if (result == null)
-                {
-                    Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
-                } else
-                {
-                    final VKTopicsAdapter adapter = new VKTopicsAdapter(getActivity(), requester.getTopicsAdapter(result));
-                    setListAdapter(adapter);
-                    getListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
-                    {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                        {
-                            ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(groupId, adapter.getItem(position).getTopicID(), accessToken));
-                        }
-                    });
-                }
+                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(groupName, groupId, adapter.getItem(position).getTopicID(), accessToken));
             }
         });
-        return resultView;
+    }
+
+
+    private void setAdapter()
+    {
+        adapter = new VKTopicsAdapter(getActivity(), topics);
+        setListAdapter(adapter);
     }
 
     @Override
@@ -81,5 +112,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
         super.onSaveInstanceState(outState);
         outState.putString(GROUP_ID_TAG, groupId);
         outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
+        outState.putString(GROUP_NAME_TAG, groupName);
+        outState.putParcelableArray(VK_TOPICS_TAG, topics);
     }
 }

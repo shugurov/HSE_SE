@@ -36,7 +36,7 @@ public class VKRequester
         requester.execute(request);
     }
 
-    public VKTopic[] getTopicsAdapter(String data)
+    public VKTopic[] getTopics(String data)
     {
         if (data == null)
         {

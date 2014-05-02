@@ -1,5 +1,6 @@
 package ru.hse.se.shugurov.social_networks;
 
+
 import java.util.Date;
 
 /**
@@ -7,8 +8,8 @@ import java.util.Date;
  */
 public class VKTopic extends VKAbstractItem
 {
-    private final int topicID;
-    private final int comments;
+    private int topicID;
+    private int comments;
 
     public VKTopic(int topicID, VKProfile author, String text, int comments, Date date)
     {
