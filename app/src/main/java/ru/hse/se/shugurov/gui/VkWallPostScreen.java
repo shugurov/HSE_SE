@@ -3,6 +3,7 @@ package ru.hse.se.shugurov.gui;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.Toast;
 
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
@@ -45,10 +46,16 @@ public class VkWallPostScreen extends ListFragment
             requester.getWallPosts(groupId, new Requester.RequestResultCallback()
             {
                 @Override
-                public void pushResult(String wallPostsJson)//TODO check if it is not null
+                public void pushResult(String wallPostsJson)//TODO multithreading
                 {
-                    posts = requester.getWallPosts(wallPostsJson);
-                    setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+                    if (wallPostsJson == null)
+                    {
+                        Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                    } else
+                    {
+                        posts = requester.getWallPosts(wallPostsJson);
+                        setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+                    }
                 }
             });
         } else

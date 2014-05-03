@@ -54,7 +54,6 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
                     if (result == null)
                     {
                         Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
-                        topics = new VKTopic[0];
                     } else
                     {
                         fillList(result, requester);

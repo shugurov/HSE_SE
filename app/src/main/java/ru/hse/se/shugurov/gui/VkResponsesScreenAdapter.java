@@ -4,6 +4,7 @@ package ru.hse.se.shugurov.gui;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.Toast;
 
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
@@ -64,9 +65,15 @@ public class VkResponsesScreenAdapter extends ListFragment
             requester.getComments(groupId, topicId, new Requester.RequestResultCallback()
             {
                 @Override
-                public void pushResult(String result)//TODO что делать с пустым результатом
+                public void pushResult(String result)
                 {
-                    parseResponses(result, requester);
+                    if (result == null)
+                    {
+                        Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                    } else
+                    {
+                        parseResponses(result, requester);
+                    }
                 }
             });
         } else
