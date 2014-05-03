@@ -6,31 +6,19 @@ package ru.hse.se.shugurov.social_networks;
 public class VKProfile
 {
     private final int userID;
-    private final String firstName;
-    private final String lastName;
     private final String photo;
+    private final String fullName;
 
-    public VKProfile(int userID, String firstName, String lastName, String photo)
+    public VKProfile(int userID, String fullName, String photo)
     {
         this.userID = userID;
-        this.firstName = firstName;
-        this.lastName = lastName;
         this.photo = photo;
+        this.fullName = fullName;
     }
 
-    public String getLastName()
-    {
-        return lastName;
-    }
-
-    public int getUserID()
+    public int getId()
     {
         return userID;
-    }
-
-    public String getFirstName()
-    {
-        return firstName;
     }
 
     public String getPhoto()
@@ -40,7 +28,7 @@ public class VKProfile
 
     public String getFullName()
     {
-        return firstName + " " + lastName;
+        return fullName;
     }
 
 }

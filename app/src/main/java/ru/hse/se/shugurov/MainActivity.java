@@ -98,7 +98,6 @@ public class MainActivity extends ActionBarActivity implements Observer
             {
                 setJsonField();
                 ArrayList<FileDescription> files = new ArrayList<FileDescription>();
-                String serverURL = getString(R.string.server_url);
                 hseView.getDescriptionsOfFiles(files);
                 startProgressDialog();
                 createAsyncTask(files, DownloadStatus.DOWNLOAD_FILES);

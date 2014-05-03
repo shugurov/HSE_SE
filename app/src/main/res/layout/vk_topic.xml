@@ -36,7 +36,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
 
-        <include layout="@layout/vk_item_footer"></include>
+        <include
+            layout="@layout/vk_item_footer"></include>
     </LinearLayout>
 
 </LinearLayout>

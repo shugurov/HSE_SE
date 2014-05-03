@@ -8,14 +8,21 @@ import java.util.Date;
  */
 public class VKTopic extends VKAbstractItem
 {
-    private int topicID;
+    private int id;
     private int comments;
+    private String attachedPicture;
 
-    public VKTopic(int topicID, VKProfile author, String text, int comments, Date date)
+    public VKTopic(int id, VKProfile author, String text, int comments, Date date)
     {
         super(author, text, date);
-        this.topicID = topicID;
+        this.id = id;
         this.comments = comments;
+    }
+
+    public VKTopic(int id, VKProfile author, String text, int comments, Date date, String attachedPicture)
+    {
+        this(id, author, text, comments, date);
+        this.attachedPicture = attachedPicture;
     }
 
     public int getComments()
@@ -23,9 +30,14 @@ public class VKTopic extends VKAbstractItem
         return comments;
     }
 
-    public int getTopicID()
+    public int getId()
     {
-        return topicID;
+        return id;
+    }
+
+    public String getAttachedPicture()
+    {
+        return attachedPicture;
     }
 
 }

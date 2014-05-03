@@ -111,7 +111,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(groupName, groupId, adapter.getItem(position).getTopicID(), accessToken));
+                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(groupName, groupId, adapter.getItem(position).getId(), accessToken));
             }
         });
     }

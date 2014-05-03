@@ -8,7 +8,7 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VkWallPost;
+import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
 
 /**
@@ -21,7 +21,7 @@ public class VkWallPostScreen extends ListFragment
     private static final String POSTS_ID = "vk_posts_array";
     private String title;
     private String groupId;
-    private VkWallPost[] posts;
+    private VKTopic[] posts;
     private AccessToken accessToken;
 
     public VkWallPostScreen()
@@ -60,7 +60,7 @@ public class VkWallPostScreen extends ListFragment
             });
         } else
         {
-
+            setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
         }
     }
 
@@ -72,7 +72,7 @@ public class VkWallPostScreen extends ListFragment
         {
             title = savedInstanceState.getString(TITLE_TAG);
             groupId = savedInstanceState.getString(GROUP_ID_TAG);
-            posts = (VkWallPost[]) savedInstanceState.getParcelableArray(POSTS_ID);
+            posts = (VKTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
         }
     }
 

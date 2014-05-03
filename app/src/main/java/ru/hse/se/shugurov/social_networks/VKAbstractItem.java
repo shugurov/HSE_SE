@@ -10,6 +10,7 @@ import java.util.Date;
  */
 public class VKAbstractItem implements Parcelable
 {
+
     public static Creator<VKAbstractItem> CREATOR = new Creator<VKAbstractItem>()
     {
         @Override
@@ -28,13 +29,13 @@ public class VKAbstractItem implements Parcelable
     private String text;
     private Date date;
 
+
     public VKAbstractItem(VKProfile author, String text, Date date)
     {
         this.author = author;
         this.text = text;
         this.date = date;
     }
-
 
     private VKAbstractItem(Parcel parcel)
     {

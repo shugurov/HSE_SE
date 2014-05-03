@@ -21,7 +21,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String VK_TOPIC_ID_TAG = "topic_id";
     private static final String REQUEST_BEGINNING = "https://api.vk.com/method/";
     private static final String BOARD_GET_TOPICS = "board.getTopics";
-    private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extendet=1";
+    private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
@@ -37,6 +37,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(request);
     }
 
+    //TODO строка с комментами не внизу страницы(
     public VKTopic[] getTopics(String topicsJson)
     {
         if (topicsJson == null)
@@ -106,7 +107,6 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
                 VKProfile profile = profilesMap.get(authorID);
                 comments[i - 1] = new VKAbstractItem(profile, text, new Date(date));
             }
-            parseProfiles(profilesMap, profiles);
         } catch (JSONException e)
         {
             e.printStackTrace();
@@ -122,28 +122,49 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(url);
     }
 
-    public VkWallPost[] getWallPosts(String wallPostJson)
+    public VKTopic[] getWallPosts(String wallPostJson)//TODO обратить мнимание на groups
     {
-        VkWallPost[] posts = null;
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
+        VKTopic[] posts = null;
+        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user TODO зачем, если всегда не используется?
         try
         {
             JSONObject jsonObject = new JSONObject(wallPostJson);
             JSONObject responseObject = jsonObject.getJSONObject("response");
             JSONArray profiles = responseObject.getJSONArray("profiles");
             parseProfiles(profilesMap, profiles);
-            JSONArray jsonComments = responseObject.getJSONArray("comments");
-            posts = new VkWallPost[jsonComments.length() - 1];
-            for (int i = 1; i < jsonComments.length(); i++)
+            JSONArray groups = responseObject.getJSONArray("groups");
+            parseGroups(profilesMap, groups);
+            JSONArray wall = responseObject.getJSONArray("wall");
+            posts = new VKTopic[wall.length() - 1];
+            for (int i = 1; i < wall.length(); i++)
             {
-                JSONObject currentComment = jsonComments.getJSONObject(i);
-                long date = currentComment.getLong("date") * 1000;
-                String text = currentComment.getString("text");
-                int authorID = currentComment.getInt("from_id");
+                JSONObject currentPost = wall.getJSONObject(i);
+                int id = currentPost.getInt("id");
+                long date = currentPost.getLong("date") * 1000;
+                String text = currentPost.getString("text");
+                int authorID = currentPost.getInt("from_id");
                 VKProfile profile = profilesMap.get(authorID);
-                posts[i - 1] = new VkWallPost(profile, text, new Date(date));
+                JSONObject commentsObject = currentPost.getJSONObject("comments");
+                int commentsQuantity = commentsObject.getInt("count");
+                String attachedPicture = null; //TODO почему только одна?(
+                if (currentPost.has("attachment"))
+                {
+
+                    JSONObject attachedItem = currentPost.getJSONObject("attachment");
+                    if (attachedItem.getString("type").equals("photo"))
+                    {
+                        JSONObject photo = attachedItem.getJSONObject("photo");
+                        attachedPicture = photo.getString("src_big");
+                    }
+                }
+                if (attachedPicture == null)
+                {
+                    posts[i - 1] = new VKTopic(id, profile, text, commentsQuantity, new Date(date));
+                } else
+                {
+                    posts[i - 1] = new VKTopic(id, profile, text, commentsQuantity, new Date(date), attachedPicture);
+                }
             }
-            parseProfiles(profilesMap, profiles);
         } catch (JSONException e)
         {
             e.printStackTrace();
@@ -163,8 +184,28 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
                 String photo = currentProfile.getString("photo");
                 String firstName = currentProfile.getString("first_name");
                 String lastName = currentProfile.getString("last_name");
-                VKProfile currentUser = new VKProfile(userID, firstName, lastName, photo);
+                VKProfile currentUser = new VKProfile(userID, firstName + " " + lastName, photo);
                 profilesMap.put(userID, currentUser);
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void parseGroups(Map<Integer, VKProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
+    {
+        for (int i = 0; i < profiles.length(); i++)
+        {
+            JSONObject currentGroup;
+            try
+            {
+                currentGroup = profiles.getJSONObject(i);
+                int groupID = -currentGroup.getInt("gid");
+                String photo = currentGroup.getString("photo");
+                String groupName = currentGroup.getString("name");
+                VKProfile vkGroup = new VKProfile(groupID, groupName, photo);
+                profilesMap.put(groupID, vkGroup);
             } catch (JSONException e)
             {
                 e.printStackTrace();
