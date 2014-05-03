@@ -6,8 +6,13 @@ package ru.hse.se.shugurov.social_networks;
 public class VKProfile
 {
     private final int userID;
-    private final String photo;
-    private final String fullName;
+    private String photo;
+    private String fullName;
+
+    public VKProfile(int userID)
+    {
+        this.userID = userID;
+    }
 
     public VKProfile(int userID, String fullName, String photo)
     {
@@ -26,9 +31,19 @@ public class VKProfile
         return photo;
     }
 
+    public void setPhoto(String photo)
+    {
+        this.photo = photo;
+    }
+
     public String getFullName()
     {
         return fullName;
+    }
+
+    public void setFullName(String fullName)
+    {
+        this.fullName = fullName;
     }
 
 }

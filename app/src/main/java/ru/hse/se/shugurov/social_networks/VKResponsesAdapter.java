@@ -19,7 +19,7 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 /**
  * Created by Иван on 26.02.14.
  */
-public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures
+public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures!!!!!!!!
 {
     private LayoutInflater inflater;
     private VKAbstractItem[] comments;

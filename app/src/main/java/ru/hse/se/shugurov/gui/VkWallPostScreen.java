@@ -3,10 +3,14 @@ package ru.hse.se.shugurov.gui;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
+
+import java.util.Map;
 
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.VKProfile;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
@@ -23,6 +27,7 @@ public class VkWallPostScreen extends ListFragment
     private String groupId;
     private VKTopic[] posts;
     private AccessToken accessToken;
+    private Map<Integer, VKProfile> profilesMap;
 
     public VkWallPostScreen()
     {
@@ -53,15 +58,29 @@ public class VkWallPostScreen extends ListFragment
                         Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
                     } else
                     {
-                        posts = requester.getWallPosts(wallPostsJson);
-                        setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+                        posts = requester.getWallPosts(wallPostsJson);//TODo do in another thread
+                        fillList();
                     }
                 }
             });
         } else
         {
-            setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+            fillList();
         }
+    }
+
+    private void fillList()
+    {
+        setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(groupId, posts[position], title, accessToken);
+                ScreenFactory.changeFragments(getFragmentManager(), wallCommentsScreen);
+            }
+        });
     }
 
     @Override

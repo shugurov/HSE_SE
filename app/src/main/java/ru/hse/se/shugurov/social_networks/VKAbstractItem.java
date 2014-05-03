@@ -25,6 +25,7 @@ public class VKAbstractItem implements Parcelable
             return new VKTopic[size];
         }
     };
+
     private VKProfile author;
     private String text;
     private Date date;

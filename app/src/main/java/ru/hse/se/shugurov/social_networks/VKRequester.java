@@ -22,11 +22,122 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String REQUEST_BEGINNING = "https://api.vk.com/method/";
     private static final String BOARD_GET_TOPICS = "board.getTopics";
     private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
+    private static final String GET_PROFILE_INFORMATION = "https://api.vk.com/method/users.get?user_ids=%s&fields=photo_100";
+    private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
     {
         this.accessToken = accessToken;
+    }
+
+    public static VKAbstractItem[] getWallComments(String commentsJson)
+    {
+        VKAbstractItem[] comments = null;
+        try
+        {
+            JSONObject jsonObject = new JSONObject(commentsJson);
+            JSONArray responseArray = jsonObject.getJSONArray("response");
+            comments = new VKAbstractItem[responseArray.length() - 1];
+            for (int i = 1; i < responseArray.length(); i++)
+            {
+                JSONObject commentObject = responseArray.getJSONObject(i);
+                int userId = commentObject.getInt("uid");
+                long date = commentObject.getLong("date") * 1000;
+                String text = commentObject.getString("text");
+                VKProfile profile = new VKProfile(userId);
+                comments[i - 1] = new VKAbstractItem(profile, text, new Date(date));
+            }
+
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return comments;
+    }
+
+    public static void getProfileInformation(VKAbstractItem[] comments, Requester.RequestResultCallback callback)
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < comments.length; i++)
+        {
+            if (i != 0)
+            {
+                builder.append(',');
+            }
+            builder.append(comments[i].getAuthor().getId());
+        }
+        String url = String.format(GET_PROFILE_INFORMATION, builder.toString());
+        Requester requester = new Requester(callback);
+        requester.execute(url);
+    }
+
+    public static void fillProfileInformation(VKAbstractItem[] comments, String profilesJson)
+    {
+        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();
+        for (VKAbstractItem comment : comments)
+        {
+            profilesMap.put(comment.getAuthor().getId(), comment.getAuthor());
+        }
+        try
+        {
+            JSONObject receivedObject = new JSONObject(profilesJson);
+            JSONArray profilesArray = receivedObject.getJSONArray("response");
+            for (int i = 0; i < profilesArray.length(); i++)
+            {
+                JSONObject profileObject = profilesArray.getJSONObject(i);
+                int userId = profileObject.getInt("uid");
+                String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
+                String photo = profileObject.getString("photo_100");//TODO наверное, спрятать в константу
+                VKProfile userProfile = profilesMap.get(userId);
+                userProfile.setFullName(name);
+                userProfile.setPhoto(photo);
+            }
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private static void parseProfiles(Map<Integer, VKProfile> profilesMap, JSONArray profiles)
+    {
+        for (int i = 0; i < profiles.length(); i++)
+        {
+            JSONObject currentProfile;
+            try
+            {
+                currentProfile = profiles.getJSONObject(i);
+                int userID = currentProfile.getInt("uid");
+                String photo = currentProfile.getString("photo_medium_rec");
+                String firstName = currentProfile.getString("first_name");
+                String lastName = currentProfile.getString("last_name");
+                VKProfile currentUser = new VKProfile(userID, firstName + " " + lastName, photo);
+                profilesMap.put(userID, currentUser);
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void parseGroups(Map<Integer, VKProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
+    {
+        for (int i = 0; i < profiles.length(); i++)
+        {
+            JSONObject currentGroup;
+            try
+            {
+                currentGroup = profiles.getJSONObject(i);
+                int groupID = -currentGroup.getInt("gid");
+                String photo = currentGroup.getString("photo_medium");
+                String groupName = currentGroup.getString("name");
+                VKProfile vkGroup = new VKProfile(groupID, groupName, photo);
+                profilesMap.put(groupID, vkGroup);
+            } catch (JSONException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void getTopics(String groupID, Requester.RequestResultCallback callback)//темы в обсуждении группы
@@ -45,7 +156,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             return null;
         }
         VKTopic[] vkBoardTopics;
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
+        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();
         try
         {
             JSONObject jsonObject = new JSONObject(topicsJson);
@@ -122,7 +233,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(url);
     }
 
-    public VKTopic[] getWallPosts(String wallPostJson)//TODO обратить мнимание на groups
+    public VKTopic[] getWallPosts(String wallPostJson)
     {
         VKTopic[] posts = null;
         Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user TODO зачем, если всегда не используется?
@@ -172,45 +283,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return posts;
     }
 
-    private void parseProfiles(Map<Integer, VKProfile> profilesMap, JSONArray profiles)
+    public void getWallComments(String groupId, int postId, Requester.RequestResultCallback callback)
     {
-        for (int i = 0; i < profiles.length(); i++)
-        {
-            JSONObject currentProfile;
-            try
-            {
-                currentProfile = profiles.getJSONObject(i);
-                int userID = currentProfile.getInt("uid");
-                String photo = currentProfile.getString("photo_medium_rec");
-                String firstName = currentProfile.getString("first_name");
-                String lastName = currentProfile.getString("last_name");
-                VKProfile currentUser = new VKProfile(userID, firstName + " " + lastName, photo);
-                profilesMap.put(userID, currentUser);
-            } catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        String url = String.format(WALL_GET_COMMENTS_FOR_POST, groupId, postId);
+        Requester requester = new Requester(callback);
+        requester.execute(url);
     }
-
-    private void parseGroups(Map<Integer, VKProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
-    {
-        for (int i = 0; i < profiles.length(); i++)
-        {
-            JSONObject currentGroup;
-            try
-            {
-                currentGroup = profiles.getJSONObject(i);
-                int groupID = -currentGroup.getInt("gid");
-                String photo = currentGroup.getString("photo_medium");
-                String groupName = currentGroup.getString("name");
-                VKProfile vkGroup = new VKProfile(groupID, groupName, photo);
-                profilesMap.put(groupID, vkGroup);
-            } catch (JSONException e)
-            {
-                e.printStackTrace();
-            }
-        }
-    }
-
 }
