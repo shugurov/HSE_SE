@@ -34,7 +34,7 @@ public class Requester extends AsyncTask<String, Void, String>
         callback.pushResult(string);
     }
 
-    private String downloadFromTheInternet(String url)
+    private String downloadFromTheInternet(String url)//TODo должен быть другой путь(
     {
         InputStream input = OpenHttpUrlConnection(url);
         if (input == null)
@@ -45,7 +45,7 @@ public class Requester extends AsyncTask<String, Void, String>
         InputStreamReader reader = new InputStreamReader(input);
         char[] inputBuffer = new char[BUFFER_SIZE];
         int charRead;
-        String content = "";//TODO полумать null и проверке
+        String content = "";
         try
         {
             while ((charRead = reader.read(inputBuffer)) > 0)
