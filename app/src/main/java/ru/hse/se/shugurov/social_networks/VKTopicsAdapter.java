@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.gui.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 
@@ -58,7 +60,10 @@ public class VKTopicsAdapter extends BaseAdapter
         }
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_topic_author_photo);
         authorPhoto.setImageBitmap(null);
-        imageLoader.displayImage(topics[position].getAuthor().getPhoto(), authorPhoto);
+        float weightSum = ((LinearLayout) convertView).getWeightSum();
+        int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
+        FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
+        imageLoader.displayImage(topics[position].getAuthor().getPhoto(), flexibleImage);
         ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthor().getFullName()));
         ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
         ((TextView) convertView.findViewById(R.id.vk_comments_quantity)).setText(Integer.toString(topics[position].getComments()));

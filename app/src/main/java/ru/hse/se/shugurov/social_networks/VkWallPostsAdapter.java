@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.gui.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
@@ -60,13 +61,18 @@ public class VkWallPostsAdapter extends BaseAdapter
         VKProfile author = currentPost.getAuthor();
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_post_author_photo);
         authorPhoto.setImageBitmap(null);
-        imageLoader.displayImage(author.getPhoto(), authorPhoto);
+        float weightSum = ((LinearLayout) convertView).getWeightSum();
+        int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
+        FlexibleImageView authorPhotoProxy = new FlexibleImageView(authorPhoto, width);
+        imageLoader.displayImage(author.getPhoto(), authorPhotoProxy);
         ImageView attachedPicture = (ImageView) convertView.findViewById(R.id.vk_wall_attached_picture);
         attachedPicture.setImageBitmap(null);
         if (currentPost.getAttachedPicture() != null)
         {
-            attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            imageLoader.displayImage(currentPost.getAttachedPicture(), attachedPicture);
+            attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * ((weightSum - 1) / weightSum));
+            FlexibleImageView attachedImageProxy = new FlexibleImageView(attachedPicture, width);
+            imageLoader.displayImage(currentPost.getAttachedPicture(), attachedImageProxy);
         } else
         {
             attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(0, 0));

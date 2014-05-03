@@ -5,17 +5,18 @@
               android:layout_height="fill_parent"
               android:orientation="horizontal"
               android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin">
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:weightSum="5">
+
 
     <ImageView
         android:id="@+id/vk_topic_author_photo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:layout_weight="4"
         android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        />
+        android:scaleType="fitCenter"/>
 
     <LinearLayout
         android:layout_width="fill_parent"

@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.gui.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
@@ -60,7 +62,10 @@ public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures
         ((TextView) convertView.findViewById(R.id.vk_comment_text)).setText(Html.fromHtml(comments[position].getText()));
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_comment_author_photo);
         authorPhoto.setImageBitmap(null);
-        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), authorPhoto);
+        float weightSum = ((LinearLayout) convertView).getWeightSum();
+        int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
+        FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
+        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), flexibleImage);
         return convertView;
     }
 }

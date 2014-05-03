@@ -181,7 +181,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             {
                 currentProfile = profiles.getJSONObject(i);
                 int userID = currentProfile.getInt("uid");
-                String photo = currentProfile.getString("photo");
+                String photo = currentProfile.getString("photo_medium_rec");
                 String firstName = currentProfile.getString("first_name");
                 String lastName = currentProfile.getString("last_name");
                 VKProfile currentUser = new VKProfile(userID, firstName + " " + lastName, photo);
@@ -202,7 +202,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             {
                 currentGroup = profiles.getJSONObject(i);
                 int groupID = -currentGroup.getInt("gid");
-                String photo = currentGroup.getString("photo");
+                String photo = currentGroup.getString("photo_medium");
                 String groupName = currentGroup.getString("name");
                 VKProfile vkGroup = new VKProfile(groupID, groupName, photo);
                 profilesMap.put(groupID, vkGroup);
