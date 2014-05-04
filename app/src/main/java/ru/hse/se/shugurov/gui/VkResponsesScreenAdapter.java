@@ -28,6 +28,7 @@ public class VkResponsesScreenAdapter extends ListFragment
     private final static String ACCESS_TOKEN_TAG = "vk_access_token_responses";
     private final static String GROUP_NAME_TAG = "vk_group_name_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
+    private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
     private String groupId;
     private int topicId;
     private AccessToken accessToken;
@@ -60,6 +61,7 @@ public class VkResponsesScreenAdapter extends ListFragment
             accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
             groupName = savedInstanceState.getString(GROUP_NAME_TAG);
             comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
+            commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
         }
     }
 
@@ -186,6 +188,7 @@ public class VkResponsesScreenAdapter extends ListFragment
         outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
         outState.putString(GROUP_NAME_TAG, groupName);
         outState.putParcelableArray(COMMENTS_TAG, comments);
+        outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
     }
 
 

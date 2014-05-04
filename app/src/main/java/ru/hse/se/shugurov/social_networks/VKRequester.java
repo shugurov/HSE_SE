@@ -36,6 +36,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
     private static final String ADD_COMMENT_TO_WALL_POST = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
     private static final String ADD_COMMENT_TO_TOPIC = "https://api.vk.com/method/board.addComment?group_id=%s&topic_id=%s&text=%s&access_token=%s";
+    private static final String ADD_TOPIC = "https://api.vk.com/method/board.addTopic?group_id=%s&title=%s&text=%s&access_token=%s";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
@@ -335,6 +336,19 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
+            callback.pushResult(null);
+        }
+    }
+
+    public void addTopic(String groupId, String title, String text, Requester.RequestResultCallback callback)
+    {
+        try
+        {
+            String url = String.format(ADD_TOPIC, groupId, URLEncoder.encode(title, "utf8"), URLEncoder.encode(text, "utf8"), accessToken);
+            Requester requester = new Requester(callback);
+            requester.execute(url);
+        } catch (UnsupportedEncodingException e)
+        {
             callback.pushResult(null);
         }
     }

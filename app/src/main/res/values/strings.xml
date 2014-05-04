@@ -8,5 +8,8 @@
     <string name="server_url">http://promoteeducate1.appspot.com</string>
     <string name="comment">Комментарий</string>
     <string name="send">Отправить</string>
+    <string name="headline">Заголовок</string>
+    <string name="create">Создать</string>
+    <string name="text">Текст</string>
 
 </resources>
