@@ -4,8 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ru.hse.se.shugurov.Requester;
@@ -24,6 +28,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
     private static final String GET_PROFILE_INFORMATION = "https://api.vk.com/method/users.get?user_ids=%s&fields=photo_100";
     private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
+    private static final String ADD_COMMENT = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
@@ -74,10 +79,16 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
 
     public static void fillProfileInformation(VKAbstractItem[] comments, String profilesJson)
     {
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();
+        Map<Integer, List<VKProfile>> profilesMap = new HashMap<Integer, List<VKProfile>>();
         for (VKAbstractItem comment : comments)
         {
-            profilesMap.put(comment.getAuthor().getId(), comment.getAuthor());
+            List<VKProfile> profilesForCurrentId = profilesMap.get(comment.getAuthor().getId());
+            if (profilesForCurrentId == null)
+            {
+                profilesForCurrentId = new ArrayList<VKProfile>();
+                profilesMap.put(comment.getAuthor().getId(), profilesForCurrentId);
+            }
+            profilesForCurrentId.add(comment.getAuthor());
         }
         try
         {
@@ -89,9 +100,12 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
                 int userId = profileObject.getInt("uid");
                 String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
                 String photo = profileObject.getString("photo_100");//TODO наверное, спрятать в константу
-                VKProfile userProfile = profilesMap.get(userId);
-                userProfile.setFullName(name);
-                userProfile.setPhoto(photo);
+                List<VKProfile> userProfiles = profilesMap.get(userId);
+                for (VKProfile userProfile : userProfiles)
+                {
+                    userProfile.setFullName(name);
+                    userProfile.setPhoto(photo);
+                }
             }
         } catch (JSONException e)
         {
@@ -288,5 +302,19 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         String url = String.format(WALL_GET_COMMENTS_FOR_POST, groupId, postId);
         Requester requester = new Requester(callback);
         requester.execute(url);
+    }
+
+    public void addComment(String groupId, int topicId, String text, Requester.RequestResultCallback callback)
+    {
+        try
+        {
+            String url = String.format(ADD_COMMENT, groupId, topicId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
+            Requester requester = new Requester(callback);
+            requester.execute(url);
+        } catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            callback.pushResult(null);
+        }
     }
 }

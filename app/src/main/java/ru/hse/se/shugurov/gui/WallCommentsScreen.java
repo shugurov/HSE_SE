@@ -1,6 +1,7 @@
 package ru.hse.se.shugurov.gui;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,12 +42,17 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
     private final String ACCESS_TOKEN_TAG = "vk_wall_comments_access_token";
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
+    private final String TYPED_COMMENT = "vk_wall_typed_comment";
     private String groupId;
     private VKTopic post;
     private String title;
     private AccessToken accessToken;
     private VKAbstractItem[] comments;
     private int containerWidth;
+    private String commentText;
+    private EditText input;
+    private View headerView;
+    private View footerView;
 
     public WallCommentsScreen()
     {
@@ -69,6 +78,7 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
             title = savedInstanceState.getString(VK_WALL_COMMENTS_TITLE_TAG);
             accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
             comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
+            commentText = savedInstanceState.getString(TYPED_COMMENT);
         }
     }
 
@@ -121,29 +131,7 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
         super.onViewCreated(view, savedInstanceState);
         if (comments == null)
         {
-            VKRequester requester = new VKRequester(accessToken);
-            requester.getWallComments(groupId, post.getId(), new Requester.RequestResultCallback()
-            {
-                @Override
-                public void pushResult(String result)
-                {
-                    if (result == null)
-                    {
-                        Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
-                    } else
-                    {
-                        comments = VKRequester.getWallComments(result);//TODo parse in different thread
-                        VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
-                        {
-                            @Override
-                            public void pushResult(String result)
-                            {
-                                handleFullProfilesInformationObtaining(result);
-                            }
-                        });
-                    }
-                }
-            });
+            loadComments();
         } else
         {
             boolean emptyProfilesOccur = false;
@@ -170,6 +158,33 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
         }
     }
 
+    private void loadComments()
+    {
+        VKRequester requester = new VKRequester(accessToken);
+        requester.getWallComments(groupId, post.getId(), new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String result)
+            {
+                if (result == null)
+                {
+                    Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                } else
+                {
+                    comments = VKRequester.getWallComments(result);//TODo parse in different thread
+                    VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
+                    {
+                        @Override
+                        public void pushResult(String result)
+                        {
+                            handleFullProfilesInformationObtaining(result);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     private void handleFullProfilesInformationObtaining(String result)
     {
         if (result == null)
@@ -185,9 +200,18 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
     private void instantiateAdapter()
     {
         VKResponsesAdapter responsesAdapter = new VKResponsesAdapter(getActivity(), comments);
-        View headerView = createHeaderView();
-        getListView().addHeaderView(headerView);
+        if (headerView == null)
+        {
+            createHeaderView();
+            getListView().addHeaderView(headerView);
+        }
+        if (footerView == null)
+        {
+            createFooterView();
+            getListView().addFooterView(footerView);
+        }
         setListAdapter(responsesAdapter);
+        setListShown(true);
     }
 
     @Override
@@ -199,22 +223,27 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
         outState.putString(VK_WALL_COMMENTS_TITLE_TAG, title);
         outState.putString(VK_WALL_GROUP_ID, groupId);
         outState.putParcelable(VK_WALL_COMMENTS_POST_TAG, post);
+        outState.putString(TYPED_COMMENT, input.getText().toString());
     }
 
 
     private View createHeaderView()
     {
+        if (headerView != null)
+        {
+            return headerView;
+        }
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View resultView = inflater.inflate(R.layout.vk_wall_post, null, false);
+        headerView = inflater.inflate(R.layout.vk_wall_post, null, false);
         ImageLoader imageLoader = ImageLoader.instance();
         VKProfile author = post.getAuthor();
-        ImageView authorPhoto = (ImageView) resultView.findViewById(R.id.vk_post_author_photo);
+        ImageView authorPhoto = (ImageView) headerView.findViewById(R.id.vk_post_author_photo);
         authorPhoto.setImageBitmap(null);
-        float weightSum = ((LinearLayout) resultView).getWeightSum();
+        float weightSum = ((LinearLayout) headerView).getWeightSum();
         int photoWidth = (int) (containerWidth * (1 / weightSum));
         FlexibleImageView authorPhotoProxy = new FlexibleImageView(authorPhoto, photoWidth);
         imageLoader.displayImage(author.getPhoto(), authorPhotoProxy);
-        ImageView attachedPicture = (ImageView) resultView.findViewById(R.id.vk_wall_attached_picture);
+        ImageView attachedPicture = (ImageView) headerView.findViewById(R.id.vk_wall_attached_picture);
         attachedPicture.setImageBitmap(null);
         if (post.getAttachedPicture() != null)
         {
@@ -226,12 +255,63 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
         {
             attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
         }
-        ((TextView) resultView.findViewById(R.id.vk_wall_post_author_name)).setText(author.getFullName());
-        ((TextView) resultView.findViewById(R.id.vk_wall_post_text)).setText(Html.fromHtml(post.getText()));
+        ((TextView) headerView.findViewById(R.id.vk_wall_post_author_name)).setText(author.getFullName());
+        ((TextView) headerView.findViewById(R.id.vk_wall_post_text)).setText(Html.fromHtml(post.getText()));
 //        ((TextView)convertView.findViewById(R.id.vk_comments_quantity)).setText(currentPost.getComments()); //TODO it does not work... why???
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        ((TextView) resultView.findViewById(R.id.vk_date)).setText(format.format(post.getDate()));
-        return resultView;
+        ((TextView) headerView.findViewById(R.id.vk_date)).setText(format.format(post.getDate()));
+        return headerView;
+    }
+
+    private View createFooterView()
+    {
+        if (footerView != null)
+        {
+            return footerView;
+        }
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        footerView = inflater.inflate(R.layout.send_form, null, false);
+        input = (EditText) footerView.findViewById(R.id.send_form_text);
+        input.setText(commentText);
+        Button sendButton = (Button) footerView.findViewById(R.id.send_form_button);
+        sendButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                commentText = input.getText().toString();
+                if (commentText.length() == 0)
+                {
+                    Toast.makeText(getActivity(), "Нельзя добавлять пустой комментарий", Toast.LENGTH_SHORT).show();
+                } else
+                {
+                    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
+                    final VKRequester requester = new VKRequester(accessToken);
+                    setListShown(false);
+                    Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
+                    requester.addComment(groupId, post.getId(), commentText, new Requester.RequestResultCallback()
+                    {
+                        @Override
+                        public void pushResult(String result)
+                        {
+                            if (result == null || (result != null && result.contains("error")))
+                            {
+                                Toast.makeText(getActivity(), "Не удалось добавить комментарий", Toast.LENGTH_SHORT).show();
+                                setListShown(true);
+                            } else
+                            {
+                                commentText = null;
+                                input.setText("");
+                                loadComments();
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+        return footerView;
     }
 
 }
