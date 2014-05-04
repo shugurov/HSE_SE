@@ -19,6 +19,12 @@ import ru.hse.se.shugurov.Requester;
  */
 public class VKRequester//TODO fix throwing exceptions here, naming conventions
 {
+    public static final String OAUTH = "https://oauth.vk.com/authorize?" +
+            "client_id=3965004&" +
+            "redirect_uri=https://oauth.vk.com/blank.html&" +
+            "display=mobile&" +
+            "response_type=token" +
+            "&scope=wall,groups";
     private static final String ACCESS_TOKEN_TAG = "access_token";
     private static final String GROUP_ID_TAG = "group_id";
     private static final String BOARD_GET_COMMENTS = "board.getComments";
@@ -28,7 +34,8 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
     private static final String GET_PROFILE_INFORMATION = "https://api.vk.com/method/users.get?user_ids=%s&fields=photo_100";
     private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
-    private static final String ADD_COMMENT = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
+    private static final String ADD_COMMENT_TO_WALL_POST = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
+    private static final String ADD_COMMENT_TO_TOPIC = "https://api.vk.com/method/board.addComment?group_id=%s&topic_id=%s&text=%s&access_token=%s";
     private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
@@ -304,11 +311,25 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(url);
     }
 
-    public void addComment(String groupId, int topicId, String text, Requester.RequestResultCallback callback)
+    public void addCommentToWallPost(String groupId, int postId, String text, Requester.RequestResultCallback callback)
     {
         try
         {
-            String url = String.format(ADD_COMMENT, groupId, topicId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
+            String url = String.format(ADD_COMMENT_TO_WALL_POST, groupId, postId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
+            Requester requester = new Requester(callback);
+            requester.execute(url);
+        } catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            callback.pushResult(null);
+        }
+    }
+
+    public void addCommentToTopic(String groupId, int topicId, String text, Requester.RequestResultCallback callback)
+    {
+        try
+        {
+            String url = String.format(ADD_COMMENT_TO_TOPIC, groupId, topicId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
             Requester requester = new Requester(callback);
             requester.execute(url);
         } catch (UnsupportedEncodingException e)

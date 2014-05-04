@@ -11,12 +11,6 @@ import java.util.regex.Pattern;
  */
 public class VkWebClient extends WebViewClient//TODO показалось что-то странное при входе в типичную пи после авторизации
 {
-    public static final String OAUTH = "https://oauth.vk.com/authorize?" +
-            "client_id=3965004&" +
-            "redirect_uri=https://oauth.vk.com/blank.html&" +
-            "display=mobile&" +
-            "response_type=token" +
-            "&scope=wall";
     private static final String ACCESS_TOKEN_TAG = "access_token";
 
 

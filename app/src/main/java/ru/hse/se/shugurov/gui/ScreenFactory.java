@@ -21,7 +21,7 @@ import ru.hse.se.shugurov.screens.HSEViewWithFile;
 import ru.hse.se.shugurov.screens.MapScreen;
 import ru.hse.se.shugurov.screens.VKHSEView;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VkWebClient;
+import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
  * Created by Иван on 15.03.14.
@@ -180,7 +180,7 @@ public class ScreenFactory//TODO экран с браузером падает �
 
     private void requestVkToken(final VKHSEView vkhseView)
     {
-        authorizationFragment = new AuthorizationFragment(VkWebClient.OAUTH, new AuthorizationFragment.AccessTokenRequest()
+        authorizationFragment = new AuthorizationFragment(VKRequester.OAUTH, new AuthorizationFragment.AccessTokenRequest()
         {
             @Override
             public void receiveToken(AccessToken accessToken)

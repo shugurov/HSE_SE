@@ -227,12 +227,8 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
     }
 
 
-    private View createHeaderView()
+    private void createHeaderView()
     {
-        if (headerView != null)
-        {
-            return headerView;
-        }
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         headerView = inflater.inflate(R.layout.vk_wall_post, null, false);
         ImageLoader imageLoader = ImageLoader.instance();
@@ -260,15 +256,10 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
 //        ((TextView)convertView.findViewById(R.id.vk_comments_quantity)).setText(currentPost.getComments()); //TODO it does not work... why???
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
         ((TextView) headerView.findViewById(R.id.vk_date)).setText(format.format(post.getDate()));
-        return headerView;
     }
 
-    private View createFooterView()
+    private void createFooterView()
     {
-        if (footerView != null)
-        {
-            return footerView;
-        }
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         footerView = inflater.inflate(R.layout.send_form, null, false);
         input = (EditText) footerView.findViewById(R.id.send_form_text);
@@ -290,7 +281,7 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
                     final VKRequester requester = new VKRequester(accessToken);
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
-                    requester.addComment(groupId, post.getId(), commentText, new Requester.RequestResultCallback()
+                    requester.addCommentToWallPost(groupId, post.getId(), commentText, new Requester.RequestResultCallback()
                     {
                         @Override
                         public void pushResult(String result)
@@ -311,7 +302,6 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
                 }
             }
         });
-        return footerView;
     }
 
 }
