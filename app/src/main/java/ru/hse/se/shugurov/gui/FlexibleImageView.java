@@ -25,9 +25,7 @@ public class FlexibleImageView extends ImageView
         double aspectRatio = ((double) bitmap.getHeight()) / bitmap.getWidth();
         int height = (int) Math.round(width * aspectRatio);
         realImage.getLayoutParams().height = height;
-        //realImage.getLayoutParams().width = width;
         realImage.setImageBitmap(bitmap);
-        //realImage.postInvalidate();//TODO What for?
     }
 
     @Override

@@ -56,7 +56,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return comments;
     }
 
-    public static void getProfileInformation(VKAbstractItem[] comments, Requester.RequestResultCallback callback)
+    public static void getProfileInformation(VKAbstractItem[] comments, Requester.RequestResultCallback callback)//TODO искать только неизвестных пользователей
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < comments.length; i++)

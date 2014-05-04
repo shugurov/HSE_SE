@@ -6,11 +6,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import java.util.Map;
-
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKProfile;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
@@ -27,7 +24,6 @@ public class VkWallPostScreen extends ListFragment
     private String groupId;
     private VKTopic[] posts;
     private AccessToken accessToken;
-    private Map<Integer, VKProfile> profilesMap;
 
     public VkWallPostScreen()
     {
