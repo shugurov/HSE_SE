@@ -12,7 +12,8 @@ import java.io.Serializable;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VkWebClient;
+import ru.hse.se.shugurov.social_networks.AuthorizationWebClient;
+import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
  * Created by Иван on 02.05.2014.
@@ -46,7 +47,7 @@ public class AuthorizationFragment extends Fragment
     {
         if (url.contains("vk"))
         {
-            return new VkWebClient(new VkWebClient.VKCallBack()
+            return new AuthorizationWebClient(VKRequester.REDIRECTION_URL, new AuthorizationWebClient.TokenCallback()
             {
                 @Override
                 public void call(AccessToken accessToken)

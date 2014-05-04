@@ -2,7 +2,6 @@ package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,15 +19,9 @@ import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adapter?
+public class VkTopicsScreenAdapter extends VkAbstractList
 {
-    private final static String GROUP_ID_TAG = "vk_group_id_topics";
-    private final static String ACCESS_TOKEN_TAG = "vk_access_token_topics";
-    private final static String GROUP_NAME_TAG = "vk_group_name_topics";
     private final static String VK_TOPICS_TAG = "vk_topics_array";
-    private String groupId;
-    private String groupName;
-    private AccessToken accessToken;
     private VKTopic[] topics;
     private VKTopicsAdapter adapter;
 
@@ -36,22 +29,19 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
     {
     }
 
-    public VkTopicsScreenAdapter(String groupName, String groupId, AccessToken accessToken)
+    public VkTopicsScreenAdapter(String groupId, String groupName, AccessToken accessToken)
     {
-        this.groupId = groupId;
-        this.accessToken = accessToken;
-        this.groupName = groupName;
+        super(groupId, groupName, accessToken);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(groupName);
         if (topics == null)
         {
-            final VKRequester requester = new VKRequester(accessToken);
-            requester.getTopics(groupId, new Requester.RequestResultCallback()
+            final VKRequester requester = getVkRequester();
+            requester.getTopics(getGroupId(), new Requester.RequestResultCallback()
             {
                 @Override
                 public void pushResult(String result)
@@ -77,9 +67,6 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            groupId = savedInstanceState.getString(GROUP_ID_TAG);
-            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
-            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
             topics = (VKTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
         }
         setHasOptionsMenu(true);
@@ -119,7 +106,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Fragment topicCreation = new VkTopicCreationScreen(groupName, groupId, accessToken);
+        Fragment topicCreation = new VkTopicCreationScreen(getGroupName(), getGroupId(), getAccessToken());
         ScreenFactory.changeFragments(getFragmentManager(), topicCreation);
         return super.onOptionsItemSelected(item);
     }
@@ -133,7 +120,7 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(groupName, groupId, adapter.getItem(position).getId(), accessToken));
+                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getAccessToken()));
             }
         });
     }
@@ -149,9 +136,6 @@ public class VkTopicsScreenAdapter extends ListFragment//TODo shall I store adap
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(GROUP_ID_TAG, groupId);
-        outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
-        outState.putString(GROUP_NAME_TAG, groupName);
         outState.putParcelableArray(VK_TOPICS_TAG, topics);
     }
 }

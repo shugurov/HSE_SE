@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.text.Html;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -35,18 +34,12 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 /**
  * Created by Иван on 03.05.2014.
  */
-public class WallCommentsScreen extends ListFragment//TODO после поворота экрана нету авы группы
+public class WallCommentsScreen extends VkAbstractList
 {
-    private final String VK_WALL_GROUP_ID = "vk_wall_comments_group_id";
-    private final String VK_WALL_COMMENTS_TITLE_TAG = "vk_wall_comments_title";
-    private final String ACCESS_TOKEN_TAG = "vk_wall_comments_access_token";
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
     private final String TYPED_COMMENT = "vk_wall_typed_comment";
-    private String groupId;
     private VKTopic post;
-    private String title;
-    private AccessToken accessToken;
     private VKAbstractItem[] comments;
     private int containerWidth;
     private String commentText;
@@ -59,24 +52,19 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
 
     }
 
-    public WallCommentsScreen(String groupId, VKTopic post, String title, AccessToken accessToken)
+    public WallCommentsScreen(String groupId, String groupName, AccessToken accessToken, VKTopic post)
     {
-        this.groupId = groupId;
+        super(groupId, groupName, accessToken);
         this.post = post;
-        this.title = title;
-        this.accessToken = accessToken;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && accessToken == null)
+        if (savedInstanceState != null && post == null)
         {
-            groupId = savedInstanceState.getString(VK_WALL_GROUP_ID);
             post = savedInstanceState.getParcelable(VK_WALL_COMMENTS_POST_TAG);
-            title = savedInstanceState.getString(VK_WALL_COMMENTS_TITLE_TAG);
-            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
             comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
             commentText = savedInstanceState.getString(TYPED_COMMENT);
         }
@@ -121,7 +109,6 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
         {
             containerWidth = getScreenWidth() - container.getPaddingLeft() - container.getPaddingRight();
         }
-        getActivity().setTitle(title);
         return resultView;
     }
 
@@ -160,8 +147,8 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
 
     private void loadComments()
     {
-        VKRequester requester = new VKRequester(accessToken);
-        requester.getWallComments(groupId, post.getId(), new Requester.RequestResultCallback()
+        VKRequester requester = getVkRequester();
+        requester.getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)
@@ -218,10 +205,7 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
         outState.putParcelableArray(VK_WALL_COMMENTS_TAG, comments);
-        outState.putString(VK_WALL_COMMENTS_TITLE_TAG, title);
-        outState.putString(VK_WALL_GROUP_ID, groupId);
         outState.putParcelable(VK_WALL_COMMENTS_POST_TAG, post);
         outState.putString(TYPED_COMMENT, input.getText().toString());
     }
@@ -278,10 +262,10 @@ public class WallCommentsScreen extends ListFragment//TODO после повор
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = new VKRequester(accessToken);
+                    final VKRequester requester = getVkRequester();
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
-                    requester.addCommentToWallPost(groupId, post.getId(), commentText, new Requester.RequestResultCallback()
+                    requester.addCommentToWallPost(getGroupId(), post.getId(), commentText, new Requester.RequestResultCallback()
                     {
                         @Override
                         public void pushResult(String result)

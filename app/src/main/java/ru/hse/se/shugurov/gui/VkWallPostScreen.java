@@ -1,7 +1,6 @@
 package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -15,36 +14,28 @@ import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkWallPostScreen extends ListFragment
+public class VkWallPostScreen extends VkAbstractList
 {
-    private static final String TITLE_TAG = "vk_wall_posts_title";
-    private static final String GROUP_ID_TAG = "vk_wall_posts_group_id";
     private static final String POSTS_ID = "vk_posts_array";
-    private String title;
-    private String groupId;
     private VKTopic[] posts;
-    private AccessToken accessToken;
 
     public VkWallPostScreen()
     {
     }
 
-    public VkWallPostScreen(String title, String groupId, AccessToken accessToken)
+    public VkWallPostScreen(String groupId, String groupName, AccessToken accessToken)
     {
-        this.title = title;
-        this.groupId = groupId;
-        this.accessToken = accessToken;
+        super(groupId, groupName, accessToken);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(title);
         if (posts == null)
         {
-            final VKRequester requester = new VKRequester(accessToken);
-            requester.getWallPosts(groupId, new Requester.RequestResultCallback()
+            final VKRequester requester = getVkRequester();
+            requester.getWallPosts(getGroupId(), new Requester.RequestResultCallback()
             {
                 @Override
                 public void pushResult(String wallPostsJson)//TODO multithreading
@@ -73,7 +64,7 @@ public class VkWallPostScreen extends ListFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(groupId, posts[position], title, accessToken);
+                WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(getGroupId(), getGroupName(), getAccessToken(), posts[position]);
                 ScreenFactory.changeFragments(getFragmentManager(), wallCommentsScreen);
             }
         });
@@ -85,8 +76,6 @@ public class VkWallPostScreen extends ListFragment
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            title = savedInstanceState.getString(TITLE_TAG);
-            groupId = savedInstanceState.getString(GROUP_ID_TAG);
             posts = (VKTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
         }
     }
@@ -95,8 +84,6 @@ public class VkWallPostScreen extends ListFragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(GROUP_ID_TAG, groupId);
-        outState.putString(TITLE_TAG, title);
         outState.putParcelableArray(POSTS_ID, posts);
     }
 }

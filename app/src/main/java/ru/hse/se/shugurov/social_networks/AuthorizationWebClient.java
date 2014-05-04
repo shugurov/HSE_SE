@@ -6,28 +6,29 @@ import android.webkit.WebViewClient;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
- * Created by Иван on 30.10.13.
+ * Created by Иван on 04.05.2014.
  */
-public class VkWebClient extends WebViewClient//TODO показалось что-то странное при входе в типичную пи после авторизации
+public class AuthorizationWebClient extends WebViewClient
 {
     private static final String ACCESS_TOKEN_TAG = "access_token";
+    private String waitFor;
+    private TokenCallback callback;
 
-
-    private VKCallBack callBack;
-
-    public VkWebClient(VKCallBack callBack)
+    public AuthorizationWebClient(String waitFor, TokenCallback callback)
     {
-        this.callBack = callBack;
+        this.waitFor = waitFor;
+        this.callback = callback;
     }
 
     @Override
-    public boolean shouldOverrideUrlLoading(final WebView webView, String url)
+    public boolean shouldOverrideUrlLoading(WebView view, String url)
     {
-        if (url.startsWith("http://oauth.vk.com/blank.html") || url.startsWith("https://oauth.vk.com/blank.html"))
+        if (url.startsWith(waitFor))
         {
             AccessToken accessToken = getAccessToken(url);
-            callBack.call(accessToken);
+            callback.call(accessToken);
             return true;
         }
         return false;
@@ -59,14 +60,8 @@ public class VkWebClient extends WebViewClient//TODO показалось что
         }
     }
 
-    public String parseForValueUsingRegex(String link, String argument)
-    {
-        return null;
-    }
-
-    public interface VKCallBack
+    public interface TokenCallback
     {
         void call(AccessToken accessToken);
     }
-
 }

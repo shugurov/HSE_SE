@@ -3,7 +3,6 @@ package ru.hse.se.shugurov.gui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -21,18 +20,12 @@ import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkResponsesScreenAdapter extends ListFragment
+public class VkResponsesScreenAdapter extends VkAbstractList
 {
-    private final static String GROUP_ID_TAG = "vk_group_id_responses";
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
-    private final static String ACCESS_TOKEN_TAG = "vk_access_token_responses";
-    private final static String GROUP_NAME_TAG = "vk_group_name_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
     private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
-    private String groupId;
     private int topicId;
-    private AccessToken accessToken;
-    private String groupName;
     private VKAbstractItem[] comments;
     private View footerView;
     private EditText input;
@@ -42,24 +35,19 @@ public class VkResponsesScreenAdapter extends ListFragment
     {
     }
 
-    public VkResponsesScreenAdapter(String groupName, String groupID, int topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
+    public VkResponsesScreenAdapter(String groupId, String groupName, int topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
     {
-        this.groupId = groupID;
+        super(groupId, groupName, accessToken);
         this.topicId = topicId;
-        this.accessToken = accessToken;
-        this.groupName = groupName;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && groupId == null)
+        if (savedInstanceState != null && comments == null)
         {
-            groupId = savedInstanceState.getString(GROUP_ID_TAG);
             topicId = savedInstanceState.getInt(TOPIC_ID_TAG);
-            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
-            groupName = savedInstanceState.getString(GROUP_NAME_TAG);
             comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
             commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
         }
@@ -68,7 +56,6 @@ public class VkResponsesScreenAdapter extends ListFragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
-        getActivity().setTitle(groupName);
         super.onViewCreated(view, savedInstanceState);
         if (comments == null)
         {
@@ -81,8 +68,8 @@ public class VkResponsesScreenAdapter extends ListFragment
 
     private void loadComments()
     {
-        final VKRequester requester = new VKRequester(accessToken);
-        requester.getComments(groupId, topicId, new Requester.RequestResultCallback()
+        final VKRequester requester = getVkRequester();
+        requester.getComments(getGroupId(), topicId, new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)
@@ -100,24 +87,27 @@ public class VkResponsesScreenAdapter extends ListFragment
 
     private void parseResponses(final String result, final VKRequester requester)
     {
-        Runnable parsing = new Runnable()
+        if (isVisible())
         {
-            @Override
-            public void run()
+            Runnable parsing = new Runnable()
             {
-                comments = requester.getComments(result);
-                getActivity().runOnUiThread(new Runnable()
+                @Override
+                public void run()
                 {
-                    @Override
-                    public void run()
+                    comments = requester.getComments(result);
+                    getActivity().runOnUiThread(new Runnable()
                     {
-                        setAdapter();
-                        setListShown(true);
-                    }
-                });
-            }
-        };
-        new Thread(parsing).start();
+                        @Override
+                        public void run()
+                        {
+                            setAdapter();
+                            setListShown(true);
+                        }
+                    });
+                }
+            };
+            new Thread(parsing).start();
+        }
 
     }
 
@@ -152,10 +142,10 @@ public class VkResponsesScreenAdapter extends ListFragment
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = new VKRequester(accessToken);
+                    final VKRequester requester = getVkRequester();
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
-                    requester.addCommentToTopic(groupId, topicId, commentText, new Requester.RequestResultCallback()
+                    requester.addCommentToTopic(getGroupId(), topicId, commentText, new Requester.RequestResultCallback()
                     {
                         @Override
                         public void pushResult(String result)
@@ -183,10 +173,10 @@ public class VkResponsesScreenAdapter extends ListFragment
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(GROUP_ID_TAG, groupId);
+        //outState.putString(GROUP_ID_TAG, groupId);
         outState.putInt(TOPIC_ID_TAG, topicId);
-        outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
-        outState.putString(GROUP_NAME_TAG, groupName);
+        //outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
+        //outState.putString(GROUP_NAME_TAG, groupName);
         outState.putParcelableArray(COMMENTS_TAG, comments);
         outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
     }

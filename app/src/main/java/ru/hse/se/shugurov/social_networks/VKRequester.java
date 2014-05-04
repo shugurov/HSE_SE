@@ -19,9 +19,10 @@ import ru.hse.se.shugurov.Requester;
  */
 public class VKRequester//TODO fix throwing exceptions here, naming conventions
 {
+    public static final String REDIRECTION_URL = "https://oauth.vk.com/blank.html";
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
             "client_id=3965004&" +
-            "redirect_uri=https://oauth.vk.com/blank.html&" +
+            "redirect_uri=" + REDIRECTION_URL + "&" +
             "display=mobile&" +
             "response_type=token" +
             "&scope=wall,groups";

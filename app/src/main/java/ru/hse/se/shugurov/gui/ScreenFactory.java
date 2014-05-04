@@ -83,7 +83,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 AccessToken vkAccessToken = getVkAccessToken(vkhseView);
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
+                    adapter = new VkTopicsScreenAdapter(vkhseView.getObjectID(), vkhseView.getName(), vkAccessToken);
                 }
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
@@ -91,7 +91,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 vkAccessToken = getVkAccessToken(vkhseView);//TODo incorrect events will happen if access token is not available
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkWallPostScreen(vkhseView.getName(), vkhseView.getObjectID(), vkAccessToken);
+                    adapter = new VkWallPostScreen(vkhseView.getObjectID(), vkhseView.getName(), vkAccessToken);
                 }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
@@ -194,7 +194,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                     SharedPreferences.Editor preferencesEditor = preferences.edit();
                     preferencesEditor.putString(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
                     preferencesEditor.commit();
-                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getName(), vkhseView.getObjectID(), accessToken);
+                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getObjectID(), vkhseView.getName(), accessToken);
                     FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
                     transaction.remove(authorizationFragment);
                     transaction.commit();
