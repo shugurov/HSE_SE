@@ -12,7 +12,7 @@ import ru.hse.se.shugurov.Requester;
 /**
  * Created by Иван on 04.05.2014.
  */
-public class FacebookRequester
+public class FacebookRequester extends AbstractRequester
 {
     public static final String REDIRECTION_URL = "https://www.facebook.com/connect/login_success.html";
     public static final String AUTH = "https://www.facebook.com/dialog/oauth?" +
@@ -22,27 +22,53 @@ public class FacebookRequester
     private final static String GET_PAGE = "https://graph.facebook.com/%s/feed?access_token=%s";
     private final static String GET_PHOTO = "http://graph.facebook.com/%s/?fields=picture&type=large";
 
-    public static void getPage(String groupId, AccessToken accessToken, Requester.RequestResultCallback callback)
+    public FacebookRequester(AccessToken accessToken)
     {
-        String request = String.format(GET_PAGE, groupId, accessToken.getAccessToken());
-        Requester requester = new Requester(callback);
-        requester.execute(request);
+        super(accessToken);
     }
 
-    public static void getGroupPictureUrl(String groupId, Requester.RequestResultCallback callback)
+    private static void getGroupPictureUrl(String groupId, Requester.RequestResultCallback callback)
     {
         String request = String.format(GET_PHOTO, groupId);
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
 
-    public static SocialNetworkTopic[] getPage(String pageJson)
+    private static void fillPhotos(String json, SocialNetworkTopic[] topics)
+    {
+        String url = "";
+        try
+        {
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject pictureObject = jsonObject.getJSONObject("picture");
+            JSONObject dataObject = pictureObject.getJSONObject("data");
+            url = dataObject.getString("url");
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        for (SocialNetworkTopic topic : topics)
+        {
+            topic.getAuthor().setPhoto(url);
+        }
+    }
+
+    @Override
+    public void getTopics(String groupId, Requester.RequestResultCallback callback)
+    {
+        String request = String.format(GET_PAGE, groupId, getAccessToken().getAccessToken());
+        Requester requester = new Requester(callback);
+        requester.execute(request);
+    }
+
+    @Override
+    public SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SocialNetworkTopic[] topics;
         SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
         try
         {
-            JSONObject pageObject = new JSONObject(pageJson);
+            JSONObject pageObject = new JSONObject(topicsJson);
             JSONArray dataObject = pageObject.getJSONArray("data");
             topics = new SocialNetworkTopic[dataObject.length()];
             for (int i = 0; i < dataObject.length(); i++)
@@ -74,25 +100,6 @@ public class FacebookRequester
         } catch (ParseException e)
         {
             return null;
-        }
-    }
-
-    public static void fillPhotos(String json, SocialNetworkTopic[] topics)
-    {
-        String url = "";
-        try
-        {
-            JSONObject jsonObject = new JSONObject(json);
-            JSONObject pictureObject = jsonObject.getJSONObject("picture");
-            JSONObject dataObject = pictureObject.getJSONObject("data");
-            url = dataObject.getString("url");
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        for (SocialNetworkTopic topic : topics)
-        {
-            topic.getAuthor().setPhoto(url);
         }
     }
 

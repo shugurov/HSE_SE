@@ -2,10 +2,16 @@ package ru.hse.se.shugurov.gui;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.FacebookRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
@@ -17,9 +23,10 @@ import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 public class FacebookList extends SocialNetworkAbstractList
 {
     private final String FACEBOOK_TOPIC_TAG = "facebook_topic_tag";
-    private final String TOPIC_COMPLETNESS_TAG = "facebook_topics_complete";
+    private final String TOPIC_COMPLETENESS_TAG = "facebook_topics_complete";
     private SocialNetworkTopic[] topics;
     private boolean topicsAreComplete;
+    private AbstractRequester requester;
 
     public FacebookList()
     {
@@ -28,6 +35,7 @@ public class FacebookList extends SocialNetworkAbstractList
     public FacebookList(String groupId, String groupName, AccessToken accessToken)
     {
         super(groupId, groupName, accessToken);
+        requester = new FacebookRequester(accessToken);
     }
 
     @Override
@@ -37,8 +45,10 @@ public class FacebookList extends SocialNetworkAbstractList
         if (savedInstanceState != null && topics == null)
         {
             topics = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(FACEBOOK_TOPIC_TAG);
-            topicsAreComplete = savedInstanceState.getBoolean(TOPIC_COMPLETNESS_TAG);
+            topicsAreComplete = savedInstanceState.getBoolean(TOPIC_COMPLETENESS_TAG);
+            requester = new FacebookRequester(getAccessToken());
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -53,17 +63,17 @@ public class FacebookList extends SocialNetworkAbstractList
             if (topicsAreComplete)
             {
                 setListAdapter(new VKTopicsAdapter(getActivity(), topics));
-            } else
+            }/* else
             {
                 requestPhotos();
-            }
+            }TODO*/
         }
 
     }
 
     private void requestTopics()
     {
-        FacebookRequester.getPage(getGroupId(), getAccessToken(), new Requester.RequestResultCallback()
+        requester.getTopics(getGroupId(), new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)
@@ -89,12 +99,12 @@ public class FacebookList extends SocialNetworkAbstractList
     {
         if (isVisible())
         {
-            topics = FacebookRequester.getPage(result); //TODO do in different thread
-            requestPhotos();
+            topics = requester.getTopics(result); //TODO do in different thread
+            //requestPhotos(); TODO
         }
     }
 
-    private void requestPhotos()
+    /*private void requestPhotos()
     {
         FacebookRequester.getGroupPictureUrl(getGroupId(), new Requester.RequestResultCallback()
         {
@@ -109,14 +119,30 @@ public class FacebookList extends SocialNetworkAbstractList
                 }
             }
         });
-    }
+    }TODO*/
 
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(FACEBOOK_TOPIC_TAG, topics);
-        outState.putBoolean(TOPIC_COMPLETNESS_TAG, topicsAreComplete);
+        outState.putBoolean(TOPIC_COMPLETENESS_TAG, topicsAreComplete);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        menu.clear();
+        inflater.inflate(R.menu.message_adding_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Fragment topicCreation = new VkTopicCreationScreen(getGroupName(), getGroupId(), getAccessToken());
+        ScreenFactory.changeFragments(getFragmentManager(), topicCreation);
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -27,7 +27,7 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin">
 
-    <TextView
+        <TextView
             android:id="@+id/vk_topic_author_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,8 @@
         <TextView
             android:id="@+id/vk_topic_text"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:layout_height="fill_parent"
+            android:maxLines="3"/>
 
         <include
             layout="@layout/vk_item_footer"></include>

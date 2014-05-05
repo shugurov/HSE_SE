@@ -17,7 +17,7 @@ import ru.hse.se.shugurov.Requester;
 /**
  * Created by Иван on 11.02.14.
  */
-public class VKRequester//TODO fix throwing exceptions here, naming conventions
+public class VKRequester extends AbstractRequester//TODO fix throwing exceptions here, naming conventions
 {
     public static final String REDIRECTION_URL = "https://oauth.vk.com/blank.html";
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
@@ -38,11 +38,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     private static final String ADD_COMMENT_TO_WALL_POST = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
     private static final String ADD_COMMENT_TO_TOPIC = "https://api.vk.com/method/board.addComment?group_id=%s&topic_id=%s&text=%s&access_token=%s";
     private static final String ADD_TOPIC = "https://api.vk.com/method/board.addTopic?group_id=%s&title=%s&text=%s&access_token=%s";
-    private AccessToken accessToken;
 
     public VKRequester(AccessToken accessToken)
     {
-        this.accessToken = accessToken;
+        super(accessToken);
     }
 
     public static SocialNetworkEntry[] getWallComments(String commentsJson)
@@ -163,15 +162,16 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         }
     }
 
+    @Override
     public void getTopics(String groupID, Requester.RequestResultCallback callback)//темы в обсуждении группы
     {
         String request = REQUEST_BEGINNING + BOARD_GET_TOPICS + "?" + GROUP_ID_TAG + "=" + groupID +
-                "&" + ACCESS_TOKEN_TAG + "=" + accessToken + "&extended=1&preview=1";
+                "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1&preview=1";
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
 
-    //TODO строка с комментами не внизу страницы(
+    @Override
     public SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SocialNetworkTopic[] vkBoardTopics;
@@ -204,14 +204,16 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return vkBoardTopics;
     }
 
+    @Override
     public void getComments(String groupID, String topicID, Requester.RequestResultCallback callback)
     {
         String request = REQUEST_BEGINNING + BOARD_GET_COMMENTS + "?" + GROUP_ID_TAG + "=" + groupID +
-                "&" + VK_TOPIC_ID_TAG + "=" + topicID + "&" + ACCESS_TOKEN_TAG + "=" + accessToken + "&extended=1";
+                "&" + VK_TOPIC_ID_TAG + "=" + topicID + "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1";
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
 
+    @Override
     public SocialNetworkEntry[] getComments(String commentsJson)
     {
         if (commentsJson == null)
@@ -313,7 +315,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     {
         try
         {
-            String url = String.format(ADD_COMMENT_TO_WALL_POST, groupId, postId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
+            String url = String.format(ADD_COMMENT_TO_WALL_POST, groupId, postId, URLEncoder.encode(text, "utf8"), getAccessToken().getAccessToken());
             Requester requester = new Requester(callback);
             requester.execute(url);
         } catch (UnsupportedEncodingException e)
@@ -327,7 +329,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     {
         try
         {
-            String url = String.format(ADD_COMMENT_TO_TOPIC, groupId, topicId, URLEncoder.encode(text, "utf8"), accessToken.getAccessToken());
+            String url = String.format(ADD_COMMENT_TO_TOPIC, groupId, topicId, URLEncoder.encode(text, "utf8"), getAccessToken().getAccessToken());
             Requester requester = new Requester(callback);
             requester.execute(url);
         } catch (UnsupportedEncodingException e)
@@ -337,11 +339,12 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         }
     }
 
+    @Override
     public void addTopic(String groupId, String title, String text, Requester.RequestResultCallback callback)
     {
         try
         {
-            String url = String.format(ADD_TOPIC, groupId, URLEncoder.encode(title, "utf8"), URLEncoder.encode(text, "utf8"), accessToken);
+            String url = String.format(ADD_TOPIC, groupId, URLEncoder.encode(title, "utf8"), URLEncoder.encode(text, "utf8"), getAccessToken());
             Requester requester = new Requester(callback);
             requester.execute(url);
         } catch (UnsupportedEncodingException e)
@@ -349,4 +352,5 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             callback.pushResult(null);
         }
     }
+
 }
