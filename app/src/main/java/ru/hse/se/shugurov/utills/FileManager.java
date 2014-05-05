@@ -22,9 +22,9 @@ public class FileManager
         this.context = context;
     }
 
-    private static <T> boolean doesArrayContainsElement(T element, T[] array)//TODO а зачем туи обобщённый метод?
+    private static boolean doesArrayContainsElement(String element, String[] array)
     {
-        for (T value : array)
+        for (String value : array)
         {
             if (element.equals(value))
             {

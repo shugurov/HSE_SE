@@ -23,7 +23,7 @@ import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
-import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
@@ -34,7 +34,7 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 /**
  * Created by Иван on 03.05.2014.
  */
-public class WallCommentsScreen extends SocialNetworkAbstractList
+public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут недописал requester
 {
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
@@ -52,9 +52,9 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
 
     }
 
-    public WallCommentsScreen(String groupId, String groupName, AccessToken accessToken, SocialNetworkTopic post)
+    public WallCommentsScreen(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester)
     {
-        super(groupId, groupName, accessToken);
+        super(groupId, groupName, requester);
         this.post = post;
     }
 
@@ -147,8 +147,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
 
     private void loadComments()
     {
-        VKRequester requester = new VKRequester(getAccessToken());
-        requester.getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
+        getRequester().getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
         {
             @Override
             public void pushResult(String result)
@@ -262,10 +261,9 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = new VKRequester(getAccessToken());
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
-                    requester.addCommentToWallPost(getGroupId(), post.getId(), commentText, new Requester.RequestResultCallback()
+                    getRequester().addCommentToWallPost(getGroupId(), post.getId(), commentText, new Requester.RequestResultCallback()
                     {
                         @Override
                         public void pushResult(String result)

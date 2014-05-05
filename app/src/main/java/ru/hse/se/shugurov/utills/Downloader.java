@@ -85,34 +85,6 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
         this.notifyObservers();
     }
 
-   /* private InputStream OpenHttpUrlConnection(String urlString) TODO
-    {
-        InputStream input = null;
-        int response;
-        try
-        {
-            URL url = new URL(urlString);
-            URLConnection urlConnection = url.openConnection();
-            if (!(urlConnection instanceof HttpURLConnection))
-            {
-                return null;
-            }
-            HttpURLConnection httpURLConnection = (HttpURLConnection) urlConnection;
-            httpURLConnection.connect();
-            response = httpURLConnection.getResponseCode();
-            if (response == httpURLConnection.HTTP_OK)
-            {
-                input = httpURLConnection.getInputStream();
-            }
-        } catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return input;
-    }*/
 
     @Override
     public void addObserver(Observer observer)
@@ -139,40 +111,6 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
     {
         return status;
     }
-
-//    private String downloadFromTheInternet(String url) TODO
-//    {
-//        InputStream input = OpenHttpUrlConnection(url);
-//        if (input == null)
-//        {
-//            return null;
-//        }
-//        int BUFFER_SIZE = 2000;//
-//        InputStreamReader reader = new InputStreamReader(input);
-//        char[] inputBuffer = new char[BUFFER_SIZE];
-//        int charRead;
-//        String content = "";
-//        try
-//        {
-//            while ((charRead = reader.read(inputBuffer)) > 0)
-//            {
-//                String readString = String.copyValueOf(inputBuffer, 0, charRead);
-//                content += readString;
-//            }
-//        } catch (IOException e)
-//        {
-//            e.printStackTrace();
-//            try
-//            {
-//                input.close();
-//            } catch (IOException e1)
-//            {
-//                e1.printStackTrace();
-//            }
-//            return null;
-//        }
-//        return content;
-//    }
 
     private void downloadFile(FileDescription description)
     {

@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by Иван on 19.04.2014.
  */
-public class MarkerWrapper implements Parcelable //TODO осмотреть на snippet
+public class MarkerWrapper implements Parcelable
 {
     public static Creator<MarkerWrapper> CREATOR = new Creator<MarkerWrapper>()
     {

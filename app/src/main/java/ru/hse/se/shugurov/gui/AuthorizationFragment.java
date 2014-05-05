@@ -44,7 +44,7 @@ public class AuthorizationFragment extends Fragment
     }
 
 
-    private WebViewClient createWebViewClient(String url)//TODO fix return value and add other web clients
+    private WebViewClient createWebViewClient(String url)
     {
         if (url.contains("vk"))
         {

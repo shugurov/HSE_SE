@@ -13,9 +13,10 @@ import java.net.URLConnection;
 /**
  * Created by Иван on 14.02.14.
  */
-public class Requester extends AsyncTask<String, Void, String>
+public class Requester extends AsyncTask<String, Void, String[]>
 {
     private RequestResultCallback callback;
+    private MultipleRequestResultCallback multipleRequestResultCallback;
 
     public Requester(RequestResultCallback callback)
     {
@@ -23,18 +24,39 @@ public class Requester extends AsyncTask<String, Void, String>
     }
 
     @Override
-    protected String doInBackground(String... params)
+    protected String[] doInBackground(String[] params)
     {
-        return downloadFromTheInternet(params[0]);
+        String[] result = new String[params.length];
+        for (int i = 0; i < params.length; i++)
+        {
+            result[i] = downloadFromTheInternet(params[i]);
+            if (result[i] == null)
+            {
+                return null;
+            }
+        }
+        return result;
     }
 
     @Override
-    protected void onPostExecute(String string)
+    protected void onPostExecute(String[] result)
     {
-        callback.pushResult(string);
+        if (callback != null)
+        {
+            if (result == null)
+            {
+                callback.pushResult(null);
+            } else
+            {
+                callback.pushResult(result[0]);
+            }
+        } else if (multipleRequestResultCallback != null)
+        {
+            multipleRequestResultCallback.pushResult(result);
+        }
     }
 
-    private String downloadFromTheInternet(String url)//TODo должен быть другой путь(
+    private String downloadFromTheInternet(String url)
     {
         InputStream input = OpenHttpUrlConnection(url);
         if (input == null)
@@ -100,6 +122,11 @@ public class Requester extends AsyncTask<String, Void, String>
 
     public interface RequestResultCallback
     {
-        void pushResult(String/**/ result);
+        void pushResult(String result);
+    }
+
+    public interface MultipleRequestResultCallback
+    {
+        void pushResult(String[] results);
     }
 }

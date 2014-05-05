@@ -12,15 +12,14 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
-import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
-import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
+public class CommentsScreenAdapter extends SocialNetworkAbstractList
 {
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
@@ -31,13 +30,13 @@ public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
     private EditText input;
     private String commentText;
 
-    public VkResponsesScreenAdapter()
+    public CommentsScreenAdapter()
     {
     }
 
-    public VkResponsesScreenAdapter(String groupId, String groupName, String topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
+    public CommentsScreenAdapter(String groupId, String groupName, String topicId, AbstractRequester requester)
     {
-        super(groupId, groupName, accessToken);
+        super(groupId, groupName, requester);
         this.topicId = topicId;
     }
 
@@ -68,58 +67,37 @@ public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
 
     private void loadComments()
     {
-        final VKRequester requester = new VKRequester(getAccessToken());
-        requester.getComments(getGroupId(), topicId, new Requester.RequestResultCallback()
+        final AbstractRequester requester = getRequester();
+        requester.getComments(getGroupId(), topicId, new AbstractRequester.RequestResultListener<SocialNetworkEntry>()
         {
             @Override
-            public void pushResult(String result)
+            public void resultObtained(SocialNetworkEntry[] resultComments)
             {
-                if (result == null)
+                if (resultComments == null)
                 {
-                    Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Не удалось загрузить информацию", Toast.LENGTH_SHORT).show();
                 } else
                 {
-                    parseResponses(result, requester);
+                    comments = resultComments;
+                    setAdapter();
                 }
             }
         });
     }
 
-    private void parseResponses(final String result, final VKRequester requester)
-    {
-        if (isVisible())
-        {
-            Runnable parsing = new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    comments = requester.getComments(result);
-                    getActivity().runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            setAdapter();
-                            setListShown(true);
-                        }
-                    });
-                }
-            };
-            new Thread(parsing).start();
-        }
-
-    }
-
     private void setAdapter()
     {
-        VKResponsesAdapter vkResponsesAdapter = new VKResponsesAdapter(getActivity(), comments);
-        if (footerView == null)
+        if (getActivity() != null)
         {
-            createFooterView();
-            getListView().addFooterView(footerView);
+            VKResponsesAdapter vkResponsesAdapter = new VKResponsesAdapter(getActivity(), comments);
+            if (footerView == null)
+            {
+                createFooterView();
+                getListView().addFooterView(footerView);
+            }
+            setListAdapter(vkResponsesAdapter);
+            setListShown(true);
         }
-        setListAdapter(vkResponsesAdapter);
     }
 
     private void createFooterView()
@@ -142,7 +120,7 @@ public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = new VKRequester(getAccessToken());
+                    final AbstractRequester requester = getRequester();
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
                     requester.addCommentToTopic(getGroupId(), topicId, commentText, new Requester.RequestResultCallback()
@@ -175,8 +153,10 @@ public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
         super.onSaveInstanceState(outState);
         outState.putString(TOPIC_ID_TAG, topicId);
         outState.putParcelableArray(COMMENTS_TAG, comments);
-        outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
+        if (input != null)
+        {
+            outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
+        }
     }
-
 
 }

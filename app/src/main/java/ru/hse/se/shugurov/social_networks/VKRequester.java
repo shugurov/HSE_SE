@@ -17,7 +17,7 @@ import ru.hse.se.shugurov.Requester;
 /**
  * Created by Иван on 11.02.14.
  */
-public class VKRequester extends AbstractRequester//TODO fix throwing exceptions here, naming conventions
+public class VKRequester extends AbstractRequester
 {
     public static final String REDIRECTION_URL = "https://oauth.vk.com/blank.html";
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
@@ -69,7 +69,7 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
         return comments;
     }
 
-    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO искать только неизвестных пользователей
+    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < comments.length; i++)
@@ -107,7 +107,7 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
                 JSONObject profileObject = profilesArray.getJSONObject(i);
                 String userId = profileObject.getString("uid");
                 String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
-                String photo = profileObject.getString("photo_100");//TODO наверное, спрятать в константу
+                String photo = profileObject.getString("photo_100");
                 List<SocialNetworkProfile> userProfiles = profilesMap.get(userId);
                 for (SocialNetworkProfile userProfile : userProfiles)
                 {
@@ -163,10 +163,25 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
     }
 
     @Override
-    public void getTopics(String groupID, Requester.RequestResultCallback callback)//темы в обсуждении группы
+    public void getTopics(String groupID, final RequestResultListener<SocialNetworkTopic> listener)//темы в обсуждении группы
     {
         String request = REQUEST_BEGINNING + BOARD_GET_TOPICS + "?" + GROUP_ID_TAG + "=" + groupID +
                 "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1&preview=1";
+        Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String topicJson)
+            {
+                if (topicJson == null || topicJson != null && topicJson.contains("error"))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    SocialNetworkTopic[] topics = getTopics(topicJson);
+                    listener.resultObtained(topics);
+                }
+            }
+        };
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
@@ -205,21 +220,32 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
     }
 
     @Override
-    public void getComments(String groupID, String topicID, Requester.RequestResultCallback callback)
+    public void getComments(String groupID, String topicID, final RequestResultListener<SocialNetworkEntry> listener)
     {
         String request = REQUEST_BEGINNING + BOARD_GET_COMMENTS + "?" + GROUP_ID_TAG + "=" + groupID +
                 "&" + VK_TOPIC_ID_TAG + "=" + topicID + "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1";
+        Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String commentsJson)
+            {
+                if (commentsJson == null || (commentsJson != null && commentsJson.contains("error")))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    SocialNetworkEntry[] comments = getComments(commentsJson);
+                    listener.resultObtained(comments);
+                }
+            }
+        };
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
 
     @Override
-    public SocialNetworkEntry[] getComments(String commentsJson)
+    protected SocialNetworkEntry[] getComments(String commentsJson)
     {
-        if (commentsJson == null)
-        {
-            return null;
-        }
         SocialNetworkEntry[] comments;
         Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();// key - uid, value - user
         try
@@ -247,17 +273,32 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
         return comments;
     }
 
-    public void getWallPosts(String groupId, Requester.RequestResultCallback callback)
+    @Override
+    public void getWallPosts(String groupId, final RequestResultListener<SocialNetworkTopic> listener)
     {
+        Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String postsJson)
+            {
+                if (postsJson == null || (postsJson != null && postsJson.contains("error")))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    listener.resultObtained(getWallPosts(postsJson));
+                }
+            }
+        };
         Requester requester = new Requester(callback);
         String url = String.format(WALL_GET_POSTS, groupId);
         requester.execute(url);
     }
 
-    public SocialNetworkTopic[] getWallPosts(String wallPostJson)
+    private SocialNetworkTopic[] getWallPosts(String wallPostJson)
     {
         SocialNetworkTopic[] posts = null;
-        Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();// key - uid, value - user TODO зачем, если всегда не используется?
+        Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();
         try
         {
             JSONObject jsonObject = new JSONObject(wallPostJson);
@@ -304,6 +345,7 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
         return posts;
     }
 
+    @Override
     public void getWallComments(String groupId, String postId, Requester.RequestResultCallback callback)
     {
         String url = String.format(WALL_GET_COMMENTS_FOR_POST, groupId, postId);
@@ -311,6 +353,7 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
         requester.execute(url);
     }
 
+    @Override
     public void addCommentToWallPost(String groupId, String postId, String text, Requester.RequestResultCallback callback)
     {
         try
@@ -325,6 +368,7 @@ public class VKRequester extends AbstractRequester//TODO fix throwing exceptions
         }
     }
 
+    @Override
     public void addCommentToTopic(String groupId, String topicId, String text, Requester.RequestResultCallback callback)
     {
         try

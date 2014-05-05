@@ -1,11 +1,13 @@
 package ru.hse.se.shugurov.social_networks;
 
+import java.io.Serializable;
+
 import ru.hse.se.shugurov.Requester;
 
 /**
  * Created by Иван on 05.05.2014.
  */
-public abstract class AbstractRequester
+public abstract class AbstractRequester implements Serializable
 {
     private AccessToken accessToken;
 
@@ -19,34 +21,55 @@ public abstract class AbstractRequester
         return accessToken;
     }
 
-    public void getTopics(String groupID, Requester.RequestResultCallback callback)
+    public void getTopics(String groupID, RequestResultListener<SocialNetworkTopic> listener)
     {
         throw new UnsupportedOperationException();
     }
 
-    public SocialNetworkTopic[] getTopics(String topicsJson)
+    protected SocialNetworkTopic[] getTopics(String topicsJson)
     {
         throw new UnsupportedOperationException();
     }
 
-    public void addTopic(String groupId, String title, String text, Requester.RequestResultCallback callback)//TODO что за бред в facebook?
+    public void addTopic(String groupId, String title, String text, Requester.RequestResultCallback callback)
     {
         throw new UnsupportedOperationException();
     }
 
-    public void getComments(String groupID, String topicID, Requester.RequestResultCallback callback)
+    public void getComments(String groupID, String topicID, RequestResultListener<SocialNetworkEntry> listener)
     {
         throw new UnsupportedOperationException();
     }
 
-    public SocialNetworkEntry[] getComments(String commentsJson)
+    protected SocialNetworkEntry[] getComments(String commentsJson)
     {
         throw new UnsupportedOperationException();
     }
 
-    public interface RequestResult<T extends SocialNetworkEntry>//TODO
+
+    public void getWallPosts(String groupId, RequestResultListener<SocialNetworkTopic> listener)
     {
-        void obtainResult(T[] result);
+        throw new UnsupportedOperationException();
+    }
+
+    public void addCommentToTopic(String groupId, String topicId, String text, Requester.RequestResultCallback callback)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void getWallComments(String groupId, String postId, Requester.RequestResultCallback callback)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public void addCommentToWallPost(String groupId, String postId, String text, Requester.RequestResultCallback callback)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public interface RequestResultListener<T extends SocialNetworkEntry>
+    {
+        void resultObtained(T[] result);
     }
 
 }

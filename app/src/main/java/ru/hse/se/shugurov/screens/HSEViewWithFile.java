@@ -22,12 +22,12 @@ public class HSEViewWithFile extends HSEView implements HasFile
     public String getFileName()
     {
         return fileName;
-    }//TODO не использую никак
+    }
 
     public String getFileType()
     {
         return fileType;
-    }//TODO не использую никак
+    }
 
     @Override
     public FileDescription getFileDescription()

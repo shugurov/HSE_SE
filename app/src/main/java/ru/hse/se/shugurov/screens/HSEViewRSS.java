@@ -13,13 +13,9 @@ public class HSEViewRSS extends HSEView
     private final static String NULL_TAG = "null";
     private final static String SUMMARY_TAG = "summary";
     private final static String LINK_TAG = "link";
-    private final static String UPDATED_AT_TAG = "updatedAt";
-    private final static String ENTRY_ID = "entryId";
     private String title = "";
     private String omitted = "";
     private String summary = "";
-    private String updatedAt = "";
-    private String entryId = "";
     private HSERSSType type;
 
     HSEViewRSS(JSONObject jsonObject) throws JSONException//TODO меня печалит пустой конструктор
@@ -28,8 +24,6 @@ public class HSEViewRSS extends HSEView
         omitted = jsonObject.getString(OMITTED_TAG);
         summary = jsonObject.getString(SUMMARY_TAG);
         url = jsonObject.getString(LINK_TAG);
-        updatedAt = jsonObject.getString(UPDATED_AT_TAG);
-        entryId = jsonObject.getString(ENTRY_ID);
         if (omitted.equals(NULL_TAG))
         {
             type = HSERSSType.ONLY_TITLE;
@@ -58,16 +52,6 @@ public class HSEViewRSS extends HSEView
         return summary;
     }
 
-    public String getUpdatedAt()
-    {
-        return updatedAt;
-    }//TODO а нужно ли?
-
-    public String getEntryId()
-    {
-        return entryId;
-    }//TODO а нужно ли?
-
     public HSERSSType getType()
     {
         return type;
@@ -83,10 +67,7 @@ public class HSEViewRSS extends HSEView
         }
         if (startIndex == 0)
         {
-            if (endIndex < 0)
-            {
-                return;
-            } else
+            if (endIndex >= 0)
             {
                 endIndex += 7;
                 if (endIndex == summary.length() - 1)

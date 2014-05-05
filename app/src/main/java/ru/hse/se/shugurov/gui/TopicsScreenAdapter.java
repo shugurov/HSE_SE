@@ -10,28 +10,26 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.Requester;
-import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
-import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
+public class TopicsScreenAdapter extends SocialNetworkAbstractList
 {
     private final static String VK_TOPICS_TAG = "vk_topics_array";
     private SocialNetworkTopic[] topics;
     private VKTopicsAdapter adapter;
 
-    public VkTopicsScreenAdapter()
+    public TopicsScreenAdapter()
     {
     }
 
-    public VkTopicsScreenAdapter(String groupId, String groupName, AccessToken accessToken)
+    public TopicsScreenAdapter(String groupId, String groupName, AbstractRequester requester)
     {
-        super(groupId, groupName, accessToken);
+        super(groupId, groupName, requester);
     }
 
     @Override
@@ -40,18 +38,18 @@ public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
         super.onViewCreated(view, savedInstanceState);
         if (topics == null)
         {
-            final VKRequester requester = new VKRequester(getAccessToken());
-            requester.getTopics(getGroupId(), new Requester.RequestResultCallback()
+            getRequester().getTopics(getGroupId(), new AbstractRequester.RequestResultListener<SocialNetworkTopic>()
             {
                 @Override
-                public void pushResult(String result)
+                public void resultObtained(SocialNetworkTopic[] resultTopics)
                 {
-                    if (result == null)
+                    if (resultTopics == null)
                     {
-                        Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Не удалось загрузить информацию", Toast.LENGTH_SHORT).show();
                     } else
                     {
-                        fillList(result, requester);
+                        topics = resultTopics;
+                        setAdapter();
                     }
                 }
             });
@@ -72,29 +70,6 @@ public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
         setHasOptionsMenu(true);
     }
 
-
-    private void fillList(final String result, final VKRequester requester)
-    {
-        Runnable parsing = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                topics = requester.getTopics(result);
-                getActivity().runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        setAdapter();
-                    }
-                });
-            }
-        };
-        new Thread(parsing).start();
-
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
@@ -106,7 +81,7 @@ public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Fragment topicCreation = new VkTopicCreationScreen(getGroupName(), getGroupId(), getAccessToken());
+        Fragment topicCreation = new TopicCreationScreen(getGroupName(), getGroupId(), getRequester());
         ScreenFactory.changeFragments(getFragmentManager(), topicCreation);
         return super.onOptionsItemSelected(item);
     }
@@ -120,7 +95,7 @@ public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ScreenFactory.changeFragments(getFragmentManager(), new VkResponsesScreenAdapter(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getAccessToken()));
+                ScreenFactory.changeFragments(getFragmentManager(), new CommentsScreenAdapter(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester()));
             }
         });
     }
@@ -128,8 +103,11 @@ public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
 
     private void setAdapter()
     {
-        adapter = new VKTopicsAdapter(getActivity(), topics);
-        setListAdapter(adapter);
+        if (getActivity() != null)
+        {
+            adapter = new VKTopicsAdapter(getActivity(), topics);
+            setListAdapter(adapter);
+        }
     }
 
     @Override

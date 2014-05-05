@@ -24,7 +24,7 @@ import ru.hse.se.shugurov.screens.HSEViewTypes;
 /**
  * Created by Иван on 15.03.14.
  */
-public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener//TODO поправить отступы в отображении, интересные статьи
+public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
 
@@ -181,6 +181,6 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         View content = getLinearLayoutWithScreenItems(inflater, getHseView().getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
-        return scrollView;//TODO
+        return scrollView;
     }
 }

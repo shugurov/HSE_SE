@@ -10,32 +10,29 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
-import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKRequester;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 
 /**
  * Created by Иван on 04.05.2014.
  */
-public class VkTopicCreationScreen extends Fragment
+public class TopicCreationScreen extends Fragment
 {
     private final static String GROUP_ID_TAG = "vk_group_id_topics_creation";
-    private final static String ACCESS_TOKEN_TAG = "vk_access_token_topics_creation";
     private String groupId;
-    private AccessToken accessToken;
     private EditText titleInput;
     private EditText textInput;
     private String actionBarTitle;
+    private AbstractRequester requester;
 
-
-    public VkTopicCreationScreen()
+    public TopicCreationScreen()
     {
     }
 
-    public VkTopicCreationScreen(String title, String groupId, AccessToken accessToken)
+    public TopicCreationScreen(String title, String groupId, AbstractRequester requester)
     {
         this.groupId = groupId;
-        this.accessToken = accessToken;
         this.actionBarTitle = title;
+        this.requester = requester;
     }
 
     @Override
@@ -45,7 +42,6 @@ public class VkTopicCreationScreen extends Fragment
         if (savedInstanceState != null && groupId == null)
         {
             groupId = savedInstanceState.getString(GROUP_ID_TAG);
-            accessToken = (AccessToken) savedInstanceState.getSerializable(ACCESS_TOKEN_TAG);
         }
     }
 
@@ -74,7 +70,6 @@ public class VkTopicCreationScreen extends Fragment
                     return;
                 }
 
-                VKRequester requester = new VKRequester(accessToken);
                 requester.addTopic(groupId, title, text, new Requester.RequestResultCallback()
                 {
                     @Override
@@ -99,7 +94,6 @@ public class VkTopicCreationScreen extends Fragment
     {
         super.onSaveInstanceState(outState);
         outState.putString(GROUP_ID_TAG, groupId);
-        outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
     }
 
 }

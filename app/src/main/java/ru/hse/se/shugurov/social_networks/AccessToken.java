@@ -16,7 +16,7 @@ public class AccessToken implements Serializable
     {
         this.accessToken = accessToken;
         long currentTime = System.currentTimeMillis();
-        this.expirationTime = currentTime + expiresIn * 1000 - 100000;//TODO почему так странно современем?(
+        this.expirationTime = currentTime + expiresIn * 1000 - 100000;
     }
 
     public AccessToken(String serializedToken)

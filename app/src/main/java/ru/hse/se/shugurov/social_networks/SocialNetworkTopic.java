@@ -9,7 +9,7 @@ import java.util.Date;
 public class SocialNetworkTopic extends SocialNetworkEntry
 {
     private String id;
-    private int comments;//TODO remove?
+    private int comments;//TODO show them
     private String attachedPicture;
 
     public SocialNetworkTopic(String topicId, SocialNetworkProfile author, String text, int comments, Date date)

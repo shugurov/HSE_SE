@@ -27,7 +27,7 @@ import ru.hse.se.shugurov.social_networks.VKRequester;
 /**
  * Created by Иван on 15.03.14.
  */
-public class ScreenFactory//TODO экран с браузером падает при перевороте
+public class ScreenFactory
 {
     private static final String SHARED_PREFERENCES_TAG_SOCIAL = "social_networks";
     private static final String VK_ACCESS_TOKEN_TAG = "vk_access_token";
@@ -85,7 +85,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 AccessToken vkAccessToken = getVkAccessToken(socialNetworkView);
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkTopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), vkAccessToken);
+                    adapter = new TopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
                 }
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
@@ -93,7 +93,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 vkAccessToken = getVkAccessToken(socialNetworkView);//TODo incorrect events will happen if access token is not available
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkWallPostScreen(socialNetworkView.getObjectID(), socialNetworkView.getName(), vkAccessToken);//TODO почему открываю имеено это?
+                    adapter = new WallPostScreen(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));//TODO почему открываю имеено это?
                 }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
@@ -113,7 +113,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 AccessToken facebookAccessToken = getFacebookAccessToken(facebookView);
                 if (facebookAccessToken != null)
                 {
-                    adapter = new FacebookList(facebookView.getObjectID(), facebookView.getName(), facebookAccessToken);
+                    adapter = new TopicsScreenAdapter(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
                 }
                 break;
             default:
@@ -222,7 +222,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 {
                     writeToSharePreferences(FACEBOOK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
                     removeAuthorizationFragment();
-                    FacebookList facebookList = new FacebookList(view.getObjectID(), view.getName(), accessToken);
+                    Fragment facebookList = new TopicsScreenAdapter(view.getObjectID(), view.getName(), new FacebookRequester(accessToken));
                     changeFragments(activity.getSupportFragmentManager(), facebookList);
                 }
             }
@@ -258,7 +258,7 @@ public class ScreenFactory//TODO экран с браузером падает �
                 } else
                 {
                     writeToSharePreferences(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), accessToken);
+                    TopicsScreenAdapter topicsScreenAdapter = new TopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(accessToken));
                     removeAuthorizationFragment();
                     changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
                 }

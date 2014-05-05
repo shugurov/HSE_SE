@@ -20,7 +20,7 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 /**
  * Created by Иван on 13.02.14.
  */
-public class VKTopicsAdapter extends BaseAdapter//TODO я вообще не использую количесто комментариев, наверное, стоит поправить
+public class VKTopicsAdapter extends BaseAdapter
 {
     private SocialNetworkTopic[] topics;
     private LayoutInflater inflater;
