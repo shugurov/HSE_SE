@@ -12,17 +12,17 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkTopicsScreenAdapter extends VkAbstractList
+public class VkTopicsScreenAdapter extends SocialNetworkAbstractList
 {
     private final static String VK_TOPICS_TAG = "vk_topics_array";
-    private VKTopic[] topics;
+    private SocialNetworkTopic[] topics;
     private VKTopicsAdapter adapter;
 
     public VkTopicsScreenAdapter()
@@ -40,7 +40,7 @@ public class VkTopicsScreenAdapter extends VkAbstractList
         super.onViewCreated(view, savedInstanceState);
         if (topics == null)
         {
-            final VKRequester requester = getVkRequester();
+            final VKRequester requester = new VKRequester(getAccessToken());
             requester.getTopics(getGroupId(), new Requester.RequestResultCallback()
             {
                 @Override
@@ -67,7 +67,7 @@ public class VkTopicsScreenAdapter extends VkAbstractList
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            topics = (VKTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
+            topics = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
         }
         setHasOptionsMenu(true);
     }

@@ -45,22 +45,22 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         this.accessToken = accessToken;
     }
 
-    public static VKAbstractItem[] getWallComments(String commentsJson)
+    public static SocialNetworkEntry[] getWallComments(String commentsJson)
     {
-        VKAbstractItem[] comments = null;
+        SocialNetworkEntry[] comments = null;
         try
         {
             JSONObject jsonObject = new JSONObject(commentsJson);
             JSONArray responseArray = jsonObject.getJSONArray("response");
-            comments = new VKAbstractItem[responseArray.length() - 1];
+            comments = new SocialNetworkEntry[responseArray.length() - 1];
             for (int i = 1; i < responseArray.length(); i++)
             {
                 JSONObject commentObject = responseArray.getJSONObject(i);
-                int userId = commentObject.getInt("uid");
+                String userId = commentObject.getString("uid");
                 long date = commentObject.getLong("date") * 1000;
                 String text = commentObject.getString("text");
-                VKProfile profile = new VKProfile(userId);
-                comments[i - 1] = new VKAbstractItem(profile, text, new Date(date));
+                SocialNetworkProfile profile = new SocialNetworkProfile(userId);
+                comments[i - 1] = new SocialNetworkEntry(profile, text, new Date(date));
             }
 
         } catch (JSONException e)
@@ -70,7 +70,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return comments;
     }
 
-    public static void getProfileInformation(VKAbstractItem[] comments, Requester.RequestResultCallback callback)//TODO искать только неизвестных пользователей
+    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO искать только неизвестных пользователей
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < comments.length; i++)
@@ -86,15 +86,15 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(url);
     }
 
-    public static void fillProfileInformation(VKAbstractItem[] comments, String profilesJson)
+    public static void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)
     {
-        Map<Integer, List<VKProfile>> profilesMap = new HashMap<Integer, List<VKProfile>>();
-        for (VKAbstractItem comment : comments)
+        Map<String, List<SocialNetworkProfile>> profilesMap = new HashMap<String, List<SocialNetworkProfile>>();
+        for (SocialNetworkEntry comment : comments)
         {
-            List<VKProfile> profilesForCurrentId = profilesMap.get(comment.getAuthor().getId());
+            List<SocialNetworkProfile> profilesForCurrentId = profilesMap.get(comment.getAuthor().getId());
             if (profilesForCurrentId == null)
             {
-                profilesForCurrentId = new ArrayList<VKProfile>();
+                profilesForCurrentId = new ArrayList<SocialNetworkProfile>();
                 profilesMap.put(comment.getAuthor().getId(), profilesForCurrentId);
             }
             profilesForCurrentId.add(comment.getAuthor());
@@ -106,11 +106,11 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             for (int i = 0; i < profilesArray.length(); i++)
             {
                 JSONObject profileObject = profilesArray.getJSONObject(i);
-                int userId = profileObject.getInt("uid");
+                String userId = profileObject.getString("uid");
                 String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
                 String photo = profileObject.getString("photo_100");//TODO наверное, спрятать в константу
-                List<VKProfile> userProfiles = profilesMap.get(userId);
-                for (VKProfile userProfile : userProfiles)
+                List<SocialNetworkProfile> userProfiles = profilesMap.get(userId);
+                for (SocialNetworkProfile userProfile : userProfiles)
                 {
                     userProfile.setFullName(name);
                     userProfile.setPhoto(photo);
@@ -122,7 +122,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         }
     }
 
-    private static void parseProfiles(Map<Integer, VKProfile> profilesMap, JSONArray profiles)
+    private static void parseProfiles(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
     {
         for (int i = 0; i < profiles.length(); i++)
         {
@@ -130,11 +130,11 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             try
             {
                 currentProfile = profiles.getJSONObject(i);
-                int userID = currentProfile.getInt("uid");
+                String userID = currentProfile.getString("uid");
                 String photo = currentProfile.getString("photo_medium_rec");
                 String firstName = currentProfile.getString("first_name");
                 String lastName = currentProfile.getString("last_name");
-                VKProfile currentUser = new VKProfile(userID, firstName + " " + lastName, photo);
+                SocialNetworkProfile currentUser = new SocialNetworkProfile(userID, firstName + " " + lastName, photo);
                 profilesMap.put(userID, currentUser);
             } catch (JSONException e)
             {
@@ -143,7 +143,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         }
     }
 
-    private static void parseGroups(Map<Integer, VKProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
+    private static void parseGroups(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
     {
         for (int i = 0; i < profiles.length(); i++)
         {
@@ -151,10 +151,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             try
             {
                 currentGroup = profiles.getJSONObject(i);
-                int groupID = -currentGroup.getInt("gid");
+                String groupID = "-" + currentGroup.getString("gid");
                 String photo = currentGroup.getString("photo_medium");
                 String groupName = currentGroup.getString("name");
-                VKProfile vkGroup = new VKProfile(groupID, groupName, photo);
+                SocialNetworkProfile vkGroup = new SocialNetworkProfile(groupID, groupName, photo);
                 profilesMap.put(groupID, vkGroup);
             } catch (JSONException e)
             {
@@ -172,14 +172,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
     }
 
     //TODO строка с комментами не внизу страницы(
-    public VKTopic[] getTopics(String topicsJson)
+    public SocialNetworkTopic[] getTopics(String topicsJson)
     {
-        if (topicsJson == null)
-        {
-            return null;
-        }
-        VKTopic[] vkBoardTopics;
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();
+        SocialNetworkTopic[] vkBoardTopics;
+        Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();
         try
         {
             JSONObject jsonObject = new JSONObject(topicsJson);
@@ -187,17 +183,17 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             JSONArray profiles = responseObject.getJSONArray("profiles");
             parseProfiles(profilesMap, profiles);
             JSONArray itemsJSONArray = responseObject.getJSONArray("topics");
-            vkBoardTopics = new VKTopic[itemsJSONArray.length() - 1];
+            vkBoardTopics = new SocialNetworkTopic[itemsJSONArray.length() - 1];
             for (int i = 1; i < itemsJSONArray.length(); i++)
             {
                 JSONObject currentTopic = itemsJSONArray.getJSONObject(i);
-                int topicID = currentTopic.getInt("tid");
-                int authorID = currentTopic.getInt("created_by");
+                String topicID = currentTopic.getString("tid");
+                String authorID = currentTopic.getString("created_by");
                 String text = currentTopic.getString("first_comment");
                 int comments = currentTopic.getInt("comments");
                 long date = currentTopic.getLong("updated");
-                VKProfile user = profilesMap.get(authorID);
-                vkBoardTopics[i - 1] = new VKTopic(topicID, user, text, comments, new Date(date * 1000));
+                SocialNetworkProfile user = profilesMap.get(authorID);
+                vkBoardTopics[i - 1] = new SocialNetworkTopic(topicID, user, text, comments, new Date(date * 1000));
             }
 
         } catch (JSONException e)
@@ -208,22 +204,22 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return vkBoardTopics;
     }
 
-    public void getComments(String groupID, int topicID, Requester.RequestResultCallback callback)
+    public void getComments(String groupID, String topicID, Requester.RequestResultCallback callback)
     {
         String request = REQUEST_BEGINNING + BOARD_GET_COMMENTS + "?" + GROUP_ID_TAG + "=" + groupID +
-                "&" + VK_TOPIC_ID_TAG + "=" + Integer.toString(topicID) + "&" + ACCESS_TOKEN_TAG + "=" + accessToken + "&extended=1";
+                "&" + VK_TOPIC_ID_TAG + "=" + topicID + "&" + ACCESS_TOKEN_TAG + "=" + accessToken + "&extended=1";
         Requester requester = new Requester(callback);
         requester.execute(request);
     }
 
-    public VKAbstractItem[] getComments(String commentsJson)
+    public SocialNetworkEntry[] getComments(String commentsJson)
     {
         if (commentsJson == null)
         {
             return null;
         }
-        VKAbstractItem[] comments;
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user
+        SocialNetworkEntry[] comments;
+        Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();// key - uid, value - user
         try
         {
             JSONObject jsonObject = new JSONObject(commentsJson);
@@ -231,15 +227,15 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             JSONArray profiles = responseObject.getJSONArray("profiles");
             parseProfiles(profilesMap, profiles);
             JSONArray jsonComments = responseObject.getJSONArray("comments");
-            comments = new VKAbstractItem[jsonComments.length() - 1];
+            comments = new SocialNetworkEntry[jsonComments.length() - 1];
             for (int i = 1; i < jsonComments.length(); i++)
             {
                 JSONObject currentComment = jsonComments.getJSONObject(i);
                 long date = currentComment.getLong("date") * 1000;
                 String text = currentComment.getString("text");
-                int authorID = currentComment.getInt("from_id");
-                VKProfile profile = profilesMap.get(authorID);
-                comments[i - 1] = new VKAbstractItem(profile, text, new Date(date));
+                String authorID = currentComment.getString("from_id");
+                SocialNetworkProfile profile = profilesMap.get(authorID);
+                comments[i - 1] = new SocialNetworkEntry(profile, text, new Date(date));
             }
         } catch (JSONException e)
         {
@@ -256,10 +252,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         requester.execute(url);
     }
 
-    public VKTopic[] getWallPosts(String wallPostJson)
+    public SocialNetworkTopic[] getWallPosts(String wallPostJson)
     {
-        VKTopic[] posts = null;
-        Map<Integer, VKProfile> profilesMap = new HashMap<Integer, VKProfile>();// key - uid, value - user TODO зачем, если всегда не используется?
+        SocialNetworkTopic[] posts = null;
+        Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();// key - uid, value - user TODO зачем, если всегда не используется?
         try
         {
             JSONObject jsonObject = new JSONObject(wallPostJson);
@@ -269,18 +265,18 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
             JSONArray groups = responseObject.getJSONArray("groups");
             parseGroups(profilesMap, groups);
             JSONArray wall = responseObject.getJSONArray("wall");
-            posts = new VKTopic[wall.length() - 1];
+            posts = new SocialNetworkTopic[wall.length() - 1];
             for (int i = 1; i < wall.length(); i++)
             {
                 JSONObject currentPost = wall.getJSONObject(i);
-                int id = currentPost.getInt("id");
+                String id = currentPost.getString("id");
                 long date = currentPost.getLong("date") * 1000;
                 String text = currentPost.getString("text");
-                int authorID = currentPost.getInt("from_id");
-                VKProfile profile = profilesMap.get(authorID);
+                String authorID = currentPost.getString("from_id");
+                SocialNetworkProfile profile = profilesMap.get(authorID);
                 JSONObject commentsObject = currentPost.getJSONObject("comments");
                 int commentsQuantity = commentsObject.getInt("count");
-                String attachedPicture = null; //TODO почему только одна?(
+                String attachedPicture = null;
                 if (currentPost.has("attachment"))
                 {
 
@@ -293,10 +289,10 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
                 }
                 if (attachedPicture == null)
                 {
-                    posts[i - 1] = new VKTopic(id, profile, text, commentsQuantity, new Date(date));
+                    posts[i - 1] = new SocialNetworkTopic(id, profile, text, commentsQuantity, new Date(date));
                 } else
                 {
-                    posts[i - 1] = new VKTopic(id, profile, text, commentsQuantity, new Date(date), attachedPicture);
+                    posts[i - 1] = new SocialNetworkTopic(id, profile, text, commentsQuantity, new Date(date), attachedPicture);
                 }
             }
         } catch (JSONException e)
@@ -306,14 +302,14 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         return posts;
     }
 
-    public void getWallComments(String groupId, int postId, Requester.RequestResultCallback callback)
+    public void getWallComments(String groupId, String postId, Requester.RequestResultCallback callback)
     {
         String url = String.format(WALL_GET_COMMENTS_FOR_POST, groupId, postId);
         Requester requester = new Requester(callback);
         requester.execute(url);
     }
 
-    public void addCommentToWallPost(String groupId, int postId, String text, Requester.RequestResultCallback callback)
+    public void addCommentToWallPost(String groupId, String postId, String text, Requester.RequestResultCallback callback)
     {
         try
         {
@@ -327,7 +323,7 @@ public class VKRequester//TODO fix throwing exceptions here, naming conventions
         }
     }
 
-    public void addCommentToTopic(String groupId, int topicId, String text, Requester.RequestResultCallback callback)
+    public void addCommentToTopic(String groupId, String topicId, String text, Requester.RequestResultCallback callback)
     {
         try
         {

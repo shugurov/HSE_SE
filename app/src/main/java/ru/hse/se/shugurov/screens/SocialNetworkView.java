@@ -6,11 +6,11 @@ import org.json.JSONObject;
 /**
  * Created by Иван on 01.11.13.
  */
-public class VKHSEView extends HSEView
+public class SocialNetworkView extends HSEView
 {
     private String objectID = "";
 
-    protected VKHSEView(JSONObject jsonObject, String serverURL) throws JSONException
+    protected SocialNetworkView(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject);
         objectID = jsonObject.getString("objectId");

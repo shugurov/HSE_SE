@@ -24,23 +24,23 @@ import java.text.DateFormat;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKAbstractItem;
-import ru.hse.se.shugurov.social_networks.VKProfile;
+import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
+import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
+import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
-import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
  * Created by Иван on 03.05.2014.
  */
-public class WallCommentsScreen extends VkAbstractList
+public class WallCommentsScreen extends SocialNetworkAbstractList
 {
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
     private final String TYPED_COMMENT = "vk_wall_typed_comment";
-    private VKTopic post;
-    private VKAbstractItem[] comments;
+    private SocialNetworkTopic post;
+    private SocialNetworkEntry[] comments;
     private int containerWidth;
     private String commentText;
     private EditText input;
@@ -52,7 +52,7 @@ public class WallCommentsScreen extends VkAbstractList
 
     }
 
-    public WallCommentsScreen(String groupId, String groupName, AccessToken accessToken, VKTopic post)
+    public WallCommentsScreen(String groupId, String groupName, AccessToken accessToken, SocialNetworkTopic post)
     {
         super(groupId, groupName, accessToken);
         this.post = post;
@@ -65,7 +65,7 @@ public class WallCommentsScreen extends VkAbstractList
         if (savedInstanceState != null && post == null)
         {
             post = savedInstanceState.getParcelable(VK_WALL_COMMENTS_POST_TAG);
-            comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
+            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
             commentText = savedInstanceState.getString(TYPED_COMMENT);
         }
     }
@@ -147,7 +147,7 @@ public class WallCommentsScreen extends VkAbstractList
 
     private void loadComments()
     {
-        VKRequester requester = getVkRequester();
+        VKRequester requester = new VKRequester(getAccessToken());
         requester.getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
         {
             @Override
@@ -216,7 +216,7 @@ public class WallCommentsScreen extends VkAbstractList
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         headerView = inflater.inflate(R.layout.vk_wall_post, null, false);
         ImageLoader imageLoader = ImageLoader.instance();
-        VKProfile author = post.getAuthor();
+        SocialNetworkProfile author = post.getAuthor();
         ImageView authorPhoto = (ImageView) headerView.findViewById(R.id.vk_post_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) headerView).getWeightSum();
@@ -262,7 +262,7 @@ public class WallCommentsScreen extends VkAbstractList
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = getVkRequester();
+                    final VKRequester requester = new VKRequester(getAccessToken());
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
                     requester.addCommentToWallPost(getGroupId(), post.getId(), commentText, new Requester.RequestResultCallback()

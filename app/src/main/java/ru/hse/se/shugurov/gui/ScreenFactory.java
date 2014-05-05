@@ -19,8 +19,9 @@ import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.screens.HSEViewTypes;
 import ru.hse.se.shugurov.screens.HSEViewWithFile;
 import ru.hse.se.shugurov.screens.MapScreen;
-import ru.hse.se.shugurov.screens.VKHSEView;
+import ru.hse.se.shugurov.screens.SocialNetworkView;
 import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.FacebookRequester;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
@@ -30,6 +31,7 @@ public class ScreenFactory//TODO экран с браузером падает �
 {
     private static final String SHARED_PREFERENCES_TAG_SOCIAL = "social_networks";
     private static final String VK_ACCESS_TOKEN_TAG = "vk_access_token";
+    private static final String FACEBOOK_ACCESS_TOKEN_TAG = "facebook_access_token";
     private static ScreenFactory screenFactory;
     private FragmentActivity activity;
     private boolean isFirstFragment = true;
@@ -79,19 +81,19 @@ public class ScreenFactory//TODO экран с браузером падает �
                 adapter = new RSSScreenAdapter(view);
                 break;
             case HSEViewTypes.VK_FORUM:
-                VKHSEView vkhseView = (VKHSEView) view;
-                AccessToken vkAccessToken = getVkAccessToken(vkhseView);
+                SocialNetworkView socialNetworkView = (SocialNetworkView) view;
+                AccessToken vkAccessToken = getVkAccessToken(socialNetworkView);
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkTopicsScreenAdapter(vkhseView.getObjectID(), vkhseView.getName(), vkAccessToken);
+                    adapter = new VkTopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), vkAccessToken);
                 }
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                vkhseView = (VKHSEView) view;
-                vkAccessToken = getVkAccessToken(vkhseView);//TODo incorrect events will happen if access token is not available
+                socialNetworkView = (SocialNetworkView) view;
+                vkAccessToken = getVkAccessToken(socialNetworkView);//TODo incorrect events will happen if access token is not available
                 if (vkAccessToken != null)
                 {
-                    adapter = new VkWallPostScreen(vkhseView.getObjectID(), vkhseView.getName(), vkAccessToken);
+                    adapter = new VkWallPostScreen(socialNetworkView.getObjectID(), socialNetworkView.getName(), vkAccessToken);//TODO почему открываю имеено это?
                 }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
@@ -106,8 +108,16 @@ public class ScreenFactory//TODO экран с браузером падает �
             case HSEViewTypes.FILE:
                 openFile((HSEViewWithFile) view);
                 break;
+            case HSEViewTypes.FACEBOOK:
+                SocialNetworkView facebookView = (SocialNetworkView) view;
+                AccessToken facebookAccessToken = getFacebookAccessToken(facebookView);
+                if (facebookAccessToken != null)
+                {
+                    adapter = new FacebookList(facebookView.getObjectID(), facebookView.getName(), facebookAccessToken);
+                }
+                break;
             default:
-                throw new IllegalArgumentException("Can't create adapter for this view type");
+                return;
         }
 
         if (adapter != null)
@@ -158,27 +168,84 @@ public class ScreenFactory//TODO экран с браузером падает �
         }//TODO то делать,если не существует?
     }
 
-    private AccessToken getVkAccessToken(VKHSEView vkhseView)
+    private AccessToken getVkAccessToken(SocialNetworkView socialNetworkView)
     {
         AccessToken accessToken = null;
         SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
         String serializedToken = preferences.getString(VK_ACCESS_TOKEN_TAG, null);
         if (serializedToken == null)
         {
-            requestVkToken(vkhseView);
+            requestVkToken(socialNetworkView);
         } else
         {
             accessToken = new AccessToken(serializedToken);
             if (accessToken.hasExpired())
             {
-                requestVkToken(vkhseView);
+                requestVkToken(socialNetworkView);
             }
         }
 
         return accessToken;
     }
 
-    private void requestVkToken(final VKHSEView vkhseView)
+    private AccessToken getFacebookAccessToken(SocialNetworkView view)
+    {
+        AccessToken accessToken = null;
+        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
+        String serializedToken = preferences.getString(FACEBOOK_ACCESS_TOKEN_TAG, null);
+        if (serializedToken == null)
+        {
+            requestFacebookToken(view);
+
+        } else
+        {
+            accessToken = new AccessToken(serializedToken);
+            if (accessToken.hasExpired())
+            {
+                requestFacebookToken(view);
+            }
+        }
+        return accessToken;
+    }
+
+    private void requestFacebookToken(final SocialNetworkView view)
+    {
+        authorizationFragment = new AuthorizationFragment(FacebookRequester.AUTH, new AuthorizationFragment.AccessTokenRequest()
+        {
+            @Override
+            public void receiveToken(AccessToken accessToken)
+            {
+                if (accessToken == null)
+                {
+                    activity.getSupportFragmentManager().popBackStack();
+                } else
+                {
+                    writeToSharePreferences(FACEBOOK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
+                    removeAuthorizationFragment();
+                    FacebookList facebookList = new FacebookList(view.getObjectID(), view.getName(), accessToken);
+                    changeFragments(activity.getSupportFragmentManager(), facebookList);
+                }
+            }
+        });
+        changeFragments(activity.getSupportFragmentManager(), authorizationFragment);
+    }
+
+    private void removeAuthorizationFragment()
+    {
+        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+        transaction.remove(authorizationFragment);
+        transaction.commit();
+    }
+
+    private void writeToSharePreferences(String tag, String content)
+    {
+        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
+        SharedPreferences.Editor preferencesEditor = preferences.edit();
+        preferencesEditor.putString(tag, content);
+        preferencesEditor.commit();
+    }
+
+    private void requestVkToken(final SocialNetworkView socialNetworkView)
     {
         authorizationFragment = new AuthorizationFragment(VKRequester.OAUTH, new AuthorizationFragment.AccessTokenRequest()
         {
@@ -190,14 +257,9 @@ public class ScreenFactory//TODO экран с браузером падает �
                     activity.getSupportFragmentManager().popBackStack();
                 } else
                 {
-                    SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor preferencesEditor = preferences.edit();
-                    preferencesEditor.putString(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    preferencesEditor.commit();
-                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(vkhseView.getObjectID(), vkhseView.getName(), accessToken);
-                    FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-                    transaction.remove(authorizationFragment);
-                    transaction.commit();
+                    writeToSharePreferences(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
+                    VkTopicsScreenAdapter topicsScreenAdapter = new VkTopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), accessToken);
+                    removeAuthorizationFragment();
                     changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
                 }
             }

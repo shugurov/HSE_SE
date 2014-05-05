@@ -4,12 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
  * Created by Иван on 04.05.2014.
  */
-public abstract class VkAbstractList extends ListFragment
+public abstract class SocialNetworkAbstractList extends ListFragment
 {
     private static final String GROUP_NAME_TAG = "vk_group_name";
     private static final String GROUP_ID_TAG = "vk_group_id";
@@ -17,13 +16,12 @@ public abstract class VkAbstractList extends ListFragment
     private String groupId;
     private AccessToken accessToken;
     private String groupName;
-    private VKRequester requester;
 
-    public VkAbstractList()
+    public SocialNetworkAbstractList()
     {
     }
 
-    public VkAbstractList(String groupId, String groupName, AccessToken accessToken)
+    public SocialNetworkAbstractList(String groupId, String groupName, AccessToken accessToken)
     {
         this.groupId = groupId;
         this.groupName = groupName;
@@ -50,15 +48,6 @@ public abstract class VkAbstractList extends ListFragment
         outState.putString(GROUP_NAME_TAG, groupName);
         outState.putString(GROUP_ID_TAG, groupId);
         outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
-    }
-
-    protected VKRequester getVkRequester()
-    {
-        if (requester == null)
-        {
-            requester = new VKRequester(accessToken);
-        }
-        return requester;
     }
 
     protected String getGroupId()

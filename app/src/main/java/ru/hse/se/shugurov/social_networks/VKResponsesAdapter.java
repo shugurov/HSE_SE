@@ -22,10 +22,10 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures!!!!!!!!
 {
     private LayoutInflater inflater;
-    private VKAbstractItem[] comments;
+    private SocialNetworkEntry[] comments;
     private ImageLoader imageLoader = ImageLoader.instance();
 
-    public VKResponsesAdapter(Context context, VKAbstractItem[] comments)
+    public VKResponsesAdapter(Context context, SocialNetworkEntry[] comments)
     {
         this.comments = comments;
         inflater = LayoutInflater.from(context);
@@ -38,7 +38,7 @@ public class VKResponsesAdapter extends BaseAdapter//TODO does not show pictures
     }
 
     @Override
-    public VKAbstractItem getItem(int position)
+    public SocialNetworkEntry getItem(int position)
     {
         return comments[position];
     }

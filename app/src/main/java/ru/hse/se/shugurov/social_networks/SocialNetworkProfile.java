@@ -3,27 +3,32 @@ package ru.hse.se.shugurov.social_networks;
 /**
  * Created by Иван on 14.02.14.
  */
-public class VKProfile
+public class SocialNetworkProfile
 {
-    private final int userID;
+    private final String userId;
     private String photo;
     private String fullName;
 
-    public VKProfile(int userID)
+    public SocialNetworkProfile(String userId)
     {
-        this.userID = userID;
+        this.userId = userId;
     }
 
-    public VKProfile(int userID, String fullName, String photo)
+    public SocialNetworkProfile(String userId, String fullName, String photo)
     {
-        this.userID = userID;
+        this(userId, fullName);
         this.photo = photo;
+    }
+
+    public SocialNetworkProfile(String userId, String fullName)
+    {
+        this.userId = userId;
         this.fullName = fullName;
     }
 
-    public int getId()
+    public String getId()
     {
-        return userID;
+        return userId;
     }
 
     public String getPhoto()

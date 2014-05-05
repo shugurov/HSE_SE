@@ -13,6 +13,7 @@ import java.io.Serializable;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.AuthorizationWebClient;
+import ru.hse.se.shugurov.social_networks.FacebookRequester;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
@@ -48,6 +49,17 @@ public class AuthorizationFragment extends Fragment
         if (url.contains("vk"))
         {
             return new AuthorizationWebClient(VKRequester.REDIRECTION_URL, new AuthorizationWebClient.TokenCallback()
+            {
+                @Override
+                public void call(AccessToken accessToken)
+                {
+                    accessTokenRequest.receiveToken(accessToken);
+                }
+            });
+        }
+        if (url.contains("facebook"))
+        {
+            return new AuthorizationWebClient(FacebookRequester.REDIRECTION_URL, new AuthorizationWebClient.TokenCallback()
             {
                 @Override
                 public void call(AccessToken accessToken)

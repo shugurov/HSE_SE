@@ -6,20 +6,20 @@ import java.util.Date;
 /**
  * Created by Иван on 13.02.14.
  */
-public class VKTopic extends VKAbstractItem
+public class SocialNetworkTopic extends SocialNetworkEntry
 {
-    private int id;
-    private int comments;
+    private String id;
+    private int comments;//TODO remove?
     private String attachedPicture;
 
-    public VKTopic(int id, VKProfile author, String text, int comments, Date date)
+    public SocialNetworkTopic(String topicId, SocialNetworkProfile author, String text, int comments, Date date)
     {
         super(author, text, date);
-        this.id = id;
+        this.id = topicId;
         this.comments = comments;
     }
 
-    public VKTopic(int id, VKProfile author, String text, int comments, Date date, String attachedPicture)
+    public SocialNetworkTopic(String id, SocialNetworkProfile author, String text, int comments, Date date, String attachedPicture)
     {
         this(id, author, text, comments, date);
         this.attachedPicture = attachedPicture;
@@ -30,7 +30,7 @@ public class VKTopic extends VKAbstractItem
         return comments;
     }
 
-    public int getId()
+    public String getId()
     {
         return id;
     }

@@ -8,37 +8,37 @@ import java.util.Date;
 /**
  * Created by Иван on 27.02.14.
  */
-public class VKAbstractItem implements Parcelable
+public class SocialNetworkEntry implements Parcelable
 {
 
-    public static Creator<VKAbstractItem> CREATOR = new Creator<VKAbstractItem>()
+    public static Creator<SocialNetworkEntry> CREATOR = new Creator<SocialNetworkEntry>()
     {
         @Override
-        public VKAbstractItem createFromParcel(Parcel source)
+        public SocialNetworkEntry createFromParcel(Parcel source)
         {
-            return new VKAbstractItem(source);
+            return new SocialNetworkEntry(source);
         }
 
         @Override
-        public VKAbstractItem[] newArray(int size)
+        public SocialNetworkEntry[] newArray(int size)
         {
-            return new VKTopic[size];
+            return new SocialNetworkTopic[size];
         }
     };
 
-    private VKProfile author;
+    private SocialNetworkProfile author;
     private String text;
     private Date date;
 
 
-    public VKAbstractItem(VKProfile author, String text, Date date)
+    public SocialNetworkEntry(SocialNetworkProfile author, String text, Date date)
     {
         this.author = author;
         this.text = text;
         this.date = date;
     }
 
-    private VKAbstractItem(Parcel parcel)
+    private SocialNetworkEntry(Parcel parcel)
     {
     }
 
@@ -47,7 +47,7 @@ public class VKAbstractItem implements Parcelable
         return date;
     }
 
-    public VKProfile getAuthor()
+    public SocialNetworkProfile getAuthor()
     {
         return author;
     }

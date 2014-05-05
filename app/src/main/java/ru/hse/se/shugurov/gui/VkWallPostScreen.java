@@ -7,17 +7,17 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
+import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VKTopic;
 import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkWallPostScreen extends VkAbstractList
+public class VkWallPostScreen extends SocialNetworkAbstractList
 {
     private static final String POSTS_ID = "vk_posts_array";
-    private VKTopic[] posts;
+    private SocialNetworkTopic[] posts;
 
     public VkWallPostScreen()
     {
@@ -34,7 +34,7 @@ public class VkWallPostScreen extends VkAbstractList
         super.onViewCreated(view, savedInstanceState);
         if (posts == null)
         {
-            final VKRequester requester = getVkRequester();
+            final VKRequester requester = new VKRequester(getAccessToken());
             requester.getWallPosts(getGroupId(), new Requester.RequestResultCallback()
             {
                 @Override
@@ -76,7 +76,7 @@ public class VkWallPostScreen extends VkAbstractList
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            posts = (VKTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
+            posts = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
         }
     }
 

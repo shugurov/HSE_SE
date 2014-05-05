@@ -13,20 +13,20 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AccessToken;
-import ru.hse.se.shugurov.social_networks.VKAbstractItem;
+import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class VkResponsesScreenAdapter extends VkAbstractList
+public class VkResponsesScreenAdapter extends SocialNetworkAbstractList
 {
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
     private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
-    private int topicId;
-    private VKAbstractItem[] comments;
+    private String topicId;
+    private SocialNetworkEntry[] comments;
     private View footerView;
     private EditText input;
     private String commentText;
@@ -35,7 +35,7 @@ public class VkResponsesScreenAdapter extends VkAbstractList
     {
     }
 
-    public VkResponsesScreenAdapter(String groupId, String groupName, int topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
+    public VkResponsesScreenAdapter(String groupId, String groupName, String topicId, AccessToken accessToken)//TODO why do groupId and topicId  have differentTypes?
     {
         super(groupId, groupName, accessToken);
         this.topicId = topicId;
@@ -47,8 +47,8 @@ public class VkResponsesScreenAdapter extends VkAbstractList
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null && comments == null)
         {
-            topicId = savedInstanceState.getInt(TOPIC_ID_TAG);
-            comments = (VKAbstractItem[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
+            topicId = savedInstanceState.getString(TOPIC_ID_TAG);
+            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
             commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
         }
     }
@@ -68,7 +68,7 @@ public class VkResponsesScreenAdapter extends VkAbstractList
 
     private void loadComments()
     {
-        final VKRequester requester = getVkRequester();
+        final VKRequester requester = new VKRequester(getAccessToken());
         requester.getComments(getGroupId(), topicId, new Requester.RequestResultCallback()
         {
             @Override
@@ -142,7 +142,7 @@ public class VkResponsesScreenAdapter extends VkAbstractList
                 {
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(input.getWindowToken(), 0);
-                    final VKRequester requester = getVkRequester();
+                    final VKRequester requester = new VKRequester(getAccessToken());
                     setListShown(false);
                     Toast.makeText(getActivity(), "Отправка комментария", Toast.LENGTH_SHORT).show();
                     requester.addCommentToTopic(getGroupId(), topicId, commentText, new Requester.RequestResultCallback()
@@ -173,10 +173,7 @@ public class VkResponsesScreenAdapter extends VkAbstractList
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        //outState.putString(GROUP_ID_TAG, groupId);
-        outState.putInt(TOPIC_ID_TAG, topicId);
-        //outState.putSerializable(ACCESS_TOKEN_TAG, accessToken);
-        //outState.putString(GROUP_NAME_TAG, groupName);
+        outState.putString(TOPIC_ID_TAG, topicId);
         outState.putParcelableArray(COMMENTS_TAG, comments);
         outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
     }

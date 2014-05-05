@@ -23,10 +23,10 @@ public class VkWallPostsAdapter extends BaseAdapter
 {
     private LayoutInflater inflater;
     private ImageLoader imageLoader = ImageLoader.instance();
-    private VKTopic[] posts;
+    private SocialNetworkTopic[] posts;
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-    public VkWallPostsAdapter(Context context, VKTopic[] posts)
+    public VkWallPostsAdapter(Context context, SocialNetworkTopic[] posts)
     {
         this.posts = posts;
         inflater = LayoutInflater.from(context);
@@ -39,7 +39,7 @@ public class VkWallPostsAdapter extends BaseAdapter
     }
 
     @Override
-    public VKTopic getItem(int position)
+    public SocialNetworkTopic getItem(int position)
     {
         return posts[position];
     }
@@ -57,8 +57,8 @@ public class VkWallPostsAdapter extends BaseAdapter
         {
             convertView = inflater.inflate(R.layout.vk_wall_post, parent, false);
         }
-        VKTopic currentPost = getItem(position);
-        VKProfile author = currentPost.getAuthor();
+        SocialNetworkTopic currentPost = getItem(position);
+        SocialNetworkProfile author = currentPost.getAuthor();
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_post_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) convertView).getWeightSum();

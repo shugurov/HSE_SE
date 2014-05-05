@@ -22,12 +22,12 @@ import ru.hse.se.shugurov.utills.ImageLoader;
  */
 public class VKTopicsAdapter extends BaseAdapter//TODO я вообще не использую количесто комментариев, наверное, стоит поправить
 {
-    private VKTopic[] topics;
+    private SocialNetworkTopic[] topics;
     private LayoutInflater inflater;
     private ImageLoader imageLoader = ImageLoader.instance();
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-    public VKTopicsAdapter(Context context, VKTopic[] topics)
+    public VKTopicsAdapter(Context context, SocialNetworkTopic[] topics)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
@@ -40,7 +40,7 @@ public class VKTopicsAdapter extends BaseAdapter//TODO я вообще не ис
     }
 
     @Override
-    public VKTopic getItem(int position)
+    public SocialNetworkTopic getItem(int position)
     {
         return topics[position];
     }

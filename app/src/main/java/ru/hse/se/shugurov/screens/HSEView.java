@@ -115,9 +115,10 @@ public class HSEView implements Serializable
                 case HSEViewTypes.RSS_WRAPPER:
                     viewList.add(new HSEViewRSSWrapper(jsonObject, serverURL));
                     break;
+                case HSEViewTypes.FACEBOOK:
                 case HSEViewTypes.VK_FORUM:
                 case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                    viewList.add(new VKHSEView(jsonObject, serverURL));
+                    viewList.add(new SocialNetworkView(jsonObject));
                     break;
                 case HSEViewTypes.MAP:
                     viewList.add(new MapScreen(jsonObject, serverURL));
