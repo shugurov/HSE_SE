@@ -6,6 +6,10 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import ru.hse.se.shugurov.Requester;
 
@@ -22,6 +26,7 @@ public class FacebookRequester extends AbstractRequester
     private final static String GET_PAGE = "https://graph.facebook.com/%s/feed?access_token=%s";
     private final static String GET_PHOTO = "http://graph.facebook.com/%s/?fields=picture&type=large";
     private final static String GET_COMMENTS = "https://graph.facebook.com/%s/comments?access_token=%s";
+    private final static String GET_POST = "https://graph.facebook.com/%s?access_token=%s";
 
     public FacebookRequester(AccessToken accessToken)
     {
@@ -104,13 +109,12 @@ public class FacebookRequester extends AbstractRequester
     @Override
     public SocialNetworkTopic[] getTopics(String topicsJson)
     {
-        SocialNetworkTopic[] topics;
         SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
         try
         {
             JSONObject pageObject = new JSONObject(topicsJson);
             JSONArray dataObject = pageObject.getJSONArray("data");
-            topics = new SocialNetworkTopic[dataObject.length()];
+            SocialNetworkTopic[] topics = new SocialNetworkTopic[dataObject.length()];
             for (int i = 0; i < dataObject.length(); i++)
             {
                 JSONObject topicObject = dataObject.getJSONObject(i);
@@ -149,7 +153,25 @@ public class FacebookRequester extends AbstractRequester
     }
 
     @Override
-    public void getComments(final String groupID, String topicID, final RequestResultListener<SocialNetworkEntry> listener)
+    public void getComments(final String groupID, final String topicID, final RequestResultListener<SocialNetworkEntry> listener)
+    {
+        getPost(topicID, new RequestResultListener<SocialNetworkTopic>()
+        {
+            @Override
+            public void resultObtained(SocialNetworkTopic[] result)
+            {
+                if (result == null)
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    requestComments(result[0], topicID, listener);
+                }
+            }
+        });
+    }
+
+    private void requestComments(final SocialNetworkTopic post, String topicID, final RequestResultListener<SocialNetworkEntry> listener)
     {
         Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
         {
@@ -161,7 +183,7 @@ public class FacebookRequester extends AbstractRequester
                     listener.resultObtained(null);
                 } else
                 {
-                    handleCommentsJson(commentsJson, listener);
+                    handleCommentsJson(post, commentsJson, listener);
                 }
             }
         };
@@ -170,22 +192,124 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
-    private void handleCommentsJson(String commentsJson, RequestResultListener<SocialNetworkEntry> listener)//TODO kill me please
+    private void handleCommentsJson(SocialNetworkTopic post, String commentsJson, final RequestResultListener<SocialNetworkEntry> listener)//TODO kill me please
     {
         try
         {
             JSONObject commentObject = new JSONObject(commentsJson);
             JSONArray commentsArray = commentObject.getJSONArray("data");
-            SocialNetworkEntry[] comments = new SocialNetworkEntry[commentsArray.length() + 1];
+            final SocialNetworkEntry[] comments = new SocialNetworkEntry[commentsArray.length() + 1];
+            comments[0] = post;
             SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
+            final Map<String, List<SocialNetworkProfile>> idToProfiles = new HashMap<String, List<SocialNetworkProfile>>();
             for (int i = 0; i < commentsArray.length(); i++)
             {
                 comments[i + 1] = parseTopic(dateFormat, commentsArray.getJSONObject(i));
+                addProfileToMap(comments[i + 1], idToProfiles);
             }
+            addProfileToMap(comments[0], idToProfiles);
+            String[] photoUrlRequests = new String[idToProfiles.size()];
+            int requestIndex = 0;
+            for (String userId : idToProfiles.keySet())
+            {
+                photoUrlRequests[requestIndex] = String.format(GET_PHOTO, userId);
+                requestIndex++;
+            }
+            Requester.MultipleRequestResultCallback callback = new Requester.MultipleRequestResultCallback()
+            {
+                @Override
+                public void pushResult(String[] results)
+                {
+                    handlePhotoJson(results, listener, idToProfiles, comments);
+                }
+            };
+            Requester requester = new Requester(callback);
+            requester.execute(photoUrlRequests);
         } catch (Exception e)
         {
             listener.resultObtained(null);
         }
 
+    }
+
+    private void addProfileToMap(SocialNetworkEntry comment, Map<String, List<SocialNetworkProfile>> idToProfiles)
+    {
+        SocialNetworkProfile profile = comment.getAuthor();
+        List<SocialNetworkProfile> profilesWithCurrentId = idToProfiles.get(profile.getId());
+        if (profilesWithCurrentId == null)
+        {
+            profilesWithCurrentId = new ArrayList<SocialNetworkProfile>();
+            idToProfiles.put(profile.getId(), profilesWithCurrentId);
+        }
+        profilesWithCurrentId.add(profile);
+    }
+
+    private void getPost(String postId, final RequestResultListener<SocialNetworkTopic> listener)
+    {
+        String request = String.format(GET_POST, postId, getAccessToken());
+        Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String result)
+            {
+                if (result == null || (result != null && result.contains("error")))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
+                    try
+                    {
+                        JSONObject topicObject = new JSONObject(result);
+                        SocialNetworkTopic topic = parseTopic(dateFormat, topicObject);
+                        listener.resultObtained(new SocialNetworkTopic[]{topic});
+                    } catch (Exception e)
+                    {
+                        listener.resultObtained(null);
+                    }
+                }
+            }
+        };
+        Requester requester = new Requester(callback);
+        requester.execute(request);
+    }
+
+    private void handlePhotoJson(String[] results, RequestResultListener<SocialNetworkEntry> listener, Map<String, List<SocialNetworkProfile>> idToProfiles, SocialNetworkEntry[] comments)
+    {
+        if (results == null)
+        {
+            listener.resultObtained(null);
+        } else
+        {
+            for (String response : results)
+            {
+                if (response.contains("error"))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    try
+                    {
+                        JSONObject responseObject = new JSONObject(response);
+                        JSONObject pictureObject = responseObject.getJSONObject("picture");
+                        JSONObject dataObject = pictureObject.getJSONObject("data");
+                        String url = dataObject.getString("url");
+                        String id = responseObject.getString("id");
+                        List<SocialNetworkProfile> profilesWithCurrentId = idToProfiles.get(id);
+                        if (profilesWithCurrentId != null)
+                        {
+                            for (SocialNetworkProfile profile : profilesWithCurrentId)
+                            {
+                                profile.setPhoto(url);
+                            }
+                        }
+                        listener.resultObtained(comments);
+                    } catch (JSONException e)
+                    {
+                        listener.resultObtained(null);
+                    }
+                }
+            }
+        }
     }
 }

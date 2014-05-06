@@ -23,6 +23,11 @@ public class Requester extends AsyncTask<String, Void, String[]>
         this.callback = callback;
     }
 
+    public Requester(MultipleRequestResultCallback multipleRequestResultCallback)
+    {
+        this.multipleRequestResultCallback = multipleRequestResultCallback;
+    }
+
     @Override
     protected String[] doInBackground(String[] params)
     {
