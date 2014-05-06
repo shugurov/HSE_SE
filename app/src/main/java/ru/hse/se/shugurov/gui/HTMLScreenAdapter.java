@@ -15,7 +15,7 @@ import ru.hse.se.shugurov.utills.FileManager;
 /**
  * Created by Иван on 15.03.14.
  */
-public class HTMLScreenAdapter extends ScreenAdapter//TODO show progress bar?
+public class HTMLScreenAdapter extends ScreenAdapter
 {
     private TextView viewForHTML;
     public HTMLScreenAdapter()

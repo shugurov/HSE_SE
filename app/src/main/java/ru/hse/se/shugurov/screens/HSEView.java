@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class HSEView implements Serializable
 {
@@ -157,7 +158,7 @@ public class HSEView implements Serializable
         return isMainView;
     }
 
-    public void getDescriptionsOfFiles(ArrayList<FileDescription> descriptions)
+    public void getDescriptionsOfFiles(Collection<FileDescription> descriptions)
     {
         if (descriptions == null)
         {

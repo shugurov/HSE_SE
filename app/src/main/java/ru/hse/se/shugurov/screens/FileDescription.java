@@ -5,8 +5,8 @@ package ru.hse.se.shugurov.screens;
  */
 public class FileDescription
 {
-    private String url;
-    private String name;
+    private final String url;
+    private final String name;
 
     public FileDescription(String name, String url)
     {
@@ -22,5 +22,35 @@ public class FileDescription
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+
+        FileDescription that = (FileDescription) o;
+
+        if (!name.equals(that.name))
+        {
+            return false;
+        }
+        if (!url.equals(that.url))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = url.hashCode();
+        result = 31 * result + name.hashCode();
+        return result;
     }
 }

@@ -2,7 +2,6 @@ package ru.hse.se.shugurov.utills;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -12,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import ru.hse.se.shugurov.observer.Observable;
 import ru.hse.se.shugurov.observer.Observer;
@@ -24,23 +24,20 @@ import ru.hse.se.shugurov.screens.FileDescription;
 public class Downloader extends AsyncTask<FileDescription, Void, Void> implements Observable
 {
     private ArrayList<Observer> observers = new ArrayList<Observer>();
-    private ArrayList<FileDescription> fileDescriptions;
-    private FileManager fileManager;
+    private Collection<FileDescription> fileDescriptions;
     private DownloadStatus status;
     private Context context;
 
     public Downloader(Context context, DownloadStatus status)
     {
         this.context = context;
-        fileManager = new FileManager(context);
         this.status = status;
     }
 
-    public Downloader(Context context, ArrayList<FileDescription> fileDescriptions, DownloadStatus status)
+    public Downloader(Context context, Collection<FileDescription> fileDescriptions, DownloadStatus status)
     {
         this.context = context;
         this.fileDescriptions = fileDescriptions;
-        fileManager = new FileManager(context);
         this.status = status;
     }
 
@@ -52,7 +49,6 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
             for (FileDescription description : fileToDownloads)
             {
                 downloadFile(description);
-                Log.d("download", description.getName());
             }
         } else
         {
@@ -60,13 +56,8 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void> implement
             {
                 for (FileDescription description : fileDescriptions)
                 {
-                    Log.d("download", "check " + description.getName());
-                    if (!fileManager.doesExist(description.getName()))
-                    {
-                        downloadFile(description);
-                        Log.d("download", "download " + description.getName());
-                    }
-                }//TODO удалять старые файлы, но не тут
+                    downloadFile(description);
+                }
             }
         }
         return null;
