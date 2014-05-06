@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,12 +23,13 @@ public class FacebookRequester extends AbstractRequester
     public static final String REDIRECTION_URL = "https://www.facebook.com/connect/login_success.html";
     public static final String AUTH = "https://www.facebook.com/dialog/oauth?" +
             "client_id=465339086933483" +
-            "&redirect_uri=" + REDIRECTION_URL + "&response_type=token";
+            "&redirect_uri=" + REDIRECTION_URL + "&response_type=token&scope=publish_actions";
 
     private final static String GET_PAGE = "https://graph.facebook.com/%s/feed?access_token=%s";
     private final static String GET_PHOTO = "http://graph.facebook.com/%s/?fields=picture&type=large";
     private final static String GET_COMMENTS = "https://graph.facebook.com/%s/comments?access_token=%s";
     private final static String GET_POST = "https://graph.facebook.com/%s?access_token=%s";
+    private final static String ADD_COMMENT = "https://graph.facebook.com/%s/comments?method=post&message=%s&access_token=%s";
 
     public FacebookRequester(AccessToken accessToken)
     {
@@ -311,5 +314,20 @@ public class FacebookRequester extends AbstractRequester
                 }
             }
         }
+    }
+
+    @Override
+    public void addCommentToTopic(String groupId, String topicId, String text, Requester.RequestResultCallback callback)
+    {
+        try
+        {
+            String request = String.format(ADD_COMMENT, topicId, URLEncoder.encode(text, "utf8"), getAccessToken());
+            Requester requester = new Requester(callback);
+            requester.execute(request);
+        } catch (UnsupportedEncodingException e)
+        {
+            callback.pushResult(null);
+        }
+
     }
 }
