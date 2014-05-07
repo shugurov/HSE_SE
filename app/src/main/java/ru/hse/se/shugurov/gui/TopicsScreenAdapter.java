@@ -95,7 +95,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ScreenFactory.changeFragments(getFragmentManager(), new CommentsScreenAdapter(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester()));
+                ScreenFactory.changeFragments(getFragmentManager(), new SocialNetworkCommentsFragment(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester()));
             }
         });
     }

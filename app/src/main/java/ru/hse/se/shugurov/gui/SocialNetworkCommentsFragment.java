@@ -18,24 +18,45 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 
 /**
- * Created by Иван on 02.05.2014.
+ * Class for demonstrating a list of comments from a specific topic of social network.
+ * This class makes actual request for data via requester object, although it does not depend on
+ * specific {@code AbstractRequester} subclass.Requester object is provided by constructor in runtime.
+ * <p/>
+ * <p/>
+ * This class shows a form for commenting this topic. After user comment is sent successfully, fragments is refreshed
+ * See {@link ru.hse.se.shugurov.social_networks.AbstractRequester}
+ *
+ * @author Ivan Shugurov
  */
-public class CommentsScreenAdapter extends SocialNetworkAbstractList
+public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
 {
+    /*constants used saving fragment state*/
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
     private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
+
+
     private String topicId;
     private SocialNetworkEntry[] comments;
     private View footerView;
     private EditText input;
     private String commentText;
 
-    public CommentsScreenAdapter()
+    /**
+     * Default constructor used by Android for instantiating this class after it has been destroyed.
+     * Should not be used by developers.
+     */
+    public SocialNetworkCommentsFragment()
     {
     }
 
-    public CommentsScreenAdapter(String groupId, String groupName, String topicId, AbstractRequester requester)
+    /**
+     * @param groupId   id of social network group. Not null.
+     * @param groupName name of requested group. Used as title in action bar. Not null.
+     * @param topicId   id of social network topic. Not null.
+     * @param requester object which makes requests for the data from social networks. Not null
+     */
+    public SocialNetworkCommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester)
     {
         super(groupId, groupName, requester);
         this.topicId = topicId;
@@ -87,6 +108,7 @@ public class CommentsScreenAdapter extends SocialNetworkAbstractList
         });
     }
 
+    /*set ListAdapter and adds footer view*/
     private void setAdapter()
     {
         if (getActivity() != null)
@@ -102,6 +124,7 @@ public class CommentsScreenAdapter extends SocialNetworkAbstractList
         }
     }
 
+    /*Create footer view which shows a form for writing a reply*/
     private void createFooterView()
     {
         LayoutInflater inflater = LayoutInflater.from(getActivity());

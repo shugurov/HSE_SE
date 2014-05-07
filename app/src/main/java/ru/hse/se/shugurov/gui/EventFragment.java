@@ -13,15 +13,16 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.EventScreen;
 
 /**
- * Created by Иван on 22.04.2014.
+ *
+ * @author Ivan Shugurov
  */
-public class EventScreenAdapter extends ScreenAdapter
+public class EventFragment extends ScreenAdapter
 {
-    public EventScreenAdapter()
+    public EventFragment()
     {
     }
 
-    public EventScreenAdapter(EventScreen eventScreen)
+    public EventFragment(EventScreen eventScreen)
     {
         super(eventScreen);
     }

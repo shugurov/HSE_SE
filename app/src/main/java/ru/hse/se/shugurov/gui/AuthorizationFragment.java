@@ -17,17 +17,30 @@ import ru.hse.se.shugurov.social_networks.FacebookRequester;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 
 /**
- * Created by Иван on 02.05.2014.
+ * This class is used for authentication in social networks. It is assumed that these networks uses OAuth 2.
+ * In order to ger access token custom {@code WebViewClient}  is provided to {@code WebView}.
+ *
+ * @author Ivan Shugurov
  */
-public class AuthorizationFragment extends Fragment
+public class AuthorizationFragment extends Fragment//TODO не умею вот этот вращать
 {
     private String url;
     private AccessTokenRequest accessTokenRequest;
 
+    /**
+     * Default constructor used by Android for instantiating this class after it has been destroyed.
+     * Should not be used by developers.
+     */
     public AuthorizationFragment()
     {
     }
 
+    /**
+     * Constructs new {@code AuthorizationFragment}
+     *
+     * @param url                OAuth url. not null
+     * @param accessTokenRequest object for callback. not null
+     */
     public AuthorizationFragment(String url, AccessTokenRequest accessTokenRequest)
     {
         this.url = url;
@@ -43,7 +56,8 @@ public class AuthorizationFragment extends Fragment
         return webView;
     }
 
-
+    /*factory method for creating WebViewClient. Analyses given Oauth url and decides which
+    * subclass of WebViewClient to use*/
     private WebViewClient createWebViewClient(String url)
     {
         if (url.contains("vk"))
@@ -69,12 +83,22 @@ public class AuthorizationFragment extends Fragment
             });
         } else
         {
-            return null;
+            return new WebViewClient();
         }
     }
 
+    /**
+     * Interface for callback objects. These objects are used for notifying listener about obtained access token
+     *
+     * @author Ivan Shugurov
+     */
     public interface AccessTokenRequest extends Serializable
     {
+        /**
+         * Sends notification whereas request for access token was successful and if it was sends obtained token
+         *
+         * @param accessToken {@code null} if access token was not obtained.
+         */
         void receiveToken(AccessToken accessToken);
     }
 }

@@ -103,7 +103,7 @@ public class ScreenFactory
                 adapter = new MapScreenAdapter((MapScreen) view);
                 break;
             case HSEViewTypes.EVENTS:
-                adapter = new EventScreenAdapter((EventScreen) view);
+                adapter = new EventFragment((EventScreen) view);
                 break;
             case HSEViewTypes.FILE:
                 openFile((HSEViewWithFile) view);
