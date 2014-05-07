@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#002336</color>
+    <color name="typical_item">#abaaa8</color>
+    <color name="web_item">#b4a0a1</color>
+    <color name="rss_item">#e4770e</color>
+    <color name="event_item">#4baab0</color>
+    <color name="file_item">#b9213a</color>
+    <color name="linkedin_item">#0189b9</color>
+    <color name="vk_item">#7091ba</color>
+    <color name="facebook_item">#3b5a93</color>
+</resources>

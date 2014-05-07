@@ -68,8 +68,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 indexOfCurrentItem = i * numberOfViewsInRow + j;
                 items[j] = (ViewGroup) inflater.inflate(R.layout.item, null, false);
                 ((TextView) items[j].findViewById(R.id.item_text_id)).setText(elements[indexOfCurrentItem].getName());
-                Drawable image = getIconDrawable(elements[indexOfCurrentItem].getHseViewType());
-                ((ImageView) items[j].findViewById(R.id.item_image_id)).setImageDrawable(image);
+                setAppearance(items[j], elements[indexOfCurrentItem].getHseViewType());
                 items[j].setId(idOfCurrentView);
                 idOfCurrentView++;
                 items[j].setOnClickListener(this);
@@ -85,55 +84,67 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
         return content;
     }
 
-    private Drawable getIconDrawable(int HSEViewType) throws IllegalArgumentException
+    private void setAppearance(View view, int HSEViewType) throws IllegalArgumentException
     {
         int drawableID;
+        int backgroundColor = R.color.typical_item;
         switch (HSEViewType)
         {
             case HSEViewTypes.INNER_WEB_PAGE:
                 drawableID = R.drawable.section1;
+                backgroundColor = R.color.web_item;
                 break;
             case HSEViewTypes.WEB_PAGE:
                 drawableID = R.drawable.section2;
+                backgroundColor = R.color.web_item;
                 break;
             case HSEViewTypes.FILE:
                 drawableID = R.drawable.section3;
+                backgroundColor = R.color.file_item;
                 break;
             case HSEViewTypes.HTML_CONTENT:
                 drawableID = R.drawable.section4;
                 break;
             case HSEViewTypes.FACEBOOK:
                 drawableID = R.drawable.section5;
+                backgroundColor = R.color.facebook_item;
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
                 drawableID = R.drawable.section6;
+                backgroundColor = R.color.vk_item;
                 break;
             case HSEViewTypes.VK_FORUM:
                 drawableID = R.drawable.section6;
+                backgroundColor = R.color.vk_item;
                 break;
             case HSEViewTypes.FAQ:
                 drawableID = R.drawable.section7;
                 break;
             case HSEViewTypes.RSS_WRAPPER:
                 drawableID = R.drawable.section8;
+                backgroundColor = R.color.rss_item;
                 break;
             case HSEViewTypes.EVENTS:
                 drawableID = R.drawable.section9;
+                backgroundColor = R.color.event_item;
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 drawableID = R.drawable.section10;
                 break;
             case HSEViewTypes.LINKEDIN:
                 drawableID = R.drawable.section12;
+                backgroundColor = R.color.linkedin_item;
                 break;
             case HSEViewTypes.MAP:
                 drawableID = R.drawable.section13;
                 break;
             default:
-                throw new IllegalArgumentException("Unknown ID");
+                return;
         }
         Resources resources = getActivity().getResources();
-        return resources.getDrawable(drawableID);
+        Drawable image = resources.getDrawable(drawableID);
+        ((ImageView) view.findViewById(R.id.item_image_id)).setImageDrawable(image);
+        (view.findViewById(R.id.item_content)).setBackgroundColor(resources.getColor(backgroundColor));
     }
 
 
