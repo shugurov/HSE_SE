@@ -142,7 +142,7 @@ public class VKRequester extends AbstractRequester
         }
     }
 
-    private static void parseGroups(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)//TODO тупо копирую код(
+    private static void parseGroups(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
     {
         for (int i = 0; i < profiles.length(); i++)
         {

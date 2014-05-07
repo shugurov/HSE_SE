@@ -26,7 +26,7 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin">
 
-    <TextView
+        <TextView
             android:id="@+id/vk_comment_author_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

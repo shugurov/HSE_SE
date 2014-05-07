@@ -82,7 +82,7 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.VK_FORUM:
                 SocialNetworkView socialNetworkView = (SocialNetworkView) view;
-                AccessToken vkAccessToken = getVkAccessToken(socialNetworkView);
+                AccessToken vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
                     adapter = new TopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
@@ -90,10 +90,10 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
                 socialNetworkView = (SocialNetworkView) view;
-                vkAccessToken = getVkAccessToken(socialNetworkView);//TODo incorrect events will happen if access token is not available
+                vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
-                    adapter = new WallPostScreen(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));//TODO почему открываю имеено это?
+                    adapter = new WallPostScreen(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
                 }
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
@@ -110,7 +110,7 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.FACEBOOK:
                 SocialNetworkView facebookView = (SocialNetworkView) view;
-                AccessToken facebookAccessToken = getFacebookAccessToken(facebookView);
+                AccessToken facebookAccessToken = getFacebookAccessToken();
                 if (facebookAccessToken != null)
                 {
                     adapter = new TopicsScreenAdapter(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
@@ -134,7 +134,7 @@ public class ScreenFactory
         }
     }
 
-    private void openBrowser(String url)//TODO а стоит ли этому быть тут?
+    private void openBrowser(String url)
     {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.parse(url);
@@ -151,7 +151,7 @@ public class ScreenFactory
 
     private void openFile(HSEViewWithFile fileView)
     {
-        File file = new File(activity.getFilesDir().getAbsolutePath() + "/" + fileView.getFileName());
+        File file = new File(activity.getFilesDir(), fileView.getFileName());
         if (file.exists())
         {
             Intent target = new Intent(Intent.ACTION_VIEW);
@@ -165,76 +165,68 @@ public class ScreenFactory
                 Toast.makeText(activity, "Нет приложений, способных открыть этот тип фалов", Toast.LENGTH_SHORT).show();
             }
 
-        }//TODO то делать,если не существует?
+        } else
+        {
+            Toast.makeText(activity, "Не удалось открыть файл", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private AccessToken getVkAccessToken(SocialNetworkView socialNetworkView)
+    private AccessToken getVkAccessToken()
     {
         AccessToken accessToken = null;
         SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
         String serializedToken = preferences.getString(VK_ACCESS_TOKEN_TAG, null);
         if (serializedToken == null)
         {
-            requestVkToken(socialNetworkView);
+            requestVkToken();
         } else
         {
             accessToken = new AccessToken(serializedToken);
             if (accessToken.hasExpired())
             {
-                requestVkToken(socialNetworkView);
+                requestVkToken();
             }
         }
 
         return accessToken;
     }
 
-    private AccessToken getFacebookAccessToken(SocialNetworkView view)
+    private AccessToken getFacebookAccessToken()
     {
         AccessToken accessToken = null;
         SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
         String serializedToken = preferences.getString(FACEBOOK_ACCESS_TOKEN_TAG, null);
         if (serializedToken == null)
         {
-            requestFacebookToken(view);
+            requestFacebookToken();
 
         } else
         {
             accessToken = new AccessToken(serializedToken);
             if (accessToken.hasExpired())
             {
-                requestFacebookToken(view);
+                requestFacebookToken();
             }
         }
         return accessToken;
     }
 
-    private void requestFacebookToken(final SocialNetworkView view)
+    private void requestFacebookToken()
     {
         authorizationFragment = new AuthorizationFragment(FacebookRequester.AUTH, new AuthorizationFragment.AccessTokenRequest()
         {
             @Override
             public void receiveToken(AccessToken accessToken)
             {
-                if (accessToken == null)
-                {
-                    activity.getSupportFragmentManager().popBackStack();
-                } else
+                if (accessToken != null)
                 {
                     writeToSharePreferences(FACEBOOK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    removeAuthorizationFragment();
-                    Fragment facebookList = new TopicsScreenAdapter(view.getObjectID(), view.getName(), new FacebookRequester(accessToken));
-                    changeFragments(activity.getSupportFragmentManager(), facebookList);
+                    Toast.makeText(activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
                 }
+                activity.getSupportFragmentManager().popBackStack();
             }
         });
         changeFragments(activity.getSupportFragmentManager(), authorizationFragment);
-    }
-
-    private void removeAuthorizationFragment()
-    {
-        FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.remove(authorizationFragment);
-        transaction.commit();
     }
 
     private void writeToSharePreferences(String tag, String content)
@@ -245,23 +237,19 @@ public class ScreenFactory
         preferencesEditor.commit();
     }
 
-    private void requestVkToken(final SocialNetworkView socialNetworkView)
+    private void requestVkToken()
     {
         authorizationFragment = new AuthorizationFragment(VKRequester.OAUTH, new AuthorizationFragment.AccessTokenRequest()
         {
             @Override
             public void receiveToken(AccessToken accessToken)
             {
-                if (accessToken == null)
-                {
-                    activity.getSupportFragmentManager().popBackStack();
-                } else
+                if (accessToken != null)
                 {
                     writeToSharePreferences(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    TopicsScreenAdapter topicsScreenAdapter = new TopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(accessToken));
-                    removeAuthorizationFragment();
-                    changeFragments(activity.getSupportFragmentManager(), topicsScreenAdapter);
+                    Toast.makeText(activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
                 }
+                activity.getSupportFragmentManager().popBackStack();
             }
         });
         changeFragments(activity.getSupportFragmentManager(), authorizationFragment);

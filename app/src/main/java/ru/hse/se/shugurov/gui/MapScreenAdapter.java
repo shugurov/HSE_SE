@@ -55,7 +55,7 @@ public class MapScreenAdapter extends SupportMapFragment
         LatLngBounds.Builder builder = LatLngBounds.builder();
         for (MarkerWrapper marker : markerWrappers)
         {
-            googleMap.addMarker(marker.getMarker());//TODO в эмуляторе тут упало(
+            googleMap.addMarker(marker.getMarker());
             builder.include(marker.getMarker().getPosition());
             googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }

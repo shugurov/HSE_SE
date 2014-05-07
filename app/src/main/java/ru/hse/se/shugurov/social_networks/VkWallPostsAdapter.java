@@ -79,7 +79,7 @@ public class VkWallPostsAdapter extends BaseAdapter
         }
         ((TextView) convertView.findViewById(R.id.vk_wall_post_author_name)).setText(author.getFullName());
         ((TextView) convertView.findViewById(R.id.vk_wall_post_text)).setText(Html.fromHtml(currentPost.getText()));
-//        ((TextView)convertView.findViewById(R.id.vk_comments_quantity)).setText(currentPost.getComments()); //TODO it does not work... why???
+        ((TextView) convertView.findViewById(R.id.comments_quantity)).setText(currentPost.getCommentsString());
         ((TextView) convertView.findViewById(R.id.vk_date)).setText(format.format(currentPost.getDate()));
         return convertView;
     }

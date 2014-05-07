@@ -58,6 +58,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
             LinearLayout linearLayout = new LinearLayout(getActivity());
             linearLayout.setOrientation(LinearLayout.HORIZONTAL);
             int currentQuantity = elements.length - i * numberOfViewsInRow >= numberOfViewsInRow ? numberOfViewsInRow : (elements.length - i * numberOfViewsInRow) % numberOfViewsInRow;
+            int itemWidth = screenWidth / numberOfViewsInRow;
             final ViewGroup[] items = new ViewGroup[currentQuantity];
             for (int j = 0; j < currentQuantity; j++)
             {
@@ -72,7 +73,7 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 items[j].setId(idOfCurrentView);
                 idOfCurrentView++;
                 items[j].setOnClickListener(this);
-                items[j].setLayoutParams(new RelativeLayout.LayoutParams(screenWidth / numberOfViewsInRow, ViewGroup.LayoutParams.MATCH_PARENT));//TODO to make them quadratic?
+                items[j].setLayoutParams(new RelativeLayout.LayoutParams(itemWidth, ViewGroup.LayoutParams.MATCH_PARENT));
             }
             for (ViewGroup item : items)
             {

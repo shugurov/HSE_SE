@@ -40,7 +40,7 @@
             android:maxLines="3"/>
 
         <include
-            layout="@layout/vk_item_footer"></include>
+            layout="@layout/social_network_item_footer"></include>
     </LinearLayout>
 
 </LinearLayout>

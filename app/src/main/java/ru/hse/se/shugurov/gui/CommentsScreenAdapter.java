@@ -2,6 +2,7 @@ package ru.hse.se.shugurov.gui;
 
 
 import android.content.Context;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,8 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
+import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
-import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
@@ -63,6 +64,7 @@ public class CommentsScreenAdapter extends SocialNetworkAbstractList
         {
             setAdapter();
         }
+        getListView().setSelector(new StateListDrawable());
     }
 
     private void loadComments()
@@ -89,13 +91,13 @@ public class CommentsScreenAdapter extends SocialNetworkAbstractList
     {
         if (getActivity() != null)
         {
-            VKResponsesAdapter vkResponsesAdapter = new VKResponsesAdapter(getActivity(), comments);
+            SocialNetworkCommentsAdapter socialNetworkCommentsAdapter = new SocialNetworkCommentsAdapter(getActivity(), comments);
             if (footerView == null)
             {
                 createFooterView();
                 getListView().addFooterView(footerView);
             }
-            setListAdapter(vkResponsesAdapter);
+            setListAdapter(socialNetworkCommentsAdapter);
             setListShown(true);
         }
     }

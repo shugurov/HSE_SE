@@ -16,33 +16,31 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.gui.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
-
 /**
- * Created by Иван on 13.02.14.
+ * Created by Иван on 26.02.14.
  */
-public class VKTopicsAdapter extends BaseAdapter
+public class SocialNetworkCommentsAdapter extends BaseAdapter
 {
-    private SocialNetworkTopic[] topics;
     private LayoutInflater inflater;
+    private SocialNetworkEntry[] comments;
     private ImageLoader imageLoader = ImageLoader.instance();
-    private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-    public VKTopicsAdapter(Context context, SocialNetworkTopic[] topics)
+    public SocialNetworkCommentsAdapter(Context context, SocialNetworkEntry[] comments)
     {
-        this.topics = topics;
+        this.comments = comments;
         inflater = LayoutInflater.from(context);
     }
 
     @Override
     public int getCount()
     {
-        return topics.length;
+        return comments.length;
     }
 
     @Override
-    public SocialNetworkTopic getItem(int position)
+    public SocialNetworkEntry getItem(int position)
     {
-        return topics[position];
+        return comments[position];
     }
 
     @Override
@@ -56,18 +54,18 @@ public class VKTopicsAdapter extends BaseAdapter
     {
         if (convertView == null)
         {
-            convertView = inflater.inflate(R.layout.vk_topic, parent, false);
+            convertView = inflater.inflate(R.layout.social_network_comment, parent, false);
         }
-        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_topic_author_photo);
+        ((TextView) convertView.findViewById(R.id.vk_comment_author_name)).setText(comments[position].getAuthor().getFullName());
+        DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
+        ((TextView) convertView.findViewById(R.id.vk_comment_date)).setText(format.format(comments[position].getDate()));
+        ((TextView) convertView.findViewById(R.id.vk_comment_text)).setText(Html.fromHtml(comments[position].getText()));
+        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_comment_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) convertView).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
         FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
-        imageLoader.displayImage(topics[position].getAuthor().getPhoto(), flexibleImage);
-        ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topics[position].getAuthor().getFullName()));
-        ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(topics[position].getText()));
-        String date = format.format(getItem(position).getDate());
-        ((TextView) convertView.findViewById(R.id.vk_date)).setText(date);
+        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), flexibleImage);
         return convertView;
     }
 }

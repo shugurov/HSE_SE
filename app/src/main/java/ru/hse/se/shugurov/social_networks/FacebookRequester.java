@@ -195,7 +195,7 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
-    private void handleCommentsJson(SocialNetworkTopic post, String commentsJson, final RequestResultListener<SocialNetworkEntry> listener)//TODO kill me please
+    private void handleCommentsJson(SocialNetworkTopic post, String commentsJson, final RequestResultListener<SocialNetworkEntry> listener)
     {
         try
         {

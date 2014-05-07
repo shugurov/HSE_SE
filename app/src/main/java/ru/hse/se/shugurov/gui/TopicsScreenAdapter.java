@@ -12,7 +12,7 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
-import ru.hse.se.shugurov.social_networks.VKTopicsAdapter;
+import ru.hse.se.shugurov.social_networks.TopicsListAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
@@ -21,7 +21,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
 {
     private final static String VK_TOPICS_TAG = "vk_topics_array";
     private SocialNetworkTopic[] topics;
-    private VKTopicsAdapter adapter;
+    private TopicsListAdapter adapter;
 
     public TopicsScreenAdapter()
     {
@@ -105,7 +105,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
     {
         if (getActivity() != null)
         {
-            adapter = new VKTopicsAdapter(getActivity(), topics);
+            adapter = new TopicsListAdapter(getActivity(), topics);
             setListAdapter(adapter);
         }
     }

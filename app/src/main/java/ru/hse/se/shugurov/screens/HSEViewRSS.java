@@ -18,7 +18,7 @@ public class HSEViewRSS extends HSEView
     private String summary = "";
     private HSERSSType type;
 
-    HSEViewRSS(JSONObject jsonObject) throws JSONException//TODO меня печалит пустой конструктор
+    HSEViewRSS(JSONObject jsonObject) throws JSONException
     {
         title = jsonObject.getString(TITLE_TAG);
         omitted = jsonObject.getString(OMITTED_TAG);
@@ -57,7 +57,7 @@ public class HSEViewRSS extends HSEView
         return type;
     }
 
-    private void clearStyle()//TODO wtf?
+    private void clearStyle()
     {
         int startIndex = summary.indexOf("<style");
         int endIndex = summary.indexOf("</style>");

@@ -3,6 +3,7 @@ package ru.hse.se.shugurov.gui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
@@ -24,17 +25,17 @@ import java.text.DateFormat;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
+import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.VKRequester;
-import ru.hse.se.shugurov.social_networks.VKResponsesAdapter;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
  * Created by Иван on 03.05.2014.
  */
-public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут недописал requester
+public class WallCommentsScreen extends SocialNetworkAbstractList
 {
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
@@ -70,7 +71,6 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
         }
     }
 
-    //BEGIN TODO тупо скопипастил код для получения ширины экрана
     @TargetApi(13)
     private int getScreenSizeAfterAPI13(Display display)
     {
@@ -98,12 +98,10 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
         }
     }
 
-    //END TODO
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View resultView = super.onCreateView(inflater, container, savedInstanceState);//TODO Do I have to do it here?
+        View resultView = super.onCreateView(inflater, container, savedInstanceState);
         containerWidth = container.getWidth() - container.getPaddingLeft() - container.getPaddingRight();
         if (containerWidth == 0)
         {
@@ -129,7 +127,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
                     VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
                     {
                         @Override
-                        public void pushResult(String result)//TODo parse in different thread
+                        public void pushResult(String result)
                         {
                             handleFullProfilesInformationObtaining(result);
                         }
@@ -143,6 +141,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
                 instantiateAdapter();
             }
         }
+        getListView().setSelector(new StateListDrawable());
     }
 
     private void loadComments()
@@ -157,7 +156,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
                     Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
                 } else
                 {
-                    comments = VKRequester.getWallComments(result);//TODo parse in different thread
+                    comments = VKRequester.getWallComments(result);
                     VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
                     {
                         @Override
@@ -185,7 +184,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
 
     private void instantiateAdapter()
     {
-        VKResponsesAdapter responsesAdapter = new VKResponsesAdapter(getActivity(), comments);
+        SocialNetworkCommentsAdapter responsesAdapter = new SocialNetworkCommentsAdapter(getActivity(), comments);
         if (headerView == null)
         {
             createHeaderView();
@@ -236,7 +235,6 @@ public class WallCommentsScreen extends SocialNetworkAbstractList//TODO тут �
         }
         ((TextView) headerView.findViewById(R.id.vk_wall_post_author_name)).setText(author.getFullName());
         ((TextView) headerView.findViewById(R.id.vk_wall_post_text)).setText(Html.fromHtml(post.getText()));
-//        ((TextView)convertView.findViewById(R.id.vk_comments_quantity)).setText(currentPost.getComments()); //TODO it does not work... why???
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
         ((TextView) headerView.findViewById(R.id.vk_date)).setText(format.format(post.getDate()));
     }
