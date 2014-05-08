@@ -11,14 +11,25 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
 
 /**
- * Created by Иван on 24.04.2014.
+ * Class used to demonstrate web pages within application
+ * <p/>
+ * Created by Ivan Shugurov
  */
-public class InternalWebScreenAdapter extends ScreenAdapter
+public class InternalWebScreenAdapter extends AbstractFragment
 {
+    /**
+     * Default constructor used by Android for instantiating this class after it was destroyed.
+     * Should not be used by developers.
+     */
     public InternalWebScreenAdapter()
     {
     }
 
+    /**
+     * Opens an url stored in hseView in {@code WebView}
+     *
+     * @param hseView with url to be opened. not null
+     */
     public InternalWebScreenAdapter(HSEView hseView)
     {
         super(hseView);

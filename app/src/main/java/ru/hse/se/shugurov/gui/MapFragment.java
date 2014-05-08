@@ -26,21 +26,33 @@ import ru.hse.se.shugurov.screens.MapScreen;
 import ru.hse.se.shugurov.screens.MarkerWrapper;
 
 /**
- * Created by Иван on 20.04.2014.
+ * Created by Ivan Shugurov
  */
-public class MapScreenAdapter extends SupportMapFragment
+public class MapFragment extends SupportMapFragment
 {
+    /*constants used for saving fragment state*/
     private static final String MARKERS_TAG = "markers";
     private static final String TITLE_TAG = "title";
+
+
     private MarkerWrapper[] markerWrappers;
     private String title;
     private Map<Marker, MarkerWrapper> markersToWrappers;
 
-    public MapScreenAdapter()
+    /**
+     * Default constructor used by Android for instantiating this class after it was destroyed.
+     * Should not be used by developers.
+     */
+    public MapFragment()
     {
     }
 
-    public MapScreenAdapter(MapScreen hseView)
+    /**
+     * Used to demonstrate map and markers on it. requires google play service
+     *
+     * @param hseView object with map markers. Not null.
+     */
+    public MapFragment(MapScreen hseView)
     {
         markerWrappers = hseView.getMarkers();
         this.title = hseView.getName();
@@ -144,7 +156,9 @@ public class MapScreenAdapter extends SupportMapFragment
         outState.putString(TITLE_TAG, title);
     }
 
-    class MarkerWindowAdapter implements GoogleMap.InfoWindowAdapter
+    /*used for customizing markers. Changes appearance only for those markers which
+    opens external map application when user touches them.*/
+    private class MarkerWindowAdapter implements GoogleMap.InfoWindowAdapter
     {
         @Override
         public View getInfoWindow(Marker marker)

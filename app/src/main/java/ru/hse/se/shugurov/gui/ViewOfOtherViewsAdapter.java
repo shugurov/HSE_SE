@@ -24,7 +24,7 @@ import ru.hse.se.shugurov.screens.HSEViewTypes;
 /**
  * Created by Иван on 15.03.14.
  */
-public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnClickListener
+public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.OnClickListener
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
 

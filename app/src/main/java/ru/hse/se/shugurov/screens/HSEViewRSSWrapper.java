@@ -28,7 +28,7 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
     }
 
 
-    public HSEViewRSS[] getRSS() throws JSONException//TODO проверить во фрагменте null или нет
+    public HSEViewRSS[] getRSS() throws JSONException
     {
         FileManager fileManager = FileManager.instance();
         String content;

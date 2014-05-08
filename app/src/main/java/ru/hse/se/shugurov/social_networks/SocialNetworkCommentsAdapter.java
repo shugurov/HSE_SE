@@ -13,7 +13,7 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.gui.FlexibleImageView;
+import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**

@@ -68,7 +68,7 @@ public class ScreenFactory
         switch (view.getHseViewType())
         {
             case HSEViewTypes.HTML_CONTENT:
-                adapter = new HTMLScreenAdapter(view);
+                adapter = new HTMLScreenFragment(view);
                 break;
             case HSEViewTypes.WEB_PAGE:
                 openBrowser(view.getUrl());
@@ -100,7 +100,7 @@ public class ScreenFactory
                 adapter = new ViewOfOtherViewsAdapter(view);
                 break;
             case HSEViewTypes.MAP:
-                adapter = new MapScreenAdapter((MapScreen) view);
+                adapter = new MapFragment((MapScreen) view);
                 break;
             case HSEViewTypes.EVENTS:
                 adapter = new EventFragment((EventScreen) view);

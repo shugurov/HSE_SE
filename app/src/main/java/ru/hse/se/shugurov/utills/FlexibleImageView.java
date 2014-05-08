@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov.gui;
+package ru.hse.se.shugurov.utills;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;

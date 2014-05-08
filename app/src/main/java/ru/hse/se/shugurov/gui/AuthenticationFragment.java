@@ -32,7 +32,7 @@ public class AuthenticationFragment extends Fragment
     private AccessTokenRequest accessTokenRequest;
 
     /**
-     * Default constructor used by Android for instantiating this class after it has been destroyed.
+     * Default constructor used by Android for instantiating this class after it was destroyed.
      * Should not be used by developers.
      */
     public AuthenticationFragment()

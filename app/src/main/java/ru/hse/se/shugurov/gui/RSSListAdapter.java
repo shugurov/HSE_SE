@@ -11,13 +11,21 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEViewRSS;
 
 /**
- * Created by Иван on 15.03.14.
+ * Provides items for {@code ListView}
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class RSSListAdapter extends BaseAdapter
 {
     private HSEViewRSS[] rssItems;
     private LayoutInflater inflater;
 
+    /**
+     * Constructs a new adapter
+     *
+     * @param context  activity used to inflate views. not null
+     * @param rssItems array of rss items to be shown. not null
+     */
     public RSSListAdapter(Context context, HSEViewRSS[] rssItems)
     {
         this.rssItems = rssItems;

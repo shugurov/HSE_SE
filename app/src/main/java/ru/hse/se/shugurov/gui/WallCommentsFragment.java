@@ -30,6 +30,7 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.social_networks.VKRequester;
+import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 import ru.hse.se.shugurov.utills.Requester;
 

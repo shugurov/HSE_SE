@@ -13,14 +13,23 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.EventScreen;
 
 /**
+ * This class is used to show list of events.
+ *
  * @author Ivan Shugurov
  */
-public class EventFragment extends ScreenAdapter
+public class EventFragment extends AbstractFragment
 {
+    /**
+     * Default constructor used by Android for instantiating this class after it was destroyed.
+     * Should not be used by developers.
+     */
     public EventFragment()
     {
     }
 
+    /**
+     * @param eventScreen object that stores information about events. Not Null.
+     */
     public EventFragment(EventScreen eventScreen)
     {
         super(eventScreen);

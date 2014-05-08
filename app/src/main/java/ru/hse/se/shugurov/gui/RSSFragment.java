@@ -19,14 +19,27 @@ import ru.hse.se.shugurov.screens.HSEViewRSS;
 import ru.hse.se.shugurov.screens.HSEViewRSSWrapper;
 
 /**
- * Created by Иван on 15.03.14.
+ * Used for demonstrating a list of RSS items via list adapter.
+ * <p/>
+ * See {@link ru.hse.se.shugurov.gui.RSSListAdapter}
+ * <p/>
+ * Created by Ivan Shugurov
  */
-public class RSSFragment extends ScreenAdapter
+public class RSSFragment extends AbstractFragment
 {
+    /**
+     * Default constructor used by Android for instantiating this class after it was destroyed.
+     * Should not be used by developers.
+     */
     public RSSFragment()
     {
     }
 
+    /**
+     * Constructs a fragment
+     *
+     * @param hseViewRSS object with a list of rss items. not null
+     */
     public RSSFragment(HSEView hseViewRSS)
     {
         super(hseViewRSS);
@@ -70,6 +83,7 @@ public class RSSFragment extends ScreenAdapter
         return rssItemsView;
     }
 
+    /*Tries to open provided url in browser*/
     private void openBrowser(String url)
     {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
@@ -78,6 +92,7 @@ public class RSSFragment extends ScreenAdapter
         getActivity().startActivity(browserIntent);
     }
 
+    /*inflates view for rss and sets titles when only 1 element has to be shown*/
     private View showEntireRSS(LayoutInflater inflater, ViewGroup container)
     {
         View rssLayout = inflater.inflate(R.layout.rss_layout, container, false);

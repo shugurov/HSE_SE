@@ -17,14 +17,21 @@ import ru.hse.se.shugurov.screens.Event;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
- * Created by Иван on 24.04.2014.
+ * Adapter for a list of events. See also {@link ru.hse.se.shugurov.gui.EventFragment}
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class EventsListAdapter extends BaseAdapter
 {
     private Event[] events;
     private LayoutInflater inflater;
 
-
+    /**
+     * Constructs {@code EventsListAdapter} and makes all necessary preparations for showing a list.
+     *
+     * @param events  events to be shown
+     * @param context for getting {@code LayoutInflater}
+     */
     public EventsListAdapter(Event[] events, Context context)
     {
         this.events = events;

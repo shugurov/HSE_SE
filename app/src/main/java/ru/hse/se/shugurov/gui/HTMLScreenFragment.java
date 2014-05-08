@@ -16,17 +16,30 @@ import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.FileManager;
 
 /**
- * Created by Иван on 15.03.14.
+ * Used to demonstrate html documents. Has some limitations due to {@code TextView} which can demonstrate only base tags.
+ * <p/>
+ * CSS is not supported
+ * <p/>
+ * Created byIvan Shugurov
  */
-public class HTMLScreenAdapter extends ScreenAdapter
+public class HTMLScreenFragment extends AbstractFragment
 {
     private TextView viewForHTML;
 
-    public HTMLScreenAdapter()
+    /**
+     * Default constructor used by Android for instantiating this class after it was destroyed.
+     * Should not be used by developers.
+     */
+    public HTMLScreenFragment()
     {
     }
 
-    public HTMLScreenAdapter(HSEView hseView)
+    /**
+     * Constructs fragment
+     *
+     * @param hseView that has html content. not null
+     */
+    public HTMLScreenFragment(HSEView hseView)
     {
         super(hseView);
     }
@@ -60,6 +73,7 @@ public class HTMLScreenAdapter extends ScreenAdapter
         return root;
     }
 
+    /*check if an activity is available and if so sets text. makes a little pause in order to make fragment animation smother*/
     private void setText(final String text)
     {
         try
