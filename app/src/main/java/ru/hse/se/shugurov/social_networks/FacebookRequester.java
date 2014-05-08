@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ru.hse.se.shugurov.Requester;
+import ru.hse.se.shugurov.utills.Requester;
 
 /**
  * Created by Иван on 04.05.2014.
@@ -109,8 +109,8 @@ public class FacebookRequester extends AbstractRequester
         });
     }
 
-    @Override
-    public SocialNetworkTopic[] getTopics(String topicsJson)
+
+    private SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
         try

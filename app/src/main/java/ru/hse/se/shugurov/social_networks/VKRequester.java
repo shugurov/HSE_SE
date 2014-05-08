@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ru.hse.se.shugurov.Requester;
+import ru.hse.se.shugurov.utills.Requester;
 
 /**
  * Created by Иван on 11.02.14.
@@ -185,8 +185,8 @@ public class VKRequester extends AbstractRequester
         requester.execute(request);
     }
 
-    @Override
-    public SocialNetworkTopic[] getTopics(String topicsJson)
+
+    private SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SocialNetworkTopic[] vkBoardTopics;
         Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();
@@ -243,8 +243,7 @@ public class VKRequester extends AbstractRequester
         requester.execute(request);
     }
 
-    @Override
-    protected SocialNetworkEntry[] getComments(String commentsJson)
+    private SocialNetworkEntry[] getComments(String commentsJson)
     {
         SocialNetworkEntry[] comments;
         Map<String, SocialNetworkProfile> profilesMap = new HashMap<String, SocialNetworkProfile>();// key - uid, value - user
@@ -366,6 +365,12 @@ public class VKRequester extends AbstractRequester
             e.printStackTrace();
             callback.pushResult(null);
         }
+    }
+
+    @Override
+    public boolean canAddPosts()
+    {
+        return true;
     }
 
     @Override

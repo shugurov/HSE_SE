@@ -85,7 +85,7 @@ public class ScreenFactory
                 AccessToken vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
-                    adapter = new SocialNetworkTopicsFragment(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
+                    adapter = new TopicsFragment(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
                 }
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
@@ -113,7 +113,7 @@ public class ScreenFactory
                 AccessToken facebookAccessToken = getFacebookAccessToken();
                 if (facebookAccessToken != null)
                 {
-                    adapter = new SocialNetworkTopicsFragment(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
+                    adapter = new TopicsFragment(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
                 }
                 break;
             default:

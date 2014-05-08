@@ -75,8 +75,8 @@ public class WallPostScreen extends SocialNetworkAbstractList
                             commentsChanged = true;
                         }
                     };
-                    WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(getGroupId(), getGroupName(), posts[position], getRequester(), stateListener);
-                    ScreenFactory.changeFragments(getFragmentManager(), wallCommentsScreen);
+                    WallCommentsFragment wallCommentsFragment = new WallCommentsFragment(getGroupId(), getGroupName(), posts[position], getRequester(), stateListener);
+                    ScreenFactory.changeFragments(getFragmentManager(), wallCommentsFragment);
                 }
             });
         }

@@ -9,13 +9,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
+import ru.hse.se.shugurov.utills.Requester;
 
 /**
  * Created by Иван on 04.05.2014.
  */
-public class TopicCreationScreen extends Fragment
+public class TopicCreationFragment extends Fragment
 {
     private final static String GROUP_ID_TAG = "vk_group_id_topics_creation";
     private String groupId;
@@ -24,11 +24,11 @@ public class TopicCreationScreen extends Fragment
     private String actionBarTitle;
     private AbstractRequester requester;
 
-    public TopicCreationScreen()
+    public TopicCreationFragment()
     {
     }
 
-    public TopicCreationScreen(String title, String groupId, AbstractRequester requester)
+    public TopicCreationFragment(String title, String groupId, AbstractRequester requester)
     {
         this.groupId = groupId;
         this.actionBarTitle = title;

@@ -12,11 +12,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.StateListener;
+import ru.hse.se.shugurov.utills.Requester;
 
 /**
  * Class for demonstrating a list of comments from a specific topic of social network.

@@ -18,7 +18,7 @@ import ru.hse.se.shugurov.social_networks.TopicsListAdapter;
 /**
  * Created by Иван on 02.05.2014.
  */
-public class SocialNetworkTopicsFragment extends SocialNetworkAbstractList
+public class TopicsFragment extends SocialNetworkAbstractList
 {
     private final static String VK_TOPICS_TAG = "vk_topics_array";
     private final static String COMMENTS_STATE = "comments_change-state";
@@ -26,11 +26,11 @@ public class SocialNetworkTopicsFragment extends SocialNetworkAbstractList
     private TopicsListAdapter adapter;
     private boolean commentsChanged = false;
 
-    public SocialNetworkTopicsFragment()
+    public TopicsFragment()
     {
     }
 
-    public SocialNetworkTopicsFragment(String groupId, String groupName, AbstractRequester requester)
+    public TopicsFragment(String groupId, String groupName, AbstractRequester requester)
     {
         super(groupId, groupName, requester);
     }
@@ -72,7 +72,7 @@ public class SocialNetworkTopicsFragment extends SocialNetworkAbstractList
             topics = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
             commentsChanged = savedInstanceState.getBoolean(COMMENTS_STATE);
         }
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(true && getRequester().canAddPosts());
     }
 
     @Override
@@ -86,7 +86,7 @@ public class SocialNetworkTopicsFragment extends SocialNetworkAbstractList
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Fragment topicCreation = new TopicCreationScreen(getGroupName(), getGroupId(), getRequester());
+        Fragment topicCreation = new TopicCreationFragment(getGroupName(), getGroupId(), getRequester());
         ScreenFactory.changeFragments(getFragmentManager(), topicCreation);
         return super.onOptionsItemSelected(item);
     }

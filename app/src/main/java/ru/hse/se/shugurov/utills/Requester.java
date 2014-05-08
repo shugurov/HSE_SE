@@ -1,4 +1,4 @@
-package ru.hse.se.shugurov;
+package ru.hse.se.shugurov.utills;
 
 import android.os.AsyncTask;
 

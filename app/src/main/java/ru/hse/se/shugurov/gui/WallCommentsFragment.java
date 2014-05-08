@@ -23,7 +23,6 @@ import android.widget.Toast;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
@@ -32,11 +31,12 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.utills.ImageLoader;
+import ru.hse.se.shugurov.utills.Requester;
 
 /**
  * Created by Иван on 03.05.2014.
  */
-public class WallCommentsScreen extends SocialNetworkAbstractList
+public class WallCommentsFragment extends SocialNetworkAbstractList
 {
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
@@ -51,12 +51,12 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
     private View footerView;
     private StateListener stateListener;
 
-    public WallCommentsScreen()
+    public WallCommentsFragment()
     {
 
     }
 
-    public WallCommentsScreen(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester, StateListener listener)
+    public WallCommentsFragment(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester, StateListener listener)
     {
         super(groupId, groupName, requester);
         this.post = post;
