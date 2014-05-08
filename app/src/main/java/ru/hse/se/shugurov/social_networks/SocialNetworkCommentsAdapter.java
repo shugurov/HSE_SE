@@ -56,7 +56,7 @@ public class SocialNetworkCommentsAdapter extends BaseAdapter
         {
             convertView = inflater.inflate(R.layout.social_network_topic, parent, false);
         }
-        ((TextView) convertView.findViewById(R.id.comment_author_name)).setText(comments[position].getAuthor().getFullName());
+        ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(comments[position].getAuthor().getFullName());
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
         if (position == 0 && comments[position] instanceof SocialNetworkTopic)
         {
@@ -66,7 +66,7 @@ public class SocialNetworkCommentsAdapter extends BaseAdapter
         ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(Html.fromHtml(comments[position].getText()));
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
         authorPhoto.setImageBitmap(null);
-        float weightSum = ((LinearLayout) convertView).getWeightSum();
+        float weightSum = ((LinearLayout) convertView.findViewById(R.id.topic_container)).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
         FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
         imageLoader.displayImage(comments[position].getAuthor().getPhoto(), flexibleImage);

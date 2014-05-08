@@ -62,7 +62,7 @@ public class TopicsListAdapter extends BaseAdapter
         SocialNetworkProfile topicAuthor = currentTopic.getAuthor();
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
         authorPhoto.setImageBitmap(null);
-        float weightSum = ((LinearLayout) convertView).getWeightSum();
+        float weightSum = ((LinearLayout) convertView.findViewById(R.id.topic_container)).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
         FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
         imageLoader.displayImage(topicAuthor.getPhoto(), flexibleImage);
