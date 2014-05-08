@@ -30,7 +30,7 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
  */
 public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
 {
-    /*constants used saving fragment state*/
+    /*constants used for saving fragment state*/
     private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
     private final static String COMMENTS_TAG = "vk_group_comments";
     private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
