@@ -1,10 +1,10 @@
 package ru.hse.se.shugurov.screens;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 import ru.hse.se.shugurov.utills.FileManager;
 
@@ -25,18 +25,26 @@ public class EventScreen extends HSEView implements HasFile
         return new FileDescription(getKey(), getUrl());
     }
 
-    public Event[] getEvents(Context context) throws JSONException
+    public Event[] getEvents() throws JSONException
     {
-        FileManager fileManager = new FileManager(context);
-        String content = fileManager.getFileContent(getKey());
-        JSONObject jsonObject;
-        jsonObject = new JSONObject(content);
-        JSONArray jsonArray = jsonObject.getJSONArray("events");
-        Event[] events = new Event[jsonArray.length()];
-        for (int i = 0; i < jsonArray.length(); i++)
+        FileManager fileManager = FileManager.instance();
+        String content;
+        try
         {
-            events[i] = new Event(jsonArray.getJSONObject(i));
+            content = fileManager.getFileContent(getKey());
+            JSONObject jsonObject;
+            jsonObject = new JSONObject(content);
+            JSONArray jsonArray = jsonObject.getJSONArray("events");
+            Event[] events = new Event[jsonArray.length()];
+            for (int i = 0; i < jsonArray.length(); i++)
+            {
+                events[i] = new Event(jsonArray.getJSONObject(i));
+            }
+            return events;
+        } catch (IOException e)
+        {
+            return new Event[0];
         }
-        return events;
+
     }
 }

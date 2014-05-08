@@ -29,6 +29,7 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
+import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
@@ -40,6 +41,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
     private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
     private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
     private final String TYPED_COMMENT = "vk_wall_typed_comment";
+    private final String COMMENTS_LISTENER_TAG = "comments_listener_tag";
     private SocialNetworkTopic post;
     private SocialNetworkEntry[] comments;
     private int containerWidth;
@@ -47,16 +49,18 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
     private EditText input;
     private View headerView;
     private View footerView;
+    private StateListener stateListener;
 
     public WallCommentsScreen()
     {
 
     }
 
-    public WallCommentsScreen(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester)
+    public WallCommentsScreen(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester, StateListener listener)
     {
         super(groupId, groupName, requester);
         this.post = post;
+        stateListener = listener;
     }
 
     @Override
@@ -68,6 +72,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
             post = savedInstanceState.getParcelable(VK_WALL_COMMENTS_POST_TAG);
             comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
             commentText = savedInstanceState.getString(TYPED_COMMENT);
+            stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
         }
     }
 
@@ -206,6 +211,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
         outState.putParcelableArray(VK_WALL_COMMENTS_TAG, comments);
         outState.putParcelable(VK_WALL_COMMENTS_POST_TAG, post);
         outState.putString(TYPED_COMMENT, input.getText().toString());
+        outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
     }
 
 
@@ -236,7 +242,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
         ((TextView) headerView.findViewById(R.id.vk_wall_post_author_name)).setText(author.getFullName());
         ((TextView) headerView.findViewById(R.id.vk_wall_post_text)).setText(Html.fromHtml(post.getText()));
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        ((TextView) headerView.findViewById(R.id.vk_date)).setText(format.format(post.getDate()));
+        ((TextView) headerView.findViewById(R.id.footer_date)).setText(format.format(post.getDate()));
     }
 
     private void createFooterView()
@@ -272,6 +278,7 @@ public class WallCommentsScreen extends SocialNetworkAbstractList
                                 setListShown(true);
                             } else
                             {
+                                stateListener.stateChanged();
                                 commentText = null;
                                 input.setText("");
                                 loadComments();

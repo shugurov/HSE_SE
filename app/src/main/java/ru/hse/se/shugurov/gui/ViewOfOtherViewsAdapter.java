@@ -117,9 +117,6 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 drawableID = R.drawable.section6;
                 backgroundColor = R.color.vk_item;
                 break;
-            case HSEViewTypes.FAQ:
-                drawableID = R.drawable.section7;
-                break;
             case HSEViewTypes.RSS_WRAPPER:
                 drawableID = R.drawable.section8;
                 backgroundColor = R.color.rss_item;
@@ -130,10 +127,6 @@ public class ViewOfOtherViewsAdapter extends ScreenAdapter implements View.OnCli
                 break;
             case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
                 drawableID = R.drawable.section10;
-                break;
-            case HSEViewTypes.LINKEDIN:
-                drawableID = R.drawable.section12;
-                backgroundColor = R.color.linkedin_item;
                 break;
             case HSEViewTypes.MAP:
                 drawableID = R.drawable.section13;

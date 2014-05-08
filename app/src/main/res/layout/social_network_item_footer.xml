@@ -5,13 +5,13 @@
     android:layout_height="fill_parent">
 
     <TextView
-        android:id="@+id/comments_quantity"
+        android:id="@+id/footer_comments_quantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"/>
 
     <TextView
-        android:id="@+id/vk_date"
+        android:id="@+id/footer_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"/>

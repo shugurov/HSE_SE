@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.HSEView;
@@ -18,6 +21,7 @@ import ru.hse.se.shugurov.utills.FileManager;
 public class HTMLScreenAdapter extends ScreenAdapter
 {
     private TextView viewForHTML;
+
     public HTMLScreenAdapter()
     {
     }
@@ -37,9 +41,19 @@ public class HTMLScreenAdapter extends ScreenAdapter
             @Override
             public void run()
             {
-                FileManager fileManager = new FileManager(getActivity());
-                String HTMLContent = fileManager.getFileContent(getHseView().getKey());
-                setText(HTMLContent);
+                try
+                {
+                    FileManager fileManager = FileManager.instance();
+                    String htmlContent = fileManager.getFileContent(getHseView().getKey());
+                    setText(htmlContent);
+                } catch (IOException e)
+                {
+                    Activity activity = getActivity();
+                    if (activity != null)
+                    {
+                        Toast.makeText(activity, "Не удалось зарузить текст", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         };
         new Thread(opening).start();
@@ -50,7 +64,7 @@ public class HTMLScreenAdapter extends ScreenAdapter
     {
         try
         {
-            Thread.sleep(650);
+            Thread.sleep(450);
         } catch (InterruptedException e)
         {
             e.printStackTrace();

@@ -22,7 +22,7 @@ import ru.hse.se.shugurov.social_networks.VKRequester;
  *
  * @author Ivan Shugurov
  */
-public class AuthorizationFragment extends Fragment//TODO не умею вот этот вращать
+public class AuthenticationFragment extends Fragment
 {
     /*constants used for saving fragment state*/
     private final String URL_TAG = "authorization_url_tag";
@@ -35,7 +35,7 @@ public class AuthorizationFragment extends Fragment//TODO не умею вот �
      * Default constructor used by Android for instantiating this class after it has been destroyed.
      * Should not be used by developers.
      */
-    public AuthorizationFragment()
+    public AuthenticationFragment()
     {
     }
 
@@ -45,7 +45,7 @@ public class AuthorizationFragment extends Fragment//TODO не умею вот �
      * @param url                OAuth url. not null
      * @param accessTokenRequest object for callback. not null
      */
-    public AuthorizationFragment(String url, AccessTokenRequest accessTokenRequest)
+    public AuthenticationFragment(String url, AccessTokenRequest accessTokenRequest)
     {
         this.url = url;
         this.accessTokenRequest = accessTokenRequest;

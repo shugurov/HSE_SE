@@ -16,6 +16,7 @@ import ru.hse.se.shugurov.Requester;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
+import ru.hse.se.shugurov.social_networks.StateListener;
 
 /**
  * Class for demonstrating a list of comments from a specific topic of social network.
@@ -31,9 +32,10 @@ import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
 {
     /*constants used for saving fragment state*/
-    private final static String TOPIC_ID_TAG = "vk_topic_id_responses";
-    private final static String COMMENTS_TAG = "vk_group_comments";
-    private final static String COMMENTS_COMMENT_TAG = "vk_group_comments_comment_text";
+    private final static String TOPIC_ID_TAG = "topic_id_responses";
+    private final static String COMMENTS_TAG = "group_comments";
+    private final static String COMMENTS_COMMENT_TAG = "group_comments_reply_text";
+    private final String COMMENTS_LISTENER_TAG = "comments_listener_tag";
 
 
     private String topicId;
@@ -41,6 +43,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
     private View footerView;
     private EditText input;
     private String commentText;
+    private StateListener stateListener;
 
     /**
      * Default constructor used by Android for instantiating this class after it has been destroyed.
@@ -55,11 +58,13 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
      * @param groupName name of requested group. Used as title in action bar. Not null.
      * @param topicId   id of social network topic. Not null.
      * @param requester object which makes requests for the data from social networks. Not null
+     * @param listener  callback interface used to notify about comments changes
      */
-    public SocialNetworkCommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester)
+    public SocialNetworkCommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester, StateListener listener)
     {
         super(groupId, groupName, requester);
         this.topicId = topicId;
+        stateListener = listener;
     }
 
     @Override
@@ -71,6 +76,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
             topicId = savedInstanceState.getString(TOPIC_ID_TAG);
             comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
             commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
+            stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
         }
     }
 
@@ -162,6 +168,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
                                 commentText = null;
                                 input.setText("");
                                 comments = null;
+                                stateListener.stateChanged();
                                 loadComments();
                             }
                         }
@@ -178,6 +185,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
         super.onSaveInstanceState(outState);
         outState.putString(TOPIC_ID_TAG, topicId);
         outState.putParcelableArray(COMMENTS_TAG, comments);
+        outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
         if (input != null)
         {
             outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());

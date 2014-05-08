@@ -127,8 +127,13 @@ public class HSEView implements Serializable
                 case HSEViewTypes.EVENTS:
                     viewList.add(new EventScreen(jsonObject, serverURL));
                     break;
-                default:
+                case HSEViewTypes.INNER_WEB_PAGE:
+                case HSEViewTypes.RSS:
+                case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
+                case HSEViewTypes.WEB_PAGE:
                     viewList.add(new HSEView(jsonObject, serverURL));
+                default:
+                    continue;
             }
 
         }

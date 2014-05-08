@@ -152,7 +152,7 @@ public class FacebookRequester extends AbstractRequester
         String userName = fromObject.getString("name");
         String date = topicObject.getString("created_time");
         SocialNetworkProfile author = new SocialNetworkProfile(userId, userName);
-        return new SocialNetworkTopic(topicId, author, message, 0, dateFormat.parse(date));
+        return new SocialNetworkTopic(null, topicId, author, message, 0, dateFormat.parse(date));
     }
 
     @Override

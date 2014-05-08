@@ -11,9 +11,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,6 +24,7 @@ import ru.hse.se.shugurov.screens.FileDescription;
 import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
+import ru.hse.se.shugurov.utills.FileManager;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 public class MainActivity extends ActionBarActivity implements Observer
@@ -40,8 +39,9 @@ public class MainActivity extends ActionBarActivity implements Observer
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        ScreenFactory.initFactory(this, savedInstanceState == null);
         super.onCreate(savedInstanceState);
+        ScreenFactory.initFactory(this, savedInstanceState == null);
+        FileManager.initialize(this);
         setContentView(R.layout.activity_main);
         if (savedInstanceState != null)
         {
@@ -127,6 +127,7 @@ public class MainActivity extends ActionBarActivity implements Observer
                 }
                 ScreenFactory.initFactory(this, true);
                 ScreenFactory.instance().showFragment(hseView);
+                wasDownloadedCompletely = true;
                 progressDialog.cancel();
                 break;
         }
@@ -217,32 +218,16 @@ public class MainActivity extends ActionBarActivity implements Observer
 
     private boolean setJsonField()
     {
-        File jsonFile = new File(getFilesDir(), JSON_FILE_NAME);
-        StringBuilder builder = new StringBuilder();
-        InputStreamReader inputStream = null;
+        FileManager fileManager = FileManager.instance();
+        String json;
         try
         {
-            try
-            {
-                inputStream = new InputStreamReader(new FileInputStream(jsonFile));
-                char[] buffer = new char[2048];
-                int charsRead;
-                while ((charsRead = inputStream.read(buffer)) > -1)
-                {
-                    builder.append(buffer, 0, charsRead);
-                }
-            } finally
-            {
-                if (inputStream != null)
-                {
-                    inputStream.close();
-                }
-            }
+            json = fileManager.getFileContent(JSON_FILE_NAME);
         } catch (IOException e)
         {
+            Toast.makeText(this, "НЕ удалось загрузить контент", Toast.LENGTH_SHORT).show();
             return false;
         }
-        String json = builder.toString();
         HSEView newView;
         try
         {

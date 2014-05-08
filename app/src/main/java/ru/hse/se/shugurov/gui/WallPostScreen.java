@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
+import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
 
 /**
@@ -15,7 +16,9 @@ import ru.hse.se.shugurov.social_networks.VkWallPostsAdapter;
 public class WallPostScreen extends SocialNetworkAbstractList
 {
     private static final String POSTS_ID = "vk_posts_array";
+    private static final String COMMENTS_STATE_TAG = "comments_state_tag";
     private SocialNetworkTopic[] posts;
+    private boolean commentsChanged = false;
 
     public WallPostScreen()
     {
@@ -27,10 +30,10 @@ public class WallPostScreen extends SocialNetworkAbstractList
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState)
+    public void onActivityCreated(Bundle savedInstanceState)
     {
-        super.onViewCreated(view, savedInstanceState);
-        if (posts == null)
+        super.onActivityCreated(savedInstanceState);
+        if (posts == null || commentsChanged)
         {
             getRequester().getWallPosts(getGroupId(), new AbstractRequester.RequestResultListener<SocialNetworkTopic>()
             {
@@ -55,16 +58,28 @@ public class WallPostScreen extends SocialNetworkAbstractList
 
     private void fillList()
     {
-        setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
+        commentsChanged = false;
+        if (isAdded())
         {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            setListAdapter(new VkWallPostsAdapter(getActivity(), posts));
+            getListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
-                WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(getGroupId(), getGroupName(), posts[position], getRequester());
-                ScreenFactory.changeFragments(getFragmentManager(), wallCommentsScreen);
-            }
-        });
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                {
+                    StateListener stateListener = new StateListener()
+                    {
+                        @Override
+                        public void stateChanged()
+                        {
+                            commentsChanged = true;
+                        }
+                    };
+                    WallCommentsScreen wallCommentsScreen = new WallCommentsScreen(getGroupId(), getGroupName(), posts[position], getRequester(), stateListener);
+                    ScreenFactory.changeFragments(getFragmentManager(), wallCommentsScreen);
+                }
+            });
+        }
     }
 
     @Override
@@ -74,6 +89,7 @@ public class WallPostScreen extends SocialNetworkAbstractList
         if (savedInstanceState != null)
         {
             posts = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
+            commentsChanged = savedInstanceState.getBoolean(COMMENTS_STATE_TAG);
         }
     }
 
@@ -82,5 +98,6 @@ public class WallPostScreen extends SocialNetworkAbstractList
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(POSTS_ID, posts);
+        outState.putBoolean(COMMENTS_STATE_TAG, commentsChanged);
     }
 }

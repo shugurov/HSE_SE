@@ -31,7 +31,7 @@ public class VKRequester extends AbstractRequester
     private static final String BOARD_GET_COMMENTS = "board.getComments";
     private static final String VK_TOPIC_ID_TAG = "topic_id";
     private static final String REQUEST_BEGINNING = "https://api.vk.com/method/";
-    private static final String BOARD_GET_TOPICS = "board.getTopics";
+    private static final String BOARD_GET_TOPICS = "https://api.vk.com/method/board.getTopics?group_id=%s&access_token=%s&extended=1&preview=1&order=1";
     private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
     private static final String GET_PROFILE_INFORMATION = "https://api.vk.com/method/users.get?user_ids=%s&fields=photo_100";
     private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
@@ -165,8 +165,7 @@ public class VKRequester extends AbstractRequester
     @Override
     public void getTopics(String groupID, final RequestResultListener<SocialNetworkTopic> listener)//темы в обсуждении группы
     {
-        String request = REQUEST_BEGINNING + BOARD_GET_TOPICS + "?" + GROUP_ID_TAG + "=" + groupID +
-                "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1&preview=1";
+        String request = String.format(BOARD_GET_TOPICS, groupID, getAccessToken());
         Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
         {
             @Override
@@ -202,13 +201,14 @@ public class VKRequester extends AbstractRequester
             for (int i = 1; i < itemsJSONArray.length(); i++)
             {
                 JSONObject currentTopic = itemsJSONArray.getJSONObject(i);
+                String title = currentTopic.getString("title");
                 String topicID = currentTopic.getString("tid");
                 String authorID = currentTopic.getString("created_by");
                 String text = currentTopic.getString("first_comment");
                 int comments = currentTopic.getInt("comments");
                 long date = currentTopic.getLong("updated");
                 SocialNetworkProfile user = profilesMap.get(authorID);
-                vkBoardTopics[i - 1] = new SocialNetworkTopic(topicID, user, text, comments, new Date(date * 1000));
+                vkBoardTopics[i - 1] = new SocialNetworkTopic(title, topicID, user, text, comments, new Date(date * 1000));
             }
 
         } catch (JSONException e)
@@ -332,10 +332,10 @@ public class VKRequester extends AbstractRequester
                 }
                 if (attachedPicture == null)
                 {
-                    posts[i - 1] = new SocialNetworkTopic(id, profile, text, commentsQuantity, new Date(date));
+                    posts[i - 1] = new SocialNetworkTopic(null, id, profile, text, commentsQuantity, new Date(date));
                 } else
                 {
-                    posts[i - 1] = new SocialNetworkTopic(id, profile, text, commentsQuantity, new Date(date), attachedPicture);
+                    posts[i - 1] = new SocialNetworkTopic(null, id, profile, text, commentsQuantity, new Date(date), attachedPicture);
                 }
             }
         } catch (JSONException e)

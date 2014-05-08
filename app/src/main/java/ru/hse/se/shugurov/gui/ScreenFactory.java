@@ -35,7 +35,7 @@ public class ScreenFactory
     private static ScreenFactory screenFactory;
     private FragmentActivity activity;
     private boolean isFirstFragment = true;
-    private AuthorizationFragment authorizationFragment;
+    private AuthenticationFragment authenticationFragment;
 
     private ScreenFactory(FragmentActivity activity, boolean isFirstFragment)
     {
@@ -78,14 +78,14 @@ public class ScreenFactory
                 break;
             case HSEViewTypes.RSS:
             case HSEViewTypes.RSS_WRAPPER:
-                adapter = new RSSScreenAdapter(view);
+                adapter = new RSSFragment(view);
                 break;
             case HSEViewTypes.VK_FORUM:
                 SocialNetworkView socialNetworkView = (SocialNetworkView) view;
                 AccessToken vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
-                    adapter = new TopicsScreenAdapter(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
+                    adapter = new SocialNetworkTopicsFragment(socialNetworkView.getObjectID(), socialNetworkView.getName(), new VKRequester(vkAccessToken));
                 }
                 break;
             case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
@@ -113,7 +113,7 @@ public class ScreenFactory
                 AccessToken facebookAccessToken = getFacebookAccessToken();
                 if (facebookAccessToken != null)
                 {
-                    adapter = new TopicsScreenAdapter(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
+                    adapter = new SocialNetworkTopicsFragment(facebookView.getObjectID(), facebookView.getName(), new FacebookRequester(facebookAccessToken));
                 }
                 break;
             default:
@@ -213,7 +213,7 @@ public class ScreenFactory
 
     private void requestFacebookToken()
     {
-        authorizationFragment = new AuthorizationFragment(FacebookRequester.AUTH, new AuthorizationFragment.AccessTokenRequest()
+        authenticationFragment = new AuthenticationFragment(FacebookRequester.AUTH, new AuthenticationFragment.AccessTokenRequest()
         {
             @Override
             public void receiveToken(AccessToken accessToken)
@@ -226,7 +226,7 @@ public class ScreenFactory
                 activity.getSupportFragmentManager().popBackStack();
             }
         });
-        changeFragments(activity.getSupportFragmentManager(), authorizationFragment);
+        changeFragments(activity.getSupportFragmentManager(), authenticationFragment);
     }
 
     private void writeToSharePreferences(String tag, String content)
@@ -239,7 +239,7 @@ public class ScreenFactory
 
     private void requestVkToken()
     {
-        authorizationFragment = new AuthorizationFragment(VKRequester.OAUTH, new AuthorizationFragment.AccessTokenRequest()
+        authenticationFragment = new AuthenticationFragment(VKRequester.OAUTH, new AuthenticationFragment.AccessTokenRequest()
         {
             @Override
             public void receiveToken(AccessToken accessToken)
@@ -252,6 +252,6 @@ public class ScreenFactory
                 activity.getSupportFragmentManager().popBackStack();
             }
         });
-        changeFragments(activity.getSupportFragmentManager(), authorizationFragment);
+        changeFragments(activity.getSupportFragmentManager(), authenticationFragment);
     }
 }

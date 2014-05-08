@@ -56,21 +56,22 @@ public class TopicsListAdapter extends BaseAdapter
     {
         if (convertView == null)
         {
-            convertView = inflater.inflate(R.layout.vk_topic, parent, false);
+            convertView = inflater.inflate(R.layout.social_network_topic, parent, false);
         }
         SocialNetworkTopic currentTopic = getItem(position);
         SocialNetworkProfile topicAuthor = currentTopic.getAuthor();
-        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.vk_topic_author_photo);
+        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) convertView).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
         FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
         imageLoader.displayImage(topicAuthor.getPhoto(), flexibleImage);
-        ((TextView) convertView.findViewById(R.id.vk_topic_author_name)).setText(Html.fromHtml(topicAuthor.getFullName()));
-        ((TextView) convertView.findViewById(R.id.vk_topic_text)).setText(Html.fromHtml(currentTopic.getText()));
-        ((TextView) convertView.findViewById(R.id.comments_quantity)).setText(currentTopic.getCommentsString());
+        ((TextView) convertView.findViewById(R.id.topic_title)).setText(currentTopic.getTitle());
+        ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(Html.fromHtml(topicAuthor.getFullName()));
+        ((TextView) convertView.findViewById(R.id.topic_text)).setText(Html.fromHtml(currentTopic.getText()));
+        ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(currentTopic.getCommentsString());
         String date = format.format(getItem(position).getDate());
-        ((TextView) convertView.findViewById(R.id.vk_date)).setText(date);
+        ((TextView) convertView.findViewById(R.id.footer_date)).setText(date);
         return convertView;
     }
 }

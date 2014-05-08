@@ -13,7 +13,6 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.EventScreen;
 
 /**
- *
  * @author Ivan Shugurov
  */
 public class EventFragment extends ScreenAdapter
@@ -33,7 +32,7 @@ public class EventFragment extends ScreenAdapter
         ListView listView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         try
         {
-            listView.setAdapter(new EventsListAdapter(((EventScreen) getHseView()).getEvents(getActivity()), getActivity()));
+            listView.setAdapter(new EventsListAdapter(((EventScreen) getHseView()).getEvents(), getActivity()));
         } catch (JSONException e)
         {
             Toast.makeText(getActivity(), "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();

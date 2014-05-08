@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -20,28 +21,33 @@ import ru.hse.se.shugurov.screens.HSEViewRSSWrapper;
 /**
  * Created by Иван on 15.03.14.
  */
-public class RSSScreenAdapter extends ScreenAdapter
+public class RSSFragment extends ScreenAdapter
 {
-    public RSSScreenAdapter()
+    public RSSFragment()
     {
     }
 
-    public RSSScreenAdapter(HSEView hseViewRSS)
+    public RSSFragment(HSEView hseViewRSS)
     {
         super(hseViewRSS);
     }
 
     private View showListOfRSSItems(final LayoutInflater inflater, final ViewGroup container)
     {
-        HSEViewRSS[] rssItems = new HSEViewRSS[0];
+        HSEViewRSS[] rssItems = null;
         try
         {
-            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS(getActivity());
+            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS();
         } catch (JSONException e)
         {
-            e.printStackTrace();
+
         }
         ListView rssItemsView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
+        if (rssItems == null)
+        {
+            Toast.makeText(getActivity(), "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();
+            return rssItemsView;
+        }
         final RSSListAdapter rssListAdapter = new RSSListAdapter(getActivity(), rssItems);
         rssItemsView.setAdapter(rssListAdapter);
         rssItemsView.setOnItemClickListener(new AdapterView.OnItemClickListener()

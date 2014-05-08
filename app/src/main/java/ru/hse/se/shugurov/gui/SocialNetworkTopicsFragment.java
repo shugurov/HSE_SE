@@ -12,22 +12,25 @@ import android.widget.Toast;
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
+import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.social_networks.TopicsListAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
  */
-public class TopicsScreenAdapter extends SocialNetworkAbstractList
+public class SocialNetworkTopicsFragment extends SocialNetworkAbstractList
 {
     private final static String VK_TOPICS_TAG = "vk_topics_array";
+    private final static String COMMENTS_STATE = "comments_change-state";
     private SocialNetworkTopic[] topics;
     private TopicsListAdapter adapter;
+    private boolean commentsChanged = false;
 
-    public TopicsScreenAdapter()
+    public SocialNetworkTopicsFragment()
     {
     }
 
-    public TopicsScreenAdapter(String groupId, String groupName, AbstractRequester requester)
+    public SocialNetworkTopicsFragment(String groupId, String groupName, AbstractRequester requester)
     {
         super(groupId, groupName, requester);
     }
@@ -36,7 +39,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        if (topics == null)
+        if (topics == null || commentsChanged)
         {
             getRequester().getTopics(getGroupId(), new AbstractRequester.RequestResultListener<SocialNetworkTopic>()
             {
@@ -49,6 +52,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
                     } else
                     {
                         topics = resultTopics;
+                        commentsChanged = false;
                         setAdapter();
                     }
                 }
@@ -66,6 +70,7 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
         if (savedInstanceState != null)
         {
             topics = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
+            commentsChanged = savedInstanceState.getBoolean(COMMENTS_STATE);
         }
         setHasOptionsMenu(true);
     }
@@ -95,7 +100,15 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                ScreenFactory.changeFragments(getFragmentManager(), new SocialNetworkCommentsFragment(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester()));
+                StateListener listener = new StateListener()
+                {
+                    @Override
+                    public void stateChanged()
+                    {
+                        commentsChanged = false;
+                    }
+                };
+                ScreenFactory.changeFragments(getFragmentManager(), new SocialNetworkCommentsFragment(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester(), listener));
             }
         });
     }
@@ -115,5 +128,6 @@ public class TopicsScreenAdapter extends SocialNetworkAbstractList
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(VK_TOPICS_TAG, topics);
+        outState.putBoolean(COMMENTS_STATE, commentsChanged);
     }
 }

@@ -19,7 +19,7 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 /**
  * Created by Иван on 24.04.2014.
  */
-public class EventsListAdapter extends BaseAdapter//TODO whu don't we use telephone and url at all?
+public class EventsListAdapter extends BaseAdapter
 {
     private Event[] events;
     private LayoutInflater inflater;
