@@ -24,7 +24,7 @@ import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
-import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
+import ru.hse.se.shugurov.social_networks.CommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
@@ -190,7 +190,7 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
 
     private void instantiateAdapter()
     {
-        SocialNetworkCommentsAdapter responsesAdapter = new SocialNetworkCommentsAdapter(getActivity(), comments);
+        CommentsAdapter responsesAdapter = new CommentsAdapter(getActivity(), comments);
         if (headerView == null)
         {
             createHeaderView();

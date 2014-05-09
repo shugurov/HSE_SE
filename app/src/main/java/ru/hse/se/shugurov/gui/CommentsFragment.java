@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
-import ru.hse.se.shugurov.social_networks.SocialNetworkCommentsAdapter;
+import ru.hse.se.shugurov.social_networks.CommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.StateListener;
 import ru.hse.se.shugurov.utills.Requester;
@@ -29,7 +29,7 @@ import ru.hse.se.shugurov.utills.Requester;
  *
  * @author Ivan Shugurov
  */
-public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
+public class CommentsFragment extends SocialNetworkAbstractList//в vk нету заголовка темы(
 {
     /*constants used for saving fragment state*/
     private final static String TOPIC_ID_TAG = "topic_id_responses";
@@ -49,7 +49,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
      * Default constructor used by Android for instantiating this class after it has been destroyed.
      * Should not be used by developers.
      */
-    public SocialNetworkCommentsFragment()
+    public CommentsFragment()
     {
     }
 
@@ -60,7 +60,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
      * @param requester object which makes requests for the data from social networks. Not null
      * @param listener  callback interface used to notify about comments changes
      */
-    public SocialNetworkCommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester, StateListener listener)
+    public CommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester, StateListener listener)
     {
         super(groupId, groupName, requester);
         this.topicId = topicId;
@@ -119,13 +119,13 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
     {
         if (getActivity() != null)
         {
-            SocialNetworkCommentsAdapter socialNetworkCommentsAdapter = new SocialNetworkCommentsAdapter(getActivity(), comments);
+            CommentsAdapter commentsAdapter = new CommentsAdapter(getActivity(), comments);
             if (footerView == null)
             {
                 createFooterView();
                 getListView().addFooterView(footerView);
             }
-            setListAdapter(socialNetworkCommentsAdapter);
+            setListAdapter(commentsAdapter);
             setListShown(true);
         }
     }
@@ -185,7 +185,7 @@ public class SocialNetworkCommentsFragment extends SocialNetworkAbstractList
         super.onSaveInstanceState(outState);
         outState.putString(TOPIC_ID_TAG, topicId);
         outState.putParcelableArray(COMMENTS_TAG, comments);
-        outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
+        //outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
         if (input != null)
         {
             outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());

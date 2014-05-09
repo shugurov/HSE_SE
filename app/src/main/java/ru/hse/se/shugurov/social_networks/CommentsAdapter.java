@@ -13,19 +13,18 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
  * Created by Иван on 26.02.14.
  */
-public class SocialNetworkCommentsAdapter extends BaseAdapter
+public class CommentsAdapter extends BaseAdapter
 {
     private LayoutInflater inflater;
     private SocialNetworkEntry[] comments;
     private ImageLoader imageLoader = ImageLoader.instance();
 
-    public SocialNetworkCommentsAdapter(Context context, SocialNetworkEntry[] comments)
+    public CommentsAdapter(Context context, SocialNetworkEntry[] comments)
     {
         this.comments = comments;
         inflater = LayoutInflater.from(context);
@@ -58,18 +57,18 @@ public class SocialNetworkCommentsAdapter extends BaseAdapter
         }
         ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(comments[position].getAuthor().getFullName());
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        if (position == 0 && comments[position] instanceof SocialNetworkTopic)
+        if (position == 0 && comments[position] instanceof SocialNetworkTopic)//TODO нету заголовка(
         {
             ((TextView) convertView.findViewById(R.id.topic_title)).setText(((SocialNetworkTopic) comments[position]).getTitle());
         }
         ((TextView) convertView.findViewById(R.id.footer_date)).setText(format.format(comments[position].getDate()));
-        ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(Html.fromHtml(comments[position].getText()));
+        ((TextView) convertView.findViewById(R.id.topic_text)).setText(Html.fromHtml(comments[position].getText()));
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) convertView.findViewById(R.id.topic_container)).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
-        FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
-        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), flexibleImage);
+        authorPhoto.getLayoutParams().height = width;
+        imageLoader.displayImage(comments[position].getAuthor().getPhoto(), authorPhoto);
         return convertView;
     }
 }

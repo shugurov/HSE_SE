@@ -13,7 +13,7 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.StateListener;
-import ru.hse.se.shugurov.social_networks.TopicsListAdapter;
+import ru.hse.se.shugurov.social_networks.TopicsAdapter;
 
 /**
  * Created by Иван on 02.05.2014.
@@ -23,7 +23,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
     private final static String VK_TOPICS_TAG = "vk_topics_array";
     private final static String COMMENTS_STATE = "comments_change-state";
     private SocialNetworkTopic[] topics;
-    private TopicsListAdapter adapter;
+    private TopicsAdapter adapter;
     private boolean commentsChanged = false;
 
     public TopicsFragment()
@@ -108,7 +108,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
                         commentsChanged = false;
                     }
                 };
-                ScreenFactory.changeFragments(getFragmentManager(), new SocialNetworkCommentsFragment(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester(), listener));
+                ScreenFactory.changeFragments(getFragmentManager(), new CommentsFragment(getGroupId(), getGroupName(), adapter.getItem(position).getId(), getRequester(), listener));
             }
         });
     }
@@ -118,7 +118,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
     {
         if (getActivity() != null)
         {
-            adapter = new TopicsListAdapter(getActivity(), topics);
+            adapter = new TopicsAdapter(getActivity(), topics);
             setListAdapter(adapter);
         }
     }

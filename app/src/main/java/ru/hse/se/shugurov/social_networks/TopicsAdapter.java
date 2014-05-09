@@ -13,21 +13,20 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 
 /**
  * Created by Иван on 13.02.14.
  */
-public class TopicsListAdapter extends BaseAdapter
+public class TopicsAdapter extends BaseAdapter
 {
     private SocialNetworkTopic[] topics;
     private LayoutInflater inflater;
     private ImageLoader imageLoader = ImageLoader.instance();
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-    public TopicsListAdapter(Context context, SocialNetworkTopic[] topics)
+    public TopicsAdapter(Context context, SocialNetworkTopic[] topics)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
@@ -63,12 +62,14 @@ public class TopicsListAdapter extends BaseAdapter
         ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) convertView.findViewById(R.id.topic_container)).getWeightSum();
-        int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
-        FlexibleImageView flexibleImage = new FlexibleImageView(authorPhoto, width);
-        imageLoader.displayImage(topicAuthor.getPhoto(), flexibleImage);
+        int imageSize = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
+        authorPhoto.getLayoutParams().height = imageSize;
+        imageLoader.displayImage(topicAuthor.getPhoto(), authorPhoto);
         ((TextView) convertView.findViewById(R.id.topic_title)).setText(currentTopic.getTitle());
         ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(Html.fromHtml(topicAuthor.getFullName()));
-        ((TextView) convertView.findViewById(R.id.topic_text)).setText(Html.fromHtml(currentTopic.getText()));
+        TextView topicTextView = (TextView) convertView.findViewById(R.id.topic_text);
+        topicTextView.setText(Html.fromHtml(currentTopic.getText()));
+        topicTextView.setMaxLines(3);
         ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(currentTopic.getCommentsString());
         String date = format.format(getItem(position).getDate());
         ((TextView) convertView.findViewById(R.id.footer_date)).setText(date);

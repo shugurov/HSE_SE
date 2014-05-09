@@ -50,8 +50,7 @@
                 android:id="@+id/topic_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="3"/>
+                android:ellipsize="end"/>
 
             <include
                 layout="@layout/social_network_item_footer"></include>
