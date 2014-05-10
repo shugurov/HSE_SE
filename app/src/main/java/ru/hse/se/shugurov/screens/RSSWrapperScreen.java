@@ -13,9 +13,9 @@ import ru.hse.se.shugurov.utills.FileManager;
 /**
  * Created by Иван on 28.10.13.
  */
-public class HSEViewRSSWrapper extends HSEView implements HasFile
+public class RSSWrapperScreen extends BaseScreen implements HasFile
 {
-    HSEViewRSSWrapper(JSONObject jsonObject, String serverURL) throws JSONException
+    RSSWrapperScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         super(jsonObject, serverURL);
         url = serverURL + "/api/structure/rss/" + getKey();
@@ -28,7 +28,7 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
     }
 
 
-    public HSEViewRSS[] getRSS() throws JSONException
+    public RSSScreen[] getRSS() throws JSONException
     {
         FileManager fileManager = FileManager.instance();
         String content;
@@ -38,10 +38,10 @@ public class HSEViewRSSWrapper extends HSEView implements HasFile
             JSONObject jsonObject;
             jsonObject = new JSONObject(content);
             JSONArray jsonArray = jsonObject.getJSONArray("entries");
-            HSEViewRSS[] childViews = new HSEViewRSS[jsonArray.length()];
+            RSSScreen[] childViews = new RSSScreen[jsonArray.length()];
             for (int i = 0; i < jsonArray.length(); i++)
             {
-                childViews[i] = new HSEViewRSS(jsonArray.getJSONObject(i));
+                childViews[i] = new RSSScreen(jsonArray.getJSONObject(i));
             }
             return childViews;
         } catch (IOException e)

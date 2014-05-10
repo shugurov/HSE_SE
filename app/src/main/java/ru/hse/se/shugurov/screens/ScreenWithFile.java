@@ -6,12 +6,12 @@ import org.json.JSONObject;
 /**
  * Created by Иван on 25.10.13.
  */
-public class HSEViewWithFile extends HSEView implements HasFile
+public class ScreenWithFile extends BaseScreen implements HasFile
 {
     private String fileType;
     private String fileName;
 
-    HSEViewWithFile(JSONObject jsonObject, String serverUrl) throws JSONException
+    ScreenWithFile(JSONObject jsonObject, String serverUrl) throws JSONException
     {
         super(jsonObject, serverUrl);
         fileType = jsonObject.getString("filetype");

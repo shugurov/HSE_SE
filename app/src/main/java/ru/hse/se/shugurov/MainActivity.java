@@ -13,25 +13,22 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import ru.hse.se.shugurov.gui.ScreenFactory;
-import ru.hse.se.shugurov.observer.Observer;
+import ru.hse.se.shugurov.screens.BaseScreen;
 import ru.hse.se.shugurov.screens.FileDescription;
-import ru.hse.se.shugurov.screens.HSEView;
-import ru.hse.se.shugurov.utills.DownloadStatus;
 import ru.hse.se.shugurov.utills.Downloader;
 import ru.hse.se.shugurov.utills.FileManager;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
-public class MainActivity extends ActionBarActivity implements Observer
+public class MainActivity extends ActionBarActivity
 {
     private static String DOWNLOAD_COMPLETENESS = "download_completeness";
     private static String JSON_FILE_NAME = "json";
-    private HSEView hseView;
+    private BaseScreen baseScreen;
     private Downloader task;
     private ProgressDialog progressDialog;
     private boolean wasDownloadedCompletely;
@@ -102,49 +99,6 @@ public class MainActivity extends ActionBarActivity implements Observer
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void update()
-    {
-        switch (task.getDownloadStatus())
-        {
-            case DOWNLOAD_JSON:
-                boolean isSuccessful = setJsonField();
-                if (isSuccessful)
-                {
-                    checkFiles();
-                } else
-                {
-                    Toast.makeText(this, "Не удалось загрузить структуру", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case DOWNLOAD_FILES:
-                try
-                {
-                    hseView.notifyAboutFileDownloading(this);
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
-                ScreenFactory.initFactory(this, true);
-                ScreenFactory.instance().showFragment(hseView);
-                wasDownloadedCompletely = true;
-                progressDialog.cancel();
-                break;
-        }
-    }
-
-    private void createAsyncTask(DownloadStatus status)
-    {
-        task = new Downloader(this, status);
-        task.addObserver(this);
-    }
-
-    private void createAsyncTask(Collection<FileDescription> descriptions, DownloadStatus status)
-    {
-        task = new Downloader(this, descriptions, status);
-        task.addObserver(this);
-    }
-
     private void checkFiles()
     {
         String jsonUrl = getString(R.string.json_url);
@@ -153,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements Observer
         {
             setJsonField();
             Set<FileDescription> files = new HashSet<FileDescription>();
-            hseView.getDescriptionsOfFiles(files);
+            baseScreen.getDescriptionsOfFiles(files);
             Set<String> essentialFiles = new HashSet<String>((files.size() * 2 / 3) + 1);
             for (FileDescription description : files)
             {
@@ -182,25 +136,30 @@ public class MainActivity extends ActionBarActivity implements Observer
             }
             if (files.isEmpty())
             {
-                try
-                {
-                    hseView.notifyAboutFileDownloading(this);
-                } catch (JSONException e)
-                {
-                    e.printStackTrace();
-                }
                 ScreenFactory.initFactory(this, true);
-                ScreenFactory.instance().showFragment(hseView);
+                ScreenFactory.instance().showFragment(baseScreen);
                 progressDialog.cancel();
                 wasDownloadedCompletely = true;
             } else
             {
-                createAsyncTask(files, DownloadStatus.DOWNLOAD_FILES);
+                Downloader.DownloadCallback downloadCallback = new Downloader.DownloadCallback()
+                {
+                    @Override
+                    public void downloadFinished()
+                    {
+                        ScreenFactory.initFactory(MainActivity.this, true);
+                        ScreenFactory.instance().showFragment(baseScreen);
+                        wasDownloadedCompletely = true;
+                        progressDialog.cancel();
+                    }
+                };
+                task = new Downloader(this, files, downloadCallback);
                 task.execute();
             }
         } else
         {
-            createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
+            Downloader.DownloadCallback downloadCallback = getCallbackForJsonDoanloading();
+            task = new Downloader(this, downloadCallback);
             task.execute(new FileDescription(JSON_FILE_NAME, jsonUrl));
         }
     }
@@ -210,6 +169,7 @@ public class MainActivity extends ActionBarActivity implements Observer
         if (progressDialog == null)
         {
             progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage("Загрузка данных");
         }
         progressDialog.setIndeterminate(true);
         progressDialog.setCanceledOnTouchOutside(false);
@@ -225,26 +185,18 @@ public class MainActivity extends ActionBarActivity implements Observer
             json = fileManager.getFileContent(JSON_FILE_NAME);
         } catch (IOException e)
         {
-            Toast.makeText(this, "НЕ удалось загрузить контент", Toast.LENGTH_SHORT).show();
             return false;
         }
-        HSEView newView;
+        BaseScreen newView;
         try
         {
-            newView = HSEView.getView(json, getString(R.string.server_url));
+            newView = BaseScreen.getView(json, getString(R.string.server_url));
         } catch (JSONException e)
         {
             handleJsonException();
             return false;
         }
-        hseView = newView;
-        try
-        {
-            hseView.notifyAboutFileDownloading(this);
-        } catch (JSONException e)
-        {
-            return false;
-        }
+        baseScreen = newView;
         return true;
     }
 
@@ -261,9 +213,31 @@ public class MainActivity extends ActionBarActivity implements Observer
 
     private void requestJson()
     {
-        createAsyncTask(DownloadStatus.DOWNLOAD_JSON);
+        Downloader.DownloadCallback downloadCallback = getCallbackForJsonDoanloading();
+        task = new Downloader(this, downloadCallback);
         String jsonUrl = getString(R.string.json_url);
         task.execute(new FileDescription(JSON_FILE_NAME, jsonUrl));
+    }
+
+    private Downloader.DownloadCallback getCallbackForJsonDoanloading()
+    {
+        return new Downloader.DownloadCallback()
+        {
+            @Override
+            public void downloadFinished()
+            {
+                boolean isSuccessful = setJsonField();
+                if (isSuccessful)
+                {
+
+                    checkFiles();
+                } else
+                {
+                    Toast.makeText(MainActivity.this, "Не удалось загрузить структуру", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                }
+            }
+        };
     }
 
 }

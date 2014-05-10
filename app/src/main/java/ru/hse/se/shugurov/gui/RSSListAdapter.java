@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEViewRSS;
+import ru.hse.se.shugurov.screens.RSSScreen;
 
 /**
  * Provides items for {@code ListView}
@@ -17,7 +17,7 @@ import ru.hse.se.shugurov.screens.HSEViewRSS;
  */
 public class RSSListAdapter extends BaseAdapter
 {
-    private HSEViewRSS[] rssItems;
+    private RSSScreen[] rssItems;
     private LayoutInflater inflater;
 
     /**
@@ -26,7 +26,7 @@ public class RSSListAdapter extends BaseAdapter
      * @param context  activity used to inflate views. not null
      * @param rssItems array of rss items to be shown. not null
      */
-    public RSSListAdapter(Context context, HSEViewRSS[] rssItems)
+    public RSSListAdapter(Context context, RSSScreen[] rssItems)
     {
         this.rssItems = rssItems;
         inflater = LayoutInflater.from(context);
@@ -39,7 +39,7 @@ public class RSSListAdapter extends BaseAdapter
     }
 
     @Override
-    public HSEViewRSS getItem(int position)
+    public RSSScreen getItem(int position)
     {
         return rssItems[position];
     }
@@ -54,7 +54,7 @@ public class RSSListAdapter extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        HSEViewRSS currentRssElement = getItem(position);
+        RSSScreen currentRssElement = getItem(position);
         if (convertView == null)
         {
             convertView = inflater.inflate(R.layout.rss_item, parent, false);

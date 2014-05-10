@@ -18,21 +18,15 @@ import ru.hse.se.shugurov.utills.Requester;
  * Created by Иван on 11.02.14.
  */
 public class VKRequester extends AbstractRequester
+
 {
     public static final String REDIRECTION_URL = "https://oauth.vk.com/blank.html";
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
-            "client_id=3965004&" +
-            "redirect_uri=" + REDIRECTION_URL + "&" +
-            "display=mobile&" +
-            "response_type=token" +
-            "&scope=wall,groups";
-    private static final String ACCESS_TOKEN_TAG = "access_token";
-    private static final String GROUP_ID_TAG = "group_id";
-    private static final String BOARD_GET_COMMENTS = "board.getComments";
-    private static final String VK_TOPIC_ID_TAG = "topic_id";
-    private static final String REQUEST_BEGINNING = "https://api.vk.com/method/";
+            "client_id=3965004&redirect_uri=" + REDIRECTION_URL +
+            "&display=mobile&response_type=token&scope=wall,groups";
+    private static final String GET_COMMENTS = "https://api.vk.com/method/board.getComments?group_id=%s&topic_id=%s&access_token=%s&extended=1&count=100";
     private static final String BOARD_GET_TOPICS = "https://api.vk.com/method/board.getTopics?group_id=%s&access_token=%s&extended=1&preview=1&order=1";
-    private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1";
+    private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1&count=100";
     private static final String GET_PROFILE_INFORMATION = "https://api.vk.com/method/users.get?user_ids=%s&fields=photo_100";
     private static final String WALL_GET_COMMENTS_FOR_POST = "https://api.vk.com/method/wall.getComments?owner_id=-%s&post_id=%s&extended=1&count=100";
     private static final String ADD_COMMENT_TO_WALL_POST = "https://api.vk.com/method/wall.addComment?owner_id=-%s&post_id=%s&text=%s&access_token=%s";
@@ -56,6 +50,7 @@ public class VKRequester extends AbstractRequester
             {
                 JSONObject commentObject = responseArray.getJSONObject(i);
                 String userId = commentObject.getString("uid");
+
                 long date = commentObject.getLong("date") * 1000;
                 String text = commentObject.getString("text");
                 SocialNetworkProfile profile = new SocialNetworkProfile(userId);
@@ -222,8 +217,7 @@ public class VKRequester extends AbstractRequester
     @Override
     public void getComments(String groupID, String topicID, final RequestResultListener<SocialNetworkEntry> listener)
     {
-        String request = REQUEST_BEGINNING + BOARD_GET_COMMENTS + "?" + GROUP_ID_TAG + "=" + groupID +
-                "&" + VK_TOPIC_ID_TAG + "=" + topicID + "&" + ACCESS_TOKEN_TAG + "=" + getAccessToken() + "&extended=1";
+        String request = String.format(GET_COMMENTS, groupID, topicID, getAccessToken());
         Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
         {
             @Override

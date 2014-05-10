@@ -19,47 +19,48 @@ import ru.hse.se.shugurov.social_networks.VKRequester;
 /**
  * This class is used for authentication in social networks. It is assumed that these networks uses OAuth 2.
  * In order to ger access token custom {@code WebViewClient}  is provided to {@code WebView}.
+ * <p/>
+ * Fragment requires  following arguments:
+ * <ul>
+ * <li>{@link java.lang.String} url with a key specified by {@code URL_TAG}. This url should lead
+ * to authentication form</li>
+ * <li>{@link ru.hse.se.shugurov.gui.AuthenticationFragment.AccessTokenRequest} with a key
+ * specified by {@code TOKEN_REQUEST_TAG}. This object is used as callback when access token is received. Object is passed as a serializable object</li>
+ * </ul>
  *
  * @author Ivan Shugurov
  */
 public class AuthenticationFragment extends Fragment
 {
-    /*constants used for saving fragment state*/
-    private final String URL_TAG = "authorization_url_tag";
-    private final String TOKEN_REQUEST_TAG = "access_token_request_tag";
+    /*constants used as keys in bundle object*/
+    public final static String URL_TAG = "authorization_url_tag";
+    public final static String TOKEN_REQUEST_TAG = "access_token_request_tag";
 
     private String url;
     private AccessTokenRequest accessTokenRequest;
 
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public AuthenticationFragment()
+    @Override
+    public void setArguments(Bundle args)
     {
+        super.setArguments(args);
+        readStateFromBundle(args);
     }
 
-    /**
-     * Constructs new {@code AuthorizationFragment}
-     *
-     * @param url                OAuth url. not null
-     * @param accessTokenRequest object for callback. not null
-     */
-    public AuthenticationFragment(String url, AccessTokenRequest accessTokenRequest)
+    /*retrieves arguments from Bundle object and makes necessary casts*/
+    private void readStateFromBundle(Bundle args)
     {
-        this.url = url;
-        this.accessTokenRequest = accessTokenRequest;
+        if (args != null)
+        {
+            url = args.getString(URL_TAG);
+            accessTokenRequest = (AccessTokenRequest) args.getSerializable(TOKEN_REQUEST_TAG);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && url == null)
-        {
-            url = savedInstanceState.getString(URL_TAG);
-            accessTokenRequest = (AccessTokenRequest) savedInstanceState.getSerializable(TOKEN_REQUEST_TAG);
-        }
+        readStateFromBundle(savedInstanceState);
     }
 
     @Override
@@ -91,6 +92,7 @@ public class AuthenticationFragment extends Fragment
                 public void call(AccessToken accessToken)
                 {
                     accessTokenRequest.receiveToken(accessToken);
+                    getFragmentManager().popBackStack();
                 }
             });
         }
@@ -102,6 +104,7 @@ public class AuthenticationFragment extends Fragment
                 public void call(AccessToken accessToken)
                 {
                     accessTokenRequest.receiveToken(accessToken);
+                    getFragmentManager().popBackStack();
                 }
             });
         } else

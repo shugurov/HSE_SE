@@ -23,7 +23,6 @@ import android.widget.Toast;
 import java.text.DateFormat;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.CommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
@@ -35,14 +34,27 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 import ru.hse.se.shugurov.utills.Requester;
 
 /**
- * Created by Иван on 03.05.2014.
+ * Mostly used to show vk wall post comments
+ * <p/>
+ * Fragment requires following arguments:
+ * <ul>
+ * <li>{@link ru.hse.se.shugurov.social_networks.SocialNetworkTopic} with a key specified by {@code WALL_COMMENTS_POST_TAG}. Passed as parcelable object</li>
+ * <li>{@link ru.hse.se.shugurov.social_networks.StateListener} with a key specified by {@code COMMENTS_LISTENER_TAG}. Passed as serializable object.</li>
+ * </ul>
+ * <p/>
+ * For other required arguments see{@link ru.hse.se.shugurov.gui.SocialNetworkAbstractList}
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class WallCommentsFragment extends SocialNetworkAbstractList
 {
-    private final String VK_WALL_COMMENTS_TAG = "vk_wall_comments";
-    private final String VK_WALL_COMMENTS_POST_TAG = "vk_wall_comments_post";
-    private final String TYPED_COMMENT = "vk_wall_typed_comment";
-    private final String COMMENTS_LISTENER_TAG = "comments_listener_tag";
+    /*constants used as keys in bundle object*/
+    public static final String WALL_COMMENTS_TAG = "wall_comments";
+    public static final String WALL_COMMENTS_POST_TAG = "wall_comments_post";
+    public final static String COMMENTS_LISTENER_TAG = "comments_listener_tag";
+    private final static String TYPED_COMMENT = "wall_typed_comment";
+
+
     private SocialNetworkTopic post;
     private SocialNetworkEntry[] comments;
     private int containerWidth;
@@ -52,26 +64,25 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
     private View footerView;
     private StateListener stateListener;
 
-    public WallCommentsFragment()
+    @Override
+    public void setArguments(Bundle args)
     {
-
-    }
-
-    public WallCommentsFragment(String groupId, String groupName, SocialNetworkTopic post, AbstractRequester requester, StateListener listener)
-    {
-        super(groupId, groupName, requester);
-        this.post = post;
-        stateListener = listener;
+        super.setArguments(args);
+        if (args != null)
+        {
+            post = args.getParcelable(WALL_COMMENTS_POST_TAG);
+            stateListener = (StateListener) args.getSerializable(COMMENTS_LISTENER_TAG);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && post == null)
+        if (savedInstanceState != null)
         {
-            post = savedInstanceState.getParcelable(VK_WALL_COMMENTS_POST_TAG);
-            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(VK_WALL_COMMENTS_TAG);
+            post = savedInstanceState.getParcelable(WALL_COMMENTS_POST_TAG);
+            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(WALL_COMMENTS_TAG);
             commentText = savedInstanceState.getString(TYPED_COMMENT);
             stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
         }
@@ -91,6 +102,7 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         return display.getWidth();
     }
 
+    /*determines api level and calls corresponding method to get screen width*/
     private int getScreenWidth()
     {
         WindowManager windowManager = getActivity().getWindowManager();
@@ -188,34 +200,41 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         }
     }
 
+    /*creates header view, footer view and sets adapter to a list viw*/
     private void instantiateAdapter()
     {
-        CommentsAdapter responsesAdapter = new CommentsAdapter(getActivity(), comments);
-        if (headerView == null)
+        try
         {
-            createHeaderView();
-            getListView().addHeaderView(headerView);
-        }
-        if (footerView == null)
+            CommentsAdapter responsesAdapter = new CommentsAdapter(getActivity(), comments);
+            if (headerView == null)
+            {
+                createHeaderView();
+                getListView().addHeaderView(headerView);
+            }
+            if (footerView == null)
+            {
+                createFooterView();
+                getListView().addFooterView(footerView);
+            }
+            setListAdapter(responsesAdapter);
+            setListShown(true);
+        } catch (Exception e)
         {
-            createFooterView();
-            getListView().addFooterView(footerView);
         }
-        setListAdapter(responsesAdapter);
-        setListShown(true);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArray(VK_WALL_COMMENTS_TAG, comments);
-        outState.putParcelable(VK_WALL_COMMENTS_POST_TAG, post);
+        outState.putParcelableArray(WALL_COMMENTS_TAG, comments);
+        outState.putParcelable(WALL_COMMENTS_POST_TAG, post);
         outState.putString(TYPED_COMMENT, input.getText().toString());
         outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
     }
 
 
+    /*creates header view and stores as class field. Header view demonstrates wall post*/
     private void createHeaderView()
     {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -225,17 +244,17 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         ImageView authorPhoto = (ImageView) headerView.findViewById(R.id.vk_post_author_photo);
         authorPhoto.setImageBitmap(null);
         float weightSum = ((LinearLayout) headerView).getWeightSum();
-        int photoWidth = (int) (containerWidth * (1 / weightSum));
-        FlexibleImageView authorPhotoProxy = new FlexibleImageView(authorPhoto, photoWidth);
+        int photoSize = (int) (containerWidth * (1 / weightSum));
+        FlexibleImageView authorPhotoProxy = new FlexibleImageView(authorPhoto, photoSize);
         imageLoader.displayImage(author.getPhoto(), authorPhotoProxy);
         ImageView attachedPicture = (ImageView) headerView.findViewById(R.id.vk_wall_attached_picture);
         attachedPicture.setImageBitmap(null);
         if (post.getAttachedPicture() != null)
         {
             attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            photoWidth = containerWidth - photoWidth;
-            FlexibleImageView attachedImageProxy = new FlexibleImageView(attachedPicture, photoWidth);
-            imageLoader.displayImage(post.getAttachedPicture(), attachedImageProxy);
+            photoSize = containerWidth - photoSize;
+            attachedPicture.getLayoutParams().height = photoSize;
+            imageLoader.displayImage(post.getAttachedPicture(), attachedPicture);
         } else
         {
             attachedPicture.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
@@ -246,6 +265,7 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         ((TextView) headerView.findViewById(R.id.footer_date)).setText(format.format(post.getDate()));
     }
 
+    /*creates footer view and stores as class field. Footer view shows a form for adding comments.*/
     private void createFooterView()
     {
         LayoutInflater inflater = LayoutInflater.from(getActivity());

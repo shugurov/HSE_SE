@@ -12,7 +12,6 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEView;
 import ru.hse.se.shugurov.utills.FileManager;
 
 /**
@@ -20,29 +19,12 @@ import ru.hse.se.shugurov.utills.FileManager;
  * <p/>
  * CSS is not supported
  * <p/>
+ * For the required arguments see{@link ru.hse.se.shugurov.gui.AbstractFragment}
  * Created byIvan Shugurov
  */
 public class HTMLScreenFragment extends AbstractFragment
 {
     private TextView viewForHTML;
-
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public HTMLScreenFragment()
-    {
-    }
-
-    /**
-     * Constructs fragment
-     *
-     * @param hseView that has html content. not null
-     */
-    public HTMLScreenFragment(HSEView hseView)
-    {
-        super(hseView);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -57,7 +39,7 @@ public class HTMLScreenFragment extends AbstractFragment
                 try
                 {
                     FileManager fileManager = FileManager.instance();
-                    String htmlContent = fileManager.getFileContent(getHseView().getKey());
+                    String htmlContent = fileManager.getFileContent(getBaseScreen().getKey());
                     setText(htmlContent);
                 } catch (IOException e)
                 {

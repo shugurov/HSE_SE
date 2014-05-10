@@ -9,10 +9,19 @@ import java.io.IOException;
 import ru.hse.se.shugurov.utills.FileManager;
 
 /**
- * Created by Иван on 24.04.2014.
+ * Used to describe a screen with events
+ * <p/>
+ * Created by Ivan Shugurov
  */
-public class EventScreen extends HSEView implements HasFile
+public class EventScreen extends BaseScreen implements HasFile
 {
+    /**
+     * Reads data from provided json object and creates a new instance
+     *
+     * @param jsonObject object which contains all necessary fields to create this class
+     * @param serverURL  lin to a server which provides api for getting events
+     * @throws JSONException
+     */
     public EventScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         super(jsonObject);
@@ -25,6 +34,12 @@ public class EventScreen extends HSEView implements HasFile
         return new FileDescription(getKey(), getUrl());
     }
 
+    /**
+     * Reads files which contains events, parses them and returns
+     *
+     * @return array of events. Array has 0 elements if i/o exception occurs
+     * @throws JSONException if json stored in file has errors
+     */
     public Event[] getEvents() throws JSONException
     {
         FileManager fileManager = FileManager.instance();

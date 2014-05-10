@@ -6,59 +6,61 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.BaseScreen;
 
-/**Base class for the majority of fragments used in app.
+/**
+ * Base class for the majority of fragments used in app.
  * provides basic facilities:
  * <ul>
- *     <li>sets action bar title. name of current {@code HSEView} is used</li>
- *     <li>stores an object of {@code HSEView} in {@code Bundle} object before the destruction of
- *     the fragment and restores it afterwards</li>
- *     <li>shows button in action bar if provided {@code HSEView} is a view of other views</li>
+ * <li>sets action bar title. name of current {@code HSEView} is used</li>
+ * <li>stores an object of {@code HSEView} in {@code Bundle} object before the destruction of
+ * the fragment and restores it afterwards</li>
+ * <li>shows button in action bar if provided {@code HSEView} is a view of other views</li>
  * </ul>
- *
- * Generally child classes should call not empty constructor. Restoring of elements is done in onCreate,
- * so child classes should override it carefully as well as onSaveInstanceState where saving state is handled.
- *
+ * <p/>
+ * Fragment requires following arguments:
+ * <ul>
+ * <li>{@link ru.hse.se.shugurov.screens.BaseScreen} with a key specified by {@code HSE_VIEW_TAG}</li>
+ * </ul>
+ * <p/>
+ * <strong>Is is assumed that method setArguments is called after putting all arguments in a bundle object</strong>
+ * <p/>
  * Created by Ivan Shugurov
  */
 public abstract class AbstractFragment extends Fragment
 {
-    /*constant used for saving fragment state*/
-    private static String HSE_VIEW_TAG = "hse_view";
+    /*constants used as keys in bundle object*/
+    public static String HSE_VIEW_TAG = "hse_view";
 
-    private HSEView hseView;
+    private BaseScreen baseScreen;
 
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public AbstractFragment()
+
+    @Override
+    public void setArguments(Bundle args)
     {
+        super.setArguments(args);
+        readStateFromBundle(args);
     }
 
-    /**
-     * @param hseView not null
-     */
-    public AbstractFragment(HSEView hseView)
+    private void readStateFromBundle(Bundle args)
     {
-        this.hseView = hseView;
+        if (args != null)
+        {
+            baseScreen = (BaseScreen) args.get(HSE_VIEW_TAG);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && hseView == null)
-        {
-            hseView = (HSEView) savedInstanceState.get(HSE_VIEW_TAG);
-        }
+        readStateFromBundle(savedInstanceState);
     }
 
     private void configureActionBar()
     {
-        getActivity().setTitle(hseView.getName());
-        if (hseView.isMainView())
+        getActivity().setTitle(baseScreen.getName());
+        if (baseScreen.isMainView())
         {
             setHasOptionsMenu(true);
         } else
@@ -78,7 +80,7 @@ public abstract class AbstractFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        outState.putSerializable(HSE_VIEW_TAG, hseView);
+        outState.putParcelable(HSE_VIEW_TAG, baseScreen);
         super.onSaveInstanceState(outState);
     }
 
@@ -91,9 +93,9 @@ public abstract class AbstractFragment extends Fragment
     }
 
     /*getter for {@code hseView*/
-    protected HSEView getHseView()
+    protected BaseScreen getBaseScreen()
     {
-        return hseView;
+        return baseScreen;
     }
 
 }

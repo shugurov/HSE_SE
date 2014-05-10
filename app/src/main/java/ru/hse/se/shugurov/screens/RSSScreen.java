@@ -1,12 +1,14 @@
 package ru.hse.se.shugurov.screens;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Created by Иван on 28.10.13.
  */
-public class HSEViewRSS extends HSEView
+public class RSSScreen extends BaseScreen
 {
     private final static String TITLE_TAG = "title";
     private final static String OMITTED_TAG = "omitted";
@@ -16,9 +18,18 @@ public class HSEViewRSS extends HSEView
     private String title = "";
     private String omitted = "";
     private String summary = "";
-    private HSERSSType type;
+    private RSSTypes type;
 
-    HSEViewRSS(JSONObject jsonObject) throws JSONException
+    protected RSSScreen(Parcel input)
+    {
+        super(input);
+        title = input.readString();
+        omitted = input.readString();
+        summary = input.readString();
+        type = (RSSTypes) input.readSerializable();
+    }
+
+    RSSScreen(JSONObject jsonObject) throws JSONException
     {
         title = jsonObject.getString(TITLE_TAG);
         omitted = jsonObject.getString(OMITTED_TAG);
@@ -26,15 +37,25 @@ public class HSEViewRSS extends HSEView
         url = jsonObject.getString(LINK_TAG);
         if (omitted.equals(NULL_TAG))
         {
-            type = HSERSSType.ONLY_TITLE;
+            type = RSSTypes.ONLY_TITLE;
             summary = "";
             omitted = "";
         } else
         {
-            type = HSERSSType.FULL_RSS;
+            type = RSSTypes.FULL_RSS;
         }
         clearStyle();
-        hseViewType = HSEViewTypes.RSS;
+        screenType = HSEViewTypes.RSS;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        super.writeToParcel(dest, flags);
+        dest.writeString(title);
+        dest.writeString(omitted);
+        dest.writeString(summary);
+        dest.writeSerializable(type);
     }
 
     public String getTitle()
@@ -52,7 +73,7 @@ public class HSEViewRSS extends HSEView
         return summary;
     }
 
-    public HSERSSType getType()
+    public RSSTypes getType()
     {
         return type;
     }

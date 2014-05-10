@@ -53,19 +53,16 @@ public class CommentsAdapter extends BaseAdapter
     {
         if (convertView == null)
         {
-            convertView = inflater.inflate(R.layout.social_network_topic, parent, false);
+            convertView = inflater.inflate(R.layout.social_network_comment, parent, false);
         }
-        ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(comments[position].getAuthor().getFullName());
+        ((TextView) convertView.findViewById(R.id.comment_author_name)).setText(comments[position].getAuthor().getFullName());
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        if (position == 0 && comments[position] instanceof SocialNetworkTopic)//TODO нету заголовка(
-        {
-            ((TextView) convertView.findViewById(R.id.topic_title)).setText(((SocialNetworkTopic) comments[position]).getTitle());
-        }
         ((TextView) convertView.findViewById(R.id.footer_date)).setText(format.format(comments[position].getDate()));
-        ((TextView) convertView.findViewById(R.id.topic_text)).setText(Html.fromHtml(comments[position].getText()));
-        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.topic_author_photo);
+        TextView commentTextView = (TextView) convertView.findViewById(R.id.comment_text);
+        commentTextView.setText(Html.fromHtml(comments[position].getText()));
+        ImageView authorPhoto = (ImageView) convertView.findViewById(R.id.comment_author_photo);
         authorPhoto.setImageBitmap(null);
-        float weightSum = ((LinearLayout) convertView.findViewById(R.id.topic_container)).getWeightSum();
+        float weightSum = ((LinearLayout) convertView).getWeightSum();
         int width = (int) ((parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight()) * (1 / weightSum));
         authorPhoto.getLayoutParams().height = width;
         imageLoader.displayImage(comments[position].getAuthor().getPhoto(), authorPhoto);

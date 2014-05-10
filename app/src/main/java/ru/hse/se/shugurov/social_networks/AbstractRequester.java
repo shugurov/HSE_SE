@@ -58,6 +58,11 @@ public abstract class AbstractRequester implements Serializable
         return false;
     }
 
+    public boolean showCommentsQuantity()
+    {
+        return true;
+    }
+
     public interface RequestResultListener<T extends SocialNetworkEntry>
     {
         void resultObtained(T[] result);

@@ -14,43 +14,26 @@ import android.widget.Toast;
 import org.json.JSONException;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEView;
-import ru.hse.se.shugurov.screens.HSEViewRSS;
-import ru.hse.se.shugurov.screens.HSEViewRSSWrapper;
+import ru.hse.se.shugurov.screens.RSSScreen;
+import ru.hse.se.shugurov.screens.RSSWrapperScreen;
 
 /**
  * Used for demonstrating a list of RSS items via list adapter.
  * <p/>
  * See {@link ru.hse.se.shugurov.gui.RSSListAdapter}
  * <p/>
+ * For the required arguments see {@link ru.hse.se.shugurov.gui.AbstractFragment}
  * Created by Ivan Shugurov
  */
-public class RSSFragment extends AbstractFragment
+public class RSSFragment extends AbstractFragment//TODO здесь валится
 {
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public RSSFragment()
-    {
-    }
-
-    /**
-     * Constructs a fragment
-     *
-     * @param hseViewRSS object with a list of rss items. not null
-     */
-    public RSSFragment(HSEView hseViewRSS)
-    {
-        super(hseViewRSS);
-    }
 
     private View showListOfRSSItems(final LayoutInflater inflater, final ViewGroup container)
     {
-        HSEViewRSS[] rssItems = null;
+        RSSScreen[] rssItems = null;
         try
         {
-            rssItems = ((HSEViewRSSWrapper) getHseView()).getRSS();
+            rssItems = ((RSSWrapperScreen) getBaseScreen()).getRSS();
         } catch (JSONException e)
         {
 
@@ -68,7 +51,7 @@ public class RSSFragment extends AbstractFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                HSEViewRSS selectedItem = rssListAdapter.getItem(position);
+                RSSScreen selectedItem = rssListAdapter.getItem(position);
                 switch (selectedItem.getType())
                 {
                     case FULL_RSS:
@@ -101,13 +84,13 @@ public class RSSFragment extends AbstractFragment
             @Override
             public void onClick(View v)
             {
-                openBrowser(getHseView().getUrl());
+                openBrowser(getBaseScreen().getUrl());
             }
         });
-        if (getHseView() instanceof HSEViewRSS)
+        if (getBaseScreen() instanceof RSSScreen)
         {
-            ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(((HSEViewRSS) getHseView()).getTitle());
-            ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(((HSEViewRSS) getHseView()).getOmitted());
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(((RSSScreen) getBaseScreen()).getTitle());
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(((RSSScreen) getBaseScreen()).getOmitted());
         } else
         {
             throw new IllegalStateException("Precondition violated in RssScreenAdapter.showEntireRSS.Inappropriate view type.");
@@ -118,10 +101,10 @@ public class RSSFragment extends AbstractFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        if (getHseView() instanceof HSEViewRSSWrapper)
+        if (getBaseScreen() instanceof RSSWrapperScreen)
         {
             return showListOfRSSItems(inflater, container);
-        } else if (getHseView() instanceof HSEViewRSS)
+        } else if (getBaseScreen() instanceof RSSScreen)
         {
             return showEntireRSS(inflater, container);
         } else

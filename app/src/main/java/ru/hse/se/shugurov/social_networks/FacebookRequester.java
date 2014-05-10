@@ -330,4 +330,10 @@ public class FacebookRequester extends AbstractRequester
         }
 
     }
+
+    @Override
+    public boolean showCommentsQuantity()
+    {
+        return false;
+    }
 }

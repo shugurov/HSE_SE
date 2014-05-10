@@ -2,6 +2,7 @@ package ru.hse.se.shugurov.gui;
 
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.hse.se.shugurov.R;
@@ -26,16 +28,28 @@ import ru.hse.se.shugurov.utills.Requester;
  * <p/>
  * This class shows a form for commenting this topic. After user comment is sent successfully, fragments is refreshed
  * See {@link ru.hse.se.shugurov.social_networks.AbstractRequester}
+ * <p/>
+ * Fragment requires following arguments:
+ * <ul>
+ * <li>topic id as String with a key specified by {@code TOPIC_ID_TAG}.</li>
+ * <li>{@link ru.hse.se.shugurov.social_networks.SocialNetworkEntry[]} of comments with a key specified by {@code COMMENTS_TAG}.
+ * Passed as parcelable array</li>
+ * <li>{@link ru.hse.se.shugurov.social_networks.StateListener} with a key specified by {@code COMMENTS_LISTENER_TAG}.
+ * Passed as a serializable object</li>
+ * <li>Topic title as String with a key specified by {@code TOPIC_TITLE_TAG}.</li>
+ * </ul>
+ * For other required arguments see {@link ru.hse.se.shugurov.gui.SocialNetworkAbstractList}
  *
  * @author Ivan Shugurov
  */
 public class CommentsFragment extends SocialNetworkAbstractList//в vk нету заголовка темы(
 {
-    /*constants used for saving fragment state*/
-    private final static String TOPIC_ID_TAG = "topic_id_responses";
-    private final static String COMMENTS_TAG = "group_comments";
+    /*constants used as keys in bundle object*/
+    public final static String TOPIC_ID_TAG = "topic_id_responses";
+    public final static String COMMENTS_TAG = "group_comments";
+    public final static String COMMENTS_LISTENER_TAG = "comments_listener_tag";
+    public final static String TOPIC_TITLE_TAG = "comments_topic_title";
     private final static String COMMENTS_COMMENT_TAG = "group_comments_reply_text";
-    private final String COMMENTS_LISTENER_TAG = "comments_listener_tag";
 
 
     private String topicId;
@@ -44,34 +58,28 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
     private EditText input;
     private String commentText;
     private StateListener stateListener;
+    private String topicTitle;
+    private TextView headerView;
 
-    /**
-     * Default constructor used by Android for instantiating this class after it has been destroyed.
-     * Should not be used by developers.
-     */
-    public CommentsFragment()
-    {
-    }
 
-    /**
-     * @param groupId   id of social network group. Not null.
-     * @param groupName name of requested group. Used as title in action bar. Not null.
-     * @param topicId   id of social network topic. Not null.
-     * @param requester object which makes requests for the data from social networks. Not null
-     * @param listener  callback interface used to notify about comments changes
-     */
-    public CommentsFragment(String groupId, String groupName, String topicId, AbstractRequester requester, StateListener listener)
+    @Override
+    public void setArguments(Bundle args)
     {
-        super(groupId, groupName, requester);
-        this.topicId = topicId;
-        stateListener = listener;
+        super.setArguments(args);
+        if (args != null)
+        {
+            topicId = args.getString(TOPIC_ID_TAG);
+            comments = (SocialNetworkEntry[]) args.getParcelableArray(COMMENTS_TAG);
+            stateListener = (StateListener) args.getSerializable(COMMENTS_LISTENER_TAG);
+            topicTitle = args.getString(TOPIC_TITLE_TAG);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null && comments == null)
+        if (savedInstanceState != null)
         {
             topicId = savedInstanceState.getString(TOPIC_ID_TAG);
             comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
@@ -94,6 +102,7 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
         getListView().setSelector(new StateListDrawable());
     }
 
+    /*requests comments via requester object*/
     private void loadComments()
     {
         final AbstractRequester requester = getRequester();
@@ -117,17 +126,36 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
     /*set ListAdapter and adds footer view*/
     private void setAdapter()
     {
-        if (getActivity() != null)
+        CommentsAdapter commentsAdapter = new CommentsAdapter(getActivity(), comments);
+        if (footerView == null)
         {
-            CommentsAdapter commentsAdapter = new CommentsAdapter(getActivity(), comments);
-            if (footerView == null)
-            {
-                createFooterView();
-                getListView().addFooterView(footerView);
-            }
+            createFooterView();
+        }
+        if (headerView == null)
+        {
+            createHeaderView();
+        }
+        try
+        {
+            getListView().addFooterView(footerView);
+            getListView().addHeaderView(headerView);
             setListAdapter(commentsAdapter);
             setListShown(true);
+        } catch (Exception ex)
+        {
         }
+
+    }
+
+    /*Create header text view which shows topic title*/
+    private void createHeaderView()
+    {
+        headerView = new TextView(getActivity());
+        //headerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int padding = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
+        headerView.setPadding(padding, 0, padding, 0);
+        headerView.setText(topicTitle);
+        headerView.setTypeface(null, Typeface.BOLD);
     }
 
     /*Create footer view which shows a form for writing a reply*/
@@ -185,11 +213,12 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
         super.onSaveInstanceState(outState);
         outState.putString(TOPIC_ID_TAG, topicId);
         outState.putParcelableArray(COMMENTS_TAG, comments);
-        //outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
+        outState.putSerializable(COMMENTS_LISTENER_TAG, stateListener);
         if (input != null)
         {
             outState.putString(COMMENTS_COMMENT_TAG, input.getText().toString());
         }
+        outState.putString(TOPIC_TITLE_TAG, topicTitle);
     }
 
 }

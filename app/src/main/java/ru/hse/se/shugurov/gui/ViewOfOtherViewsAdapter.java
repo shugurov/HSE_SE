@@ -18,26 +18,22 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.HSEView;
+import ru.hse.se.shugurov.screens.BaseScreen;
 import ru.hse.se.shugurov.screens.HSEViewTypes;
 
 /**
- * Created by Иван on 15.03.14.
+ * Class with shows "menu"
+ * <p/>
+ * For the required arguments see{@link ru.hse.se.shugurov.gui.AbstractFragment}
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.OnClickListener
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
 
-    public ViewOfOtherViewsAdapter()
-    {
-    }
-
-    public ViewOfOtherViewsAdapter(HSEView hseView)
-    {
-        super(hseView);
-    }
-
-    private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, HSEView[] elements, int screenWidth)
+    /*creates menu*/
+    private LinearLayout getLinearLayoutWithScreenItems(LayoutInflater inflater, BaseScreen[] elements, int screenWidth)
     {
         int numberOfViewsInRow = 1;
         while (screenWidth / numberOfViewsInRow > (MINIMUM_WIDTH_OF_THE_ELEMENT + 20))
@@ -68,7 +64,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
                 indexOfCurrentItem = i * numberOfViewsInRow + j;
                 items[j] = (ViewGroup) inflater.inflate(R.layout.item, null, false);
                 ((TextView) items[j].findViewById(R.id.item_text_id)).setText(elements[indexOfCurrentItem].getName());
-                setAppearance(items[j], elements[indexOfCurrentItem].getHseViewType());
+                setAppearance(items[j], elements[indexOfCurrentItem].getScreenType());
                 items[j].setId(idOfCurrentView);
                 idOfCurrentView++;
                 items[j].setOnClickListener(this);
@@ -84,6 +80,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
         return content;
     }
 
+    /*sets image and background color*/
     private void setAppearance(View view, int HSEViewType) throws IllegalArgumentException
     {
         int drawableID;
@@ -144,7 +141,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
     @Override
     public void onClick(View view)
     {
-        HSEView selectedView = getHseView().getViewElements()[view.getId()];
+        BaseScreen selectedView = getBaseScreen().getViewElements()[view.getId()];
         ScreenFactory.instance().showFragment(selectedView);
     }
 
@@ -162,6 +159,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
         return display.getWidth();
     }
 
+    /*determines api level and calls corresponding method to get screen width*/
     private int getScreenWidth()
     {
         WindowManager windowManager = getActivity().getWindowManager();
@@ -183,7 +181,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
         {
             screenWidth = getScreenWidth();
         }
-        View content = getLinearLayoutWithScreenItems(inflater, getHseView().getViewElements(), screenWidth);
+        View content = getLinearLayoutWithScreenItems(inflater, getBaseScreen().getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
         return scrollView;

@@ -7,11 +7,17 @@ import android.os.Parcelable;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.Serializable;
+
 /**
- * Created by Иван on 19.04.2014.
+ * Instance of this class wraps an instance of  {@link com.google.android.gms.maps.model.MarkerOptions}
+ * in order to extends MarkerOptions with several additional fields
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class MarkerWrapper implements Parcelable
 {
+    /*used to parse instances of this class*/
     public static Creator<MarkerWrapper> CREATOR = new Creator<MarkerWrapper>()
     {
         @Override
@@ -32,6 +38,17 @@ public class MarkerWrapper implements Parcelable
     private String phone;
     private MarkerOptions marker;
 
+    /**
+     * Creates a new instance
+     *
+     * @param title
+     * @param url
+     * @param actionType
+     * @param phone
+     * @param latitude
+     * @param longitude
+     * @param address
+     */
     public MarkerWrapper(String title, String url, ActionTypes actionType, String phone, double latitude, double longitude, String address)
     {
         this.actionType = actionType;
@@ -53,19 +70,19 @@ public class MarkerWrapper implements Parcelable
         }
     }
 
+    /*should be called when */
     private MarkerWrapper(Parcel parcel)
     {
-
+        address = parcel.readString();
+        actionType = (ActionTypes) parcel.readSerializable();
+        url = parcel.readString();
+        phone = parcel.readString();
+        marker = parcel.readParcelable(MarkerOptions.class.getClassLoader());
     }
 
     public MarkerOptions getMarker()
     {
         return marker;
-    }
-
-    public void setMarker(MarkerOptions marker)
-    {
-        this.marker = marker;
     }
 
     public String getAddress()
@@ -97,10 +114,14 @@ public class MarkerWrapper implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-
+        dest.writeString(address);
+        dest.writeSerializable(actionType);
+        dest.writeString(url);
+        dest.writeString(phone);
+        dest.writeParcelable(marker, flags);
     }
 
-    public enum ActionTypes
+    public enum ActionTypes implements Serializable
     {
         DO_NOTHING, OPEN_EXTERNAL_MAPS, OPEN_URL;
     }

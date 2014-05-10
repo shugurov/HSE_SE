@@ -14,26 +14,13 @@ import ru.hse.se.shugurov.screens.EventScreen;
 
 /**
  * This class is used to show list of events.
+ * <p/>
+ * For the required arguments see{@link ru.hse.se.shugurov.gui.AbstractFragment}
  *
  * @author Ivan Shugurov
  */
 public class EventFragment extends AbstractFragment
 {
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public EventFragment()
-    {
-    }
-
-    /**
-     * @param eventScreen object that stores information about events. Not Null.
-     */
-    public EventFragment(EventScreen eventScreen)
-    {
-        super(eventScreen);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -41,13 +28,12 @@ public class EventFragment extends AbstractFragment
         ListView listView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         try
         {
-            listView.setAdapter(new EventsListAdapter(((EventScreen) getHseView()).getEvents(), getActivity()));
+            listView.setAdapter(new EventsListAdapter(((EventScreen) getBaseScreen()).getEvents(), getActivity()));
         } catch (JSONException e)
         {
             Toast.makeText(getActivity(), "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();
         }
         return listView;
     }
-
 
 }

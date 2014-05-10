@@ -25,11 +25,13 @@ public class TopicsAdapter extends BaseAdapter
     private LayoutInflater inflater;
     private ImageLoader imageLoader = ImageLoader.instance();
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
+    private boolean doShowCommentsQuantity;
 
-    public TopicsAdapter(Context context, SocialNetworkTopic[] topics)
+    public TopicsAdapter(Context context, SocialNetworkTopic[] topics, boolean doShowCommentsQuantity)
     {
         this.topics = topics;
         inflater = LayoutInflater.from(context);
+        this.doShowCommentsQuantity = doShowCommentsQuantity;
     }
 
     @Override
@@ -69,8 +71,10 @@ public class TopicsAdapter extends BaseAdapter
         ((TextView) convertView.findViewById(R.id.topic_author_name)).setText(Html.fromHtml(topicAuthor.getFullName()));
         TextView topicTextView = (TextView) convertView.findViewById(R.id.topic_text);
         topicTextView.setText(Html.fromHtml(currentTopic.getText()));
-        topicTextView.setMaxLines(3);
-        ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(currentTopic.getCommentsString());
+        if (doShowCommentsQuantity)
+        {
+            ((TextView) convertView.findViewById(R.id.footer_comments_quantity)).setText(currentTopic.getCommentsString());
+        }
         String date = format.format(getItem(position).getDate());
         ((TextView) convertView.findViewById(R.id.footer_date)).setText(date);
         return convertView;

@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * Created by Иван on 01.11.13.
  */
-public class SocialNetworkView extends HSEView
+public class SocialNetworkView extends BaseScreen
 {
     private String objectID = "";
 

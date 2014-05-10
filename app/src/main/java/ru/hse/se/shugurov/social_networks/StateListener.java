@@ -1,11 +1,22 @@
 package ru.hse.se.shugurov.social_networks;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Иван on 08.05.2014.
  */
-public interface StateListener extends Serializable//TODO сделать класс и добиться того, чтобы не падал при закрытии комментов
+public class StateListener implements Serializable
 {
-    void stateChanged();
+    private AtomicBoolean stateFlag;
+
+    public StateListener(AtomicBoolean stateFlag)
+    {
+        this.stateFlag = stateFlag;
+    }
+
+    public void stateChanged()
+    {
+        stateFlag.set(true);
+    }
 }

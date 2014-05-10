@@ -3,6 +3,7 @@ package ru.hse.se.shugurov.gui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,57 +19,55 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import ru.hse.se.shugurov.R;
-import ru.hse.se.shugurov.screens.MapScreen;
 import ru.hse.se.shugurov.screens.MarkerWrapper;
 
 /**
+ * Fragment requires following arguments:
+ * <ul>
+ * <li>{@link ru.hse.se.shugurov.screens.MarkerWrapper[]} with a key specified by {@code MARKERS_TAG}</li>
+ * <li>title as a string with a key specified by {@code TITLE_TAG}</li>
+ * </ul>
+ * <p/>
+ * <strong>Is is assumed that method setArguments is called after putting all arguments in a bundle object</strong>
  * Created by Ivan Shugurov
  */
 public class MapFragment extends SupportMapFragment
 {
-    /*constants used for saving fragment state*/
-    private static final String MARKERS_TAG = "markers";
-    private static final String TITLE_TAG = "title";
+    /*constants used as keys in bundle object*/
+    public static final String MARKERS_TAG = "markers";
+    public static final String TITLE_TAG = "title";
 
 
     private MarkerWrapper[] markerWrappers;
     private String title;
     private Map<Marker, MarkerWrapper> markersToWrappers;
 
-    /**
-     * Default constructor used by Android for instantiating this class after it was destroyed.
-     * Should not be used by developers.
-     */
-    public MapFragment()
-    {
-    }
-
-    /**
-     * Used to demonstrate map and markers on it. requires google play service
-     *
-     * @param hseView object with map markers. Not null.
-     */
-    public MapFragment(MapScreen hseView)
-    {
-        markerWrappers = hseView.getMarkers();
-        this.title = hseView.getName();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        readStateFomBundle(savedInstanceState);
+        super.onCreate(savedInstanceState);
+        getActivity().setTitle(title);
+    }
+
+    /*gets class fields from a bundle object*/
+    private void readStateFomBundle(Bundle savedInstanceState)
+    {
         if (savedInstanceState != null)
         {
-            markerWrappers = (MarkerWrapper[]) savedInstanceState.getParcelableArray(MARKERS_TAG);
+            Parcelable[] parcelableArray = savedInstanceState.getParcelableArray(MARKERS_TAG);
+            if (parcelableArray != null)
+            {
+                markerWrappers = Arrays.copyOf(parcelableArray, parcelableArray.length, MarkerWrapper[].class);
+            }
             title = savedInstanceState.getString(TITLE_TAG);
             savedInstanceState.remove(MARKERS_TAG);
         }
-        super.onCreate(savedInstanceState);
-        getActivity().setTitle(title);
     }
 
     @Override
@@ -98,39 +97,7 @@ public class MapFragment extends SupportMapFragment
             @Override
             public void onInfoWindowClick(Marker marker)
             {
-                MarkerWrapper correspondingWrapper = markersToWrappers.get(marker);
-                switch (correspondingWrapper.getActionType())
-                {
-                    case OPEN_EXTERNAL_MAPS:
-                        double latitude = marker.getPosition().latitude;
-                        double longitude = marker.getPosition().longitude;
-                        String uriBeginning = String.format("geo: %s, %s", latitude, longitude);
-                        String query = String.format("%s,%s(%s)", latitude, longitude, marker.getTitle());
-                        try
-                        {
-                            String encodedQuery = URLEncoder.encode(query, "utf8");
-                            String uriString = uriBeginning + "?q=" + encodedQuery + "&z=16";
-                            Uri uri = Uri.parse(uriString);
-                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-                            try
-                            {
-                                startActivity(intent);
-                            } catch (Exception e)
-                            {
-                                Toast.makeText(getActivity(), "Google maps не установлены", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (UnsupportedEncodingException e)
-                        {
-                            return;
-                        }
-                        break;
-                    case OPEN_URL:
-                        Intent openBrowserIntent = new Intent(Intent.ACTION_VIEW);
-                        Uri uri = Uri.parse(correspondingWrapper.getUrl());
-                        openBrowserIntent.setData(uri);
-                        getActivity().startActivity(openBrowserIntent);
-                        break;
-                }
+                handleMarkerClick(marker);
             }
         });
         final LatLngBounds bounds = builder.build();
@@ -148,12 +115,57 @@ public class MapFragment extends SupportMapFragment
         return resultView;
     }
 
+    /*makes necessary actions when user clicks on map marker*/
+    private void handleMarkerClick(Marker marker)
+    {
+        MarkerWrapper correspondingWrapper = markersToWrappers.get(marker);
+        switch (correspondingWrapper.getActionType())
+        {
+            case OPEN_EXTERNAL_MAPS:
+                double latitude = marker.getPosition().latitude;
+                double longitude = marker.getPosition().longitude;
+                String uriBeginning = String.format("geo: %s, %s", latitude, longitude);
+                String query = String.format("%s,%s(%s)", latitude, longitude, marker.getTitle());
+                try
+                {
+                    String encodedQuery = URLEncoder.encode(query, "utf8");
+                    String uriString = uriBeginning + "?q=" + encodedQuery + "&z=16";
+                    Uri uri = Uri.parse(uriString);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    try
+                    {
+                        startActivity(intent);
+                    } catch (Exception e)
+                    {
+                        Toast.makeText(getActivity(), "Google maps не установлены", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (UnsupportedEncodingException e)
+                {
+                    return;
+                }
+                break;
+            case OPEN_URL:
+                Intent openBrowserIntent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = Uri.parse(correspondingWrapper.getUrl());
+                openBrowserIntent.setData(uri);
+                getActivity().startActivity(openBrowserIntent);
+                break;
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(MARKERS_TAG, markerWrappers);
         outState.putString(TITLE_TAG, title);
+    }
+
+    @Override
+    public void setArguments(Bundle args)
+    {
+        readStateFomBundle(args);
+        super.setArguments(args);
     }
 
     /*used for customizing markers. Changes appearance only for those markers which
