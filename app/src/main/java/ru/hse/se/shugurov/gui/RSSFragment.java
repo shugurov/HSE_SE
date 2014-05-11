@@ -79,7 +79,7 @@ public class RSSFragment extends AbstractFragment//TODO здесь валитс�
     private View showEntireRSS(LayoutInflater inflater, ViewGroup container)
     {
         View rssLayout = inflater.inflate(R.layout.rss_layout, container, false);
-        rssLayout.findViewById(R.id.rss_layout_content).setOnClickListener(new View.OnClickListener()
+        rssLayout.findViewById(R.id.rss_layout_button).setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)

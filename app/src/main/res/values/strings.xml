@@ -11,5 +11,6 @@
     <string name="headline">Заголовок</string>
     <string name="create">Создать</string>
     <string name="text">Текст</string>
+    <string name="in_details">Подробности</string>
 
 </resources>
