@@ -37,8 +37,7 @@ import ru.hse.se.shugurov.utills.Requester;
  * <li>topic id as String with a key specified by {@code TOPIC_ID_TAG}.</li>
  * <li>{@link ru.hse.se.shugurov.social_networks.SocialNetworkEntry[]} of comments with a key specified by {@code COMMENTS_TAG}.
  * Passed as parcelable array</li>
- * <li>{@link ru.hse.se.shugurov.social_networks.StateListener} with a key specified by {@code COMMENTS_LISTENER_TAG}.
- * Passed as a serializable object</li>
+ * <li>{@link ru.hse.se.shugurov.social_networks.StateListener} with a key specified by {@code COMMENTS_LISTENER_TAG}.</li>
  * <li>Topic title as String with a key specified by {@code TOPIC_TITLE_TAG}.</li>
  * </ul>
  * For other required arguments see {@link ru.hse.se.shugurov.gui.SocialNetworkAbstractList}
@@ -78,6 +77,7 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
         }
     }
 
+    /*retrieves comments from a bundle object*/
     private void getCommentsFromBundle(Bundle args)
     {
         Parcelable[] parcelables = args.getParcelableArray(COMMENTS_TAG);

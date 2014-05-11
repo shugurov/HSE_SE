@@ -18,6 +18,9 @@ import java.util.Collection;
  */
 public class BaseScreen implements Parcelable
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<BaseScreen> CREATOR = new Creator<BaseScreen>()
     {
         @Override
@@ -78,6 +81,9 @@ public class BaseScreen implements Parcelable
         }
     }
 
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
     protected BaseScreen(Parcel input)
     {
         url = input.readString();
@@ -148,7 +154,7 @@ public class BaseScreen implements Parcelable
         return key;
     }
 
-    /*parse fthe following fields: type, url, key, name, description*/
+    /*parse the following fields: type, url, key, name, description*/
     private void parseUsualDescriptionOfTheView(JSONObject jsonObject) throws JSONException
     {
 

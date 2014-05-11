@@ -17,6 +17,9 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class EventScreen extends BaseScreen implements HasFile
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<EventScreen> CREATOR = new Creator<EventScreen>()
     {
         @Override
@@ -45,7 +48,10 @@ public class EventScreen extends BaseScreen implements HasFile
         url = serverURL + "/api/structure/events/" + getKey();
     }
 
-    private EventScreen(Parcel input)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected EventScreen(Parcel input)
     {
         super(input);
     }

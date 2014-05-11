@@ -10,6 +10,9 @@ import org.json.JSONObject;
  */
 public class ScreenWithFile extends BaseScreen implements HasFile
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<ScreenWithFile> CREATOR = new Creator<ScreenWithFile>()
     {
         @Override
@@ -35,7 +38,10 @@ public class ScreenWithFile extends BaseScreen implements HasFile
         url = serverUrl + url;
     }
 
-    private ScreenWithFile(Parcel source)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected ScreenWithFile(Parcel source)
     {
         super(source);
     }

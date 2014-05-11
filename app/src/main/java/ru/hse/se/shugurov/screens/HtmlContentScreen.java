@@ -12,7 +12,9 @@ import org.json.JSONObject;
  */
 public class HtmlContentScreen extends BaseScreen implements HasFile
 {
-
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<HtmlContentScreen> CREATOR = new Creator<HtmlContentScreen>()
     {
         @Override

@@ -42,6 +42,7 @@ public abstract class AbstractFragment extends Fragment
         readStateFromBundle(args);
     }
 
+    /*retrieves necessary fields from a bundle object*/
     private void readStateFromBundle(Bundle args)
     {
         if (args != null)
@@ -57,6 +58,7 @@ public abstract class AbstractFragment extends Fragment
         readStateFromBundle(savedInstanceState);
     }
 
+    /*sets title and checks if it is a actions to be shown*/
     private void configureActionBar()
     {
         getActivity().setTitle(screen.getName());

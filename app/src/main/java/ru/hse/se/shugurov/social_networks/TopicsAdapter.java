@@ -17,7 +17,9 @@ import ru.hse.se.shugurov.utills.ImageLoader;
 
 
 /**
- * Created by Иван on 13.02.14.
+ * Used to create a list of topics
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class TopicsAdapter extends BaseAdapter
 {
@@ -27,6 +29,13 @@ public class TopicsAdapter extends BaseAdapter
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
     private boolean doShowCommentsQuantity;
 
+    /**
+     * Creates a new instance. Makes all preparations for inflating and showing list items
+     *
+     * @param context                is used to inflate layouts
+     * @param topics                 array of topics to be displayed
+     * @param doShowCommentsQuantity specifies if a number of comments os shown
+     */
     public TopicsAdapter(Context context, SocialNetworkTopic[] topics, boolean doShowCommentsQuantity)
     {
         this.topics = topics;

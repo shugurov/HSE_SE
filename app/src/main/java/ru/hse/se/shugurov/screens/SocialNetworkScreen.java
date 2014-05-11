@@ -10,6 +10,9 @@ import org.json.JSONObject;
  */
 public class SocialNetworkScreen extends BaseScreen
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<SocialNetworkScreen> CREATOR = new Creator<SocialNetworkScreen>()
     {
         @Override
@@ -32,7 +35,10 @@ public class SocialNetworkScreen extends BaseScreen
         objectId = jsonObject.getString("objectId");
     }
 
-    private SocialNetworkScreen(Parcel source)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected SocialNetworkScreen(Parcel source)
     {
         super(source);
         objectId = source.readString();
@@ -45,6 +51,11 @@ public class SocialNetworkScreen extends BaseScreen
         dest.writeString(objectId);
     }
 
+    /**
+     * Usually returns id of a post or a group
+     *
+     * @return id
+     */
     public String getObjectId()
     {
         return objectId;

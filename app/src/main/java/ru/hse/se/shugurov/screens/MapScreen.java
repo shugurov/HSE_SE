@@ -10,12 +10,16 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-/**Class represents a map screen which has several map markers
- *
+/**
+ * Class represents a map screen which has several map markers
+ * <p/>
  * Created by Ivan Shugurov
  */
 public class MapScreen extends BaseScreen
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<MapScreen> CREATOR = new Creator<MapScreen>()
     {
         @Override
@@ -47,6 +51,9 @@ public class MapScreen extends BaseScreen
         parseMarkers(markersArray);
     }
 
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
     protected MapScreen(Parcel input)
     {
         super(input);
@@ -107,7 +114,6 @@ public class MapScreen extends BaseScreen
     }
 
     /**
-     *
      * @return map markers
      */
     public MarkerWrapper[] getMarkers()

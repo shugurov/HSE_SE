@@ -17,6 +17,9 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class RSSWrapperScreen extends BaseScreen implements HasFile
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<RSSWrapperScreen> CREATOR = new Creator<RSSWrapperScreen>()
     {
         @Override
@@ -32,7 +35,10 @@ public class RSSWrapperScreen extends BaseScreen implements HasFile
         }
     };
 
-    private RSSWrapperScreen(Parcel input)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected RSSWrapperScreen(Parcel input)
     {
         super(input);
     }

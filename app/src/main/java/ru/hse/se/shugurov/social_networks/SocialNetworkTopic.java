@@ -6,10 +6,15 @@ import android.os.Parcel;
 import java.util.Date;
 
 /**
- * Created by Иван on 13.02.14.
+ * Represents a social network topic. Every topics consist of a title, id, comments and optional attache picture
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class SocialNetworkTopic extends SocialNetworkEntry
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<SocialNetworkTopic> CREATOR = new Creator<SocialNetworkTopic>()
     {
         @Override
@@ -29,6 +34,16 @@ public class SocialNetworkTopic extends SocialNetworkEntry
     private int comments;
     private String attachedPicture;
 
+    /**
+     * Creates a new instance with all fields specified except attache picture
+     *
+     * @param title    a title of a topic
+     * @param topicId  unique identifier
+     * @param author   an author of a topic
+     * @param text     text of a topic
+     * @param comments a number of comments
+     * @param date     a date whet it was published
+     */
     public SocialNetworkTopic(String title, String topicId, SocialNetworkProfile author, String text, int comments, Date date)
     {
         super(author, text, date);
@@ -37,13 +52,27 @@ public class SocialNetworkTopic extends SocialNetworkEntry
         this.title = title;
     }
 
+    /**
+     * Creates a new instance with all fields specified
+     *
+     * @param title           a title of a topic
+     * @param id              unique identifier
+     * @param author          an author of a topic
+     * @param text            text of a topic
+     * @param comments        a number of comments
+     * @param date            a date whet it was published
+     * @param attachedPicture a link to a picture
+     */
     public SocialNetworkTopic(String title, String id, SocialNetworkProfile author, String text, int comments, Date date, String attachedPicture)
     {
         this(title, id, author, text, comments, date);
         this.attachedPicture = attachedPicture;
     }
 
-    private SocialNetworkTopic(Parcel source)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected SocialNetworkTopic(Parcel source)
     {
         super(source);
         title = source.readString();
@@ -52,26 +81,39 @@ public class SocialNetworkTopic extends SocialNetworkEntry
         attachedPicture = source.readString();
     }
 
+    /**
+     * @return a number of comments
+     */
     public int getComments()
     {
         return comments;
     }
 
+    /**
+     * @return unique identifier of a post
+     */
     public String getId()
     {
         return id;
     }
 
+    /**
+     * @return a link to a picture
+     */
     public String getAttachedPicture()
     {
         return attachedPicture;
     }
 
+    /**
+     * @return a mumber of comments plus a correct form of "комментарий"
+     */
     public String getCommentsString()
     {
         return comments + " " + getCommentWord();
     }
 
+    /*determines a correct form of "комментарий"*/
     private String getCommentWord()
     {
         String result = "";
@@ -110,6 +152,9 @@ public class SocialNetworkTopic extends SocialNetworkEntry
         return result;
     }
 
+    /**
+     * @return title
+     */
     public String getTitle()
     {
         return title;

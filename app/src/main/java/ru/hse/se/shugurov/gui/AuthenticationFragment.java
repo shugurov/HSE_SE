@@ -25,7 +25,7 @@ import ru.hse.se.shugurov.social_networks.VKRequester;
  * <li>{@link java.lang.String} url with a key specified by {@code URL_TAG}. This url should lead
  * to authentication form</li>
  * <li>{@link ru.hse.se.shugurov.gui.AuthenticationFragment.AccessTokenRequest} with a key
- * specified by {@code TOKEN_REQUEST_TAG}. This object is used as callback when access token is received. Object is passed as a serializable object</li>
+ * specified by {@code TOKEN_REQUEST_TAG}.</li>
  * </ul>
  *
  * @author Ivan Shugurov

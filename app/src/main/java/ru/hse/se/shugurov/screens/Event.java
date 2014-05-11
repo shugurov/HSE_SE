@@ -14,6 +14,9 @@ import java.util.Date;
  */
 public class Event extends BaseScreen
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<Event> CREATOR = new Creator<Event>()
     {
         @Override
@@ -47,7 +50,10 @@ public class Event extends BaseScreen
         date = new Date(dateNumber * 1000);
     }
 
-    private Event(Parcel source)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected Event(Parcel source)
     {
         super(source);
         telephone = source.readString();

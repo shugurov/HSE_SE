@@ -333,6 +333,7 @@ public class ScreenFactory implements Serializable //todo remove serializable
         changeFragments(activity.getSupportFragmentManager(), authenticationFragment);
     }
 
+    /*tells a user about receiving a token*/
     private void notifyAboutAccessTokenReceiving()
     {
         if (activity == null)

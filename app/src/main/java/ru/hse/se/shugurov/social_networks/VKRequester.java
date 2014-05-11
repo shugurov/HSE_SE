@@ -14,16 +14,25 @@ import java.util.Map;
 
 import ru.hse.se.shugurov.utills.Requester;
 
-/**
- * Created by Иван on 11.02.14.
+/** Handles vk requests.
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class VKRequester extends AbstractRequester
-
 {
+    /**
+     * url with an access token begins with this string
+     */
     public static final String REDIRECTION_URL = "https://oauth.vk.com/blank.html";
+
+    /**
+     * Has to be called in order to get an access token
+     */
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
             "client_id=3965004&redirect_uri=" + REDIRECTION_URL +
             "&display=mobile&response_type=token&scope=wall,groups";
+
+
     private static final String GET_COMMENTS = "https://api.vk.com/method/board.getComments?group_id=%s&topic_id=%s&access_token=%s&extended=1&count=100";
     private static final String BOARD_GET_TOPICS = "https://api.vk.com/method/board.getTopics?group_id=%s&access_token=%s&extended=1&preview=1&order=1";
     private static final String WALL_GET_POSTS = "https://api.vk.com/method/wall.get?owner_id=-%s&extended=1&count=100";
@@ -33,12 +42,23 @@ public class VKRequester extends AbstractRequester
     private static final String ADD_COMMENT_TO_TOPIC = "https://api.vk.com/method/board.addComment?group_id=%s&topic_id=%s&text=%s&access_token=%s";
     private static final String ADD_TOPIC = "https://api.vk.com/method/board.addTopic?group_id=%s&title=%s&text=%s&access_token=%s";
 
+    /**
+     * Creates a new instance with a specified token
+     *
+     * @param accessToken
+     */
     public VKRequester(AccessToken accessToken)
     {
         super(accessToken);
     }
 
-    public static SocialNetworkEntry[] getWallComments(String commentsJson)
+    /**
+     * parses comments json
+     *
+     * @param commentsJson
+     * @return
+     */
+    public static SocialNetworkEntry[] getWallComments(String commentsJson)//TODO стоит, наверное убрать
     {
         SocialNetworkEntry[] comments = null;
         try
@@ -64,7 +84,13 @@ public class VKRequester extends AbstractRequester
         return comments;
     }
 
-    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)
+    /**
+     * Requests authors for comments
+     *
+     * @param comments
+     * @param callback
+     */
+    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO поправить(
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < comments.length; i++)
@@ -80,7 +106,13 @@ public class VKRequester extends AbstractRequester
         requester.execute(url);
     }
 
-    public static void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)
+    /**
+     * fills comments objects with authors
+     *
+     * @param comments
+     * @param profilesJson
+     */
+    public static void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)//TODO поправить(
     {
         Map<String, List<SocialNetworkProfile>> profilesMap = new HashMap<String, List<SocialNetworkProfile>>();
         for (SocialNetworkEntry comment : comments)
@@ -158,9 +190,9 @@ public class VKRequester extends AbstractRequester
     }
 
     @Override
-    public void getTopics(String groupID, final RequestResultListener<SocialNetworkTopic> listener)//темы в обсуждении группы
+    public void getTopics(String groupId, final RequestResultListener<SocialNetworkTopic> listener)//темы в обсуждении группы
     {
-        String request = String.format(BOARD_GET_TOPICS, groupID, getAccessToken());
+        String request = String.format(BOARD_GET_TOPICS, groupId, getAccessToken());
         Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
         {
             @Override

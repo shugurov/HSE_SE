@@ -16,14 +16,24 @@ import java.util.Map;
 import ru.hse.se.shugurov.utills.Requester;
 
 /**
- * Created by Иван on 04.05.2014.
+ * Handles facebook requests.
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class FacebookRequester extends AbstractRequester
 {
+    /**
+     * url with an access token begins with this string
+     */
     public static final String REDIRECTION_URL = "https://www.facebook.com/connect/login_success.html";
+
+    /**
+     * Has to be called in order to get an access token
+     */
     public static final String AUTH = "https://www.facebook.com/dialog/oauth?" +
             "client_id=465339086933483" +
             "&redirect_uri=" + REDIRECTION_URL + "&response_type=token&scope=publish_actions";
+
 
     private final static String GET_PAGE = "https://graph.facebook.com/%s/feed?access_token=%s";
     private final static String GET_PHOTO = "http://graph.facebook.com/%s/?fields=picture&type=large";
@@ -31,11 +41,17 @@ public class FacebookRequester extends AbstractRequester
     private final static String GET_POST = "https://graph.facebook.com/%s?access_token=%s";
     private final static String ADD_COMMENT = "https://graph.facebook.com/%s/comments?method=post&message=%s&access_token=%s";
 
+    /**
+     * Creates a new instance with a specified token
+     *
+     * @param accessToken
+     */
     public FacebookRequester(AccessToken accessToken)
     {
         super(accessToken);
     }
 
+    /*requests a picture for the group given*/
     private static void getGroupPictureUrl(String groupId, Requester.RequestResultCallback callback)
     {
         String request = String.format(GET_PHOTO, groupId);
@@ -43,6 +59,7 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
+    /*extracts a photo url from a json and sets it it every topic*/
     private static void fillPhotos(String json, SocialNetworkTopic[] topics)
     {
         String url = "";
@@ -78,6 +95,7 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
+    /*checks if a response with topics is not null and does not contain error messages*/
     private void handleTopicsResponse(String topicJson, final RequestResultListener<SocialNetworkTopic> listener, String groupId)
     {
         if (topicJson == null || (topicJson != null && topicJson.contains("error")))
@@ -89,6 +107,7 @@ public class FacebookRequester extends AbstractRequester
         }
     }
 
+    /*creates topic objects and pushes them back*/
     private void createTopics(String topicJson, final RequestResultListener<SocialNetworkTopic> listener, String groupId)
     {
         final SocialNetworkTopic[] topics = getTopics(topicJson);
@@ -109,7 +128,7 @@ public class FacebookRequester extends AbstractRequester
         });
     }
 
-
+    /*parses json and creates topic objects*/
     private SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat("y-MM-dd'T'HH:mm:ss'+0000'");
@@ -133,6 +152,7 @@ public class FacebookRequester extends AbstractRequester
         }
     }
 
+    /*parses json, creates a topic object and returns it*/
     private SocialNetworkTopic parseTopic(SimpleDateFormat dateFormat, JSONObject topicObject) throws JSONException, ParseException
     {
         String message;
@@ -174,6 +194,7 @@ public class FacebookRequester extends AbstractRequester
         });
     }
 
+    /*creates a callback and makes q requests for comments*/
     private void requestComments(final SocialNetworkTopic post, String topicID, final RequestResultListener<SocialNetworkEntry> listener)
     {
         Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
@@ -195,6 +216,7 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
+    /*creates array of topics and fills it*/
     private void handleCommentsJson(SocialNetworkTopic post, String commentsJson, final RequestResultListener<SocialNetworkEntry> listener)
     {
         try
@@ -235,6 +257,7 @@ public class FacebookRequester extends AbstractRequester
 
     }
 
+    /*adds an author of the comment given to a map of authors*/
     private void addProfileToMap(SocialNetworkEntry comment, Map<String, List<SocialNetworkProfile>> idToProfiles)
     {
         SocialNetworkProfile profile = comment.getAuthor();
@@ -247,6 +270,7 @@ public class FacebookRequester extends AbstractRequester
         profilesWithCurrentId.add(profile);
     }
 
+    /*requests posts*/
     private void getPost(String postId, final RequestResultListener<SocialNetworkTopic> listener)
     {
         String request = String.format(GET_POST, postId, getAccessToken());
@@ -277,6 +301,7 @@ public class FacebookRequester extends AbstractRequester
         requester.execute(request);
     }
 
+    /*parses json for a photo*/
     private void handlePhotoJson(String[] results, RequestResultListener<SocialNetworkEntry> listener, Map<String, List<SocialNetworkProfile>> idToProfiles, SocialNetworkEntry[] comments)
     {
         if (results == null)

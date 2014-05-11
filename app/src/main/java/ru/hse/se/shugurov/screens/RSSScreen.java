@@ -8,8 +8,11 @@ import org.json.JSONObject;
 /**
  * Created by Иван on 28.10.13.
  */
-public class RSSScreen extends BaseScreen//TODO нужно ли наслеование
+public class RSSScreen extends BaseScreen
 {
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static final Creator<RSSScreen> CREATOR = new Creator<RSSScreen>()
     {
         @Override
@@ -53,6 +56,9 @@ public class RSSScreen extends BaseScreen//TODO нужно ли наслеова
         screenType = ScreenTypes.RSS;
     }
 
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
     private RSSScreen(Parcel input)
     {
         super(input);

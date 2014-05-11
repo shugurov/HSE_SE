@@ -16,7 +16,9 @@ import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
- * Created by Иван on 26.02.14.
+ * Used to fill a list with comments
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class CommentsAdapter extends BaseAdapter
 {
@@ -24,6 +26,12 @@ public class CommentsAdapter extends BaseAdapter
     private SocialNetworkEntry[] comments;
     private ImageLoader imageLoader = ImageLoader.instance();
 
+    /**
+     * Creates a new instance. Makes all preparations for inflating and showing list items
+     *
+     * @param context  is used to inflate layouts
+     * @param comments array of comments to be displayed
+     */
     public CommentsAdapter(Context context, SocialNetworkEntry[] comments)
     {
         this.comments = comments;

@@ -171,6 +171,7 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         getListView().setSelector(new StateListDrawable());
     }
 
+    /*requests a list of comments via requester*/
     private void loadComments()
     {
         getRequester().getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
@@ -197,6 +198,7 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         });
     }
 
+    /*checks whether request was correct or not, if it was correct then triggers adapter setting*/
     private void handleFullProfilesInformationObtaining(String result)
     {
         if (result == null)

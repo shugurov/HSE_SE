@@ -8,7 +8,10 @@ import java.util.regex.Pattern;
 
 
 /**
- * Created by Иван on 04.05.2014.
+ * Used to wait for a particular link. When desired link is caught, object of the class
+ * parses it and gets an access token
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class AuthorizationWebClient extends WebViewClient
 {
@@ -16,6 +19,13 @@ public class AuthorizationWebClient extends WebViewClient
     private String waitFor;
     private TokenCallback callback;
 
+    /**
+     * url beginning which specifies a url with information about an access token. Access token should have a key access_token.
+     * Expiration time should have a key expires_in
+     *
+     * @param waitFor
+     * @param callback
+     */
     public AuthorizationWebClient(String waitFor, TokenCallback callback)
     {
         this.waitFor = waitFor;
@@ -34,6 +44,7 @@ public class AuthorizationWebClient extends WebViewClient
         return false;
     }
 
+    /*creates a new access token*/
     private AccessToken getAccessToken(String link)
     {
         AccessToken receivedToken = null;
@@ -46,6 +57,7 @@ public class AuthorizationWebClient extends WebViewClient
         return receivedToken;
     }
 
+    /*parses given url for a value with a specified key*/
     private String parseForArgument(String link, String argument)
     {
         String expression = String.format("%s=(.*?)(&|$)+", argument);
@@ -60,8 +72,16 @@ public class AuthorizationWebClient extends WebViewClient
         }
     }
 
+    /**
+     * Used to notify caller about access token
+     */
     public interface TokenCallback
     {
+        /**
+         * If access token is gor successfully then passes it, otherwise passes null
+         *
+         * @param accessToken
+         */
         void call(AccessToken accessToken);
     }
 }

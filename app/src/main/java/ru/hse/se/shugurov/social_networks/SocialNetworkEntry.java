@@ -6,11 +6,16 @@ import android.os.Parcelable;
 import java.util.Date;
 
 /**
- * Created by Иван on 27.02.14.
+ * Represents a social network entry like a comment which has an author, a date of publishing and a text
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class SocialNetworkEntry implements Parcelable
 {
 
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static Creator<SocialNetworkEntry> CREATOR = new Creator<SocialNetworkEntry>()
     {
         @Override
@@ -31,6 +36,13 @@ public class SocialNetworkEntry implements Parcelable
     private Date date;
 
 
+    /**
+     * Creates a new instance with specified parameters
+     *
+     * @param author who published it
+     * @param text
+     * @param date   when it was published
+     */
     public SocialNetworkEntry(SocialNetworkProfile author, String text, Date date)
     {
         this.author = author;
@@ -38,6 +50,9 @@ public class SocialNetworkEntry implements Parcelable
         this.date = date;
     }
 
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
     protected SocialNetworkEntry(Parcel source)
     {
         author = source.readParcelable(SocialNetworkProfile.class.getClassLoader());
@@ -45,16 +60,25 @@ public class SocialNetworkEntry implements Parcelable
         date = new Date(source.readLong());
     }
 
+    /**
+     * @return a date when it was published
+     */
     public Date getDate()
     {
         return date;
     }
 
+    /**
+     * @return an author who published it
+     */
     public SocialNetworkProfile getAuthor()
     {
         return author;
     }
 
+    /**
+     * @return a text of an entry
+     */
     public String getText()
     {
         return text;

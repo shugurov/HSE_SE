@@ -17,7 +17,9 @@ import java.io.Serializable;
  */
 public class MarkerWrapper implements Parcelable
 {
-    /*used to parse instances of this class*/
+    /**
+     * Used for recreating objects after their serialization
+     */
     public static Creator<MarkerWrapper> CREATOR = new Creator<MarkerWrapper>()
     {
         @Override
@@ -70,8 +72,10 @@ public class MarkerWrapper implements Parcelable
         }
     }
 
-    /*should be called when */
-    private MarkerWrapper(Parcel parcel)
+    /**
+     * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
+     */
+    protected MarkerWrapper(Parcel parcel)
     {
         address = parcel.readString();
         actionType = (ActionTypes) parcel.readSerializable();
@@ -80,26 +84,43 @@ public class MarkerWrapper implements Parcelable
         marker = parcel.readParcelable(MarkerOptions.class.getClassLoader());
     }
 
+    /**
+     * Returns instance of {@code MarkerOptions} which can be used as a mark on GoogleMap
+     *
+     * @return marker
+     */
     public MarkerOptions getMarker()
     {
         return marker;
     }
 
+    /**
+     * @return address where this place is situated
+     */
     public String getAddress()
     {
         return address;
     }
 
+    /**
+     * @return a type of actions which should be performed when a user clicks on a map marker
+     */
     public ActionTypes getActionType()
     {
         return actionType;
     }
 
+    /**
+     * @return url of a web site which provides information about this place
+     */
     public String getUrl()
     {
         return url;
     }
 
+    /**
+     * @return url of a web site which provides information about this place
+     */
     public String getPhone()
     {
         return phone;
