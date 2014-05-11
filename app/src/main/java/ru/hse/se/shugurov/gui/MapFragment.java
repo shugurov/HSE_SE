@@ -61,7 +61,10 @@ public class MapFragment extends SupportMapFragment
         if (savedInstanceState != null)
         {
             Parcelable[] parcelableArray = savedInstanceState.getParcelableArray(MARKERS_TAG);
-            if (parcelableArray != null)
+            if (parcelableArray == null)
+            {
+                markerWrappers = new MarkerWrapper[0];
+            } else
             {
                 markerWrappers = Arrays.copyOf(parcelableArray, parcelableArray.length, MarkerWrapper[].class);
             }

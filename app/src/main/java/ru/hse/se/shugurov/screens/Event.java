@@ -1,9 +1,10 @@
 package ru.hse.se.shugurov.screens;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,8 +12,22 @@ import java.util.Date;
  * <p/>
  * Created byIvan Shugurov
  */
-public class Event extends BaseScreen implements Serializable//TODO  должен ли он быть serializable
+public class Event extends BaseScreen
 {
+    public static final Creator<Event> CREATOR = new Creator<Event>()
+    {
+        @Override
+        public Event createFromParcel(Parcel source)
+        {
+            return new Event(source);
+        }
+
+        @Override
+        public Event[] newArray(int size)
+        {
+            return new Event[size];
+        }
+    };
     private String telephone;
     private String address;
     private Date date;
@@ -30,6 +45,23 @@ public class Event extends BaseScreen implements Serializable//TODO  долже�
         address = eventObject.getString("address");
         long dateNumber = eventObject.getLong("date");
         date = new Date(dateNumber * 1000);
+    }
+
+    private Event(Parcel source)
+    {
+        super(source);
+        telephone = source.readString();
+        address = source.readString();
+        date = new Date(source.readLong());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        super.writeToParcel(dest, flags);
+        dest.writeString(telephone);
+        dest.writeString(address);
+        dest.writeLong(date.getTime());
     }
 
     /**
@@ -61,6 +93,4 @@ public class Event extends BaseScreen implements Serializable//TODO  долже�
     {
         return date;
     }
-
-
 }

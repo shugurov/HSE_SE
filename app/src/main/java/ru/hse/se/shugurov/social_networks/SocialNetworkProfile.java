@@ -1,11 +1,28 @@
 package ru.hse.se.shugurov.social_networks;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Иван on 14.02.14.
  */
-public class SocialNetworkProfile
+public class SocialNetworkProfile implements Parcelable
 {
-    private final String userId;
+    public static final Creator<SocialNetworkProfile> CREATOR = new Creator<SocialNetworkProfile>()
+    {
+        @Override
+        public SocialNetworkProfile createFromParcel(Parcel source)
+        {
+            return new SocialNetworkProfile(source);
+        }
+
+        @Override
+        public SocialNetworkProfile[] newArray(int size)
+        {
+            return new SocialNetworkProfile[size];
+        }
+    };
+    private String userId;
     private String photo;
     private String fullName;
 
@@ -24,6 +41,13 @@ public class SocialNetworkProfile
     {
         this.userId = userId;
         this.fullName = fullName;
+    }
+
+    private SocialNetworkProfile(Parcel source)
+    {
+        userId = source.readString();
+        photo = source.readString();
+        fullName = source.readString();
     }
 
     public String getId()
@@ -51,4 +75,17 @@ public class SocialNetworkProfile
         this.fullName = fullName;
     }
 
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(userId);
+        dest.writeString(photo);
+        dest.writeString(fullName);
+    }
 }

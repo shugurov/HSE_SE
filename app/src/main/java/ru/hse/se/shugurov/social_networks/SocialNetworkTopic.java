@@ -1,6 +1,8 @@
 package ru.hse.se.shugurov.social_networks;
 
 
+import android.os.Parcel;
+
 import java.util.Date;
 
 /**
@@ -8,6 +10,20 @@ import java.util.Date;
  */
 public class SocialNetworkTopic extends SocialNetworkEntry
 {
+    public static final Creator<SocialNetworkTopic> CREATOR = new Creator<SocialNetworkTopic>()
+    {
+        @Override
+        public SocialNetworkTopic createFromParcel(Parcel source)
+        {
+            return new SocialNetworkTopic(source);
+        }
+
+        @Override
+        public SocialNetworkTopic[] newArray(int size)
+        {
+            return new SocialNetworkTopic[size];
+        }
+    };
     private String title;
     private String id;
     private int comments;
@@ -25,6 +41,15 @@ public class SocialNetworkTopic extends SocialNetworkEntry
     {
         this(title, id, author, text, comments, date);
         this.attachedPicture = attachedPicture;
+    }
+
+    private SocialNetworkTopic(Parcel source)
+    {
+        super(source);
+        title = source.readString();
+        id = source.readString();
+        comments = source.readInt();
+        attachedPicture = source.readString();
     }
 
     public int getComments()
@@ -88,5 +113,15 @@ public class SocialNetworkTopic extends SocialNetworkEntry
     public String getTitle()
     {
         return title;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        super.writeToParcel(dest, flags);
+        dest.writeString(title);
+        dest.writeString(id);
+        dest.writeInt(comments);
+        dest.writeString(attachedPicture);
     }
 }

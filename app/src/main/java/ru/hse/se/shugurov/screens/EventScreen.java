@@ -1,5 +1,7 @@
 package ru.hse.se.shugurov.screens;
 
+import android.os.Parcel;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +17,21 @@ import ru.hse.se.shugurov.utills.FileManager;
  */
 public class EventScreen extends BaseScreen implements HasFile
 {
+    public static final Creator<EventScreen> CREATOR = new Creator<EventScreen>()
+    {
+        @Override
+        public EventScreen createFromParcel(Parcel source)
+        {
+            return new EventScreen(source);
+        }
+
+        @Override
+        public EventScreen[] newArray(int size)
+        {
+            return new EventScreen[size];
+        }
+    };
+
     /**
      * Reads data from provided json object and creates a new instance
      *
@@ -26,6 +43,11 @@ public class EventScreen extends BaseScreen implements HasFile
     {
         super(jsonObject);
         url = serverURL + "/api/structure/events/" + getKey();
+    }
+
+    private EventScreen(Parcel input)
+    {
+        super(input);
     }
 
     @Override
@@ -60,6 +82,5 @@ public class EventScreen extends BaseScreen implements HasFile
         {
             return new Event[0];
         }
-
     }
 }

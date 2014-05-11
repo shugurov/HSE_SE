@@ -39,7 +39,7 @@ public class HTMLScreenFragment extends AbstractFragment
                 try
                 {
                     FileManager fileManager = FileManager.instance();
-                    String htmlContent = fileManager.getFileContent(getBaseScreen().getKey());
+                    String htmlContent = fileManager.getFileContent(getScreen().getKey());
                     setText(htmlContent);
                 } catch (IOException e)
                 {

@@ -43,6 +43,10 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void>
         {
             for (FileDescription description : fileToDownloads)
             {
+                if (isCancelled())
+                {
+                    return null;
+                }
                 downloadFile(description);
             }
         }
@@ -50,6 +54,10 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void>
         {
             for (FileDescription description : fileDescriptions)
             {
+                if (isCancelled())
+                {
+                    return null;
+                }
                 downloadFile(description);
             }
         }
@@ -66,7 +74,7 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void>
     protected void onPostExecute(Void aVoid)
     {
         super.onPostExecute(aVoid);
-        if (callback != null)
+        if (callback != null && !isCancelled())
         {
             callback.downloadFinished();
         }

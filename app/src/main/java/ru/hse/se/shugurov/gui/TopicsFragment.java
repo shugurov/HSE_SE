@@ -1,6 +1,7 @@
 package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.hse.se.shugurov.R;
@@ -33,13 +35,13 @@ public class TopicsFragment extends SocialNetworkAbstractList
 
     private SocialNetworkTopic[] topics;
     private TopicsAdapter adapter;
-    private AtomicBoolean commentsChanged = new AtomicBoolean(false);
+    private AtomicBoolean stateChanged = new AtomicBoolean(false);
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-        if (topics == null || commentsChanged.get())
+        if (topics == null || stateChanged.get())
         {
             getRequester().getTopics(getGroupId(), new AbstractRequester.RequestResultListener<SocialNetworkTopic>()
             {
@@ -52,7 +54,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
                     } else
                     {
                         topics = resultTopics;
-                        commentsChanged.set(false);
+                        stateChanged.set(false);
                         setAdapter();
                     }
                 }
@@ -69,8 +71,15 @@ public class TopicsFragment extends SocialNetworkAbstractList
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            topics = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
-            commentsChanged = (AtomicBoolean) savedInstanceState.getSerializable(COMMENTS_STATE);
+            Parcelable[] parcelables = savedInstanceState.getParcelableArray(VK_TOPICS_TAG);
+            if (parcelables == null)
+            {
+                topics = new SocialNetworkTopic[0];
+            } else
+            {
+                topics = Arrays.copyOf(parcelables, parcelables.length, SocialNetworkTopic[].class);
+            }
+            stateChanged = (AtomicBoolean) savedInstanceState.getSerializable(COMMENTS_STATE);
         }
         setHasOptionsMenu(getRequester().canAddPosts());
     }
@@ -91,7 +100,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
         arguments.putString(TopicCreationFragment.TITLE_TAG, getGroupName());
         arguments.putString(TopicCreationFragment.GROUP_ID_TAG, getGroupId());
         arguments.putSerializable(TopicCreationFragment.REQUESTER_TAG, getRequester());
-        StateListener stateListener = new StateListener(commentsChanged);
+        StateListener stateListener = new StateListener(stateChanged);
         arguments.putSerializable(TopicCreationFragment.STATE_LISTENER_TAG, stateListener);
         topicCreation.setArguments(arguments);
         ScreenFactory.changeFragments(getFragmentManager(), topicCreation);
@@ -107,7 +116,7 @@ public class TopicsFragment extends SocialNetworkAbstractList
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                StateListener listener = new StateListener(commentsChanged);
+                StateListener listener = new StateListener(stateChanged);
                 CommentsFragment commentsFragment = new CommentsFragment();
                 Bundle arguments = new Bundle();
                 arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, getGroupId());
@@ -137,6 +146,6 @@ public class TopicsFragment extends SocialNetworkAbstractList
     {
         super.onSaveInstanceState(outState);
         outState.putParcelableArray(VK_TOPICS_TAG, topics);
-        outState.putSerializable(COMMENTS_STATE, commentsChanged);
+        outState.putSerializable(COMMENTS_STATE, stateChanged);
     }
 }

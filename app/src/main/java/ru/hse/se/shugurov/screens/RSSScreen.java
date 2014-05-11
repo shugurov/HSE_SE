@@ -8,8 +8,22 @@ import org.json.JSONObject;
 /**
  * Created by Иван on 28.10.13.
  */
-public class RSSScreen extends BaseScreen
+public class RSSScreen extends BaseScreen//TODO нужно ли наслеование
 {
+    public static final Creator<RSSScreen> CREATOR = new Creator<RSSScreen>()
+    {
+        @Override
+        public RSSScreen createFromParcel(Parcel source)
+        {
+            return new RSSScreen(source);
+        }
+
+        @Override
+        public RSSScreen[] newArray(int size)
+        {
+            return new RSSScreen[size];
+        }
+    };
     private final static String TITLE_TAG = "title";
     private final static String OMITTED_TAG = "omitted";
     private final static String NULL_TAG = "null";
@@ -19,15 +33,6 @@ public class RSSScreen extends BaseScreen
     private String omitted = "";
     private String summary = "";
     private RSSTypes type;
-
-    protected RSSScreen(Parcel input)
-    {
-        super(input);
-        title = input.readString();
-        omitted = input.readString();
-        summary = input.readString();
-        type = (RSSTypes) input.readSerializable();
-    }
 
     RSSScreen(JSONObject jsonObject) throws JSONException
     {
@@ -45,7 +50,16 @@ public class RSSScreen extends BaseScreen
             type = RSSTypes.FULL_RSS;
         }
         clearStyle();
-        screenType = HSEViewTypes.RSS;
+        screenType = ScreenTypes.RSS;
+    }
+
+    private RSSScreen(Parcel input)
+    {
+        super(input);
+        title = input.readString();
+        omitted = input.readString();
+        summary = input.readString();
+        type = (RSSTypes) input.readSerializable();
     }
 
     @Override

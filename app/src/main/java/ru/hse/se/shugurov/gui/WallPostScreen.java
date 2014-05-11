@@ -1,10 +1,12 @@
 package ru.hse.se.shugurov.gui;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
@@ -63,7 +65,14 @@ public class WallPostScreen extends SocialNetworkAbstractList
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null)
         {
-            posts = (SocialNetworkTopic[]) savedInstanceState.getParcelableArray(POSTS_ID);
+            Parcelable[] parcelables = savedInstanceState.getParcelableArray(POSTS_ID);
+            if (parcelables == null)
+            {
+                posts = new SocialNetworkTopic[0];
+            } else
+            {
+                posts = Arrays.copyOf(parcelables, parcelables.length, SocialNetworkTopic[].class);
+            }
             commentsChanged = (AtomicBoolean) savedInstanceState.getSerializable(COMMENTS_STATE_TAG);
         }
     }

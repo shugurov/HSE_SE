@@ -22,7 +22,7 @@ public class InternalWebFragment extends AbstractFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         WebView webView = (WebView) inflater.inflate(R.layout.internal_web_view, container, false);
-        webView.loadUrl(getBaseScreen().getUrl());
+        webView.loadUrl(getScreen().getUrl());
         webView.setWebViewClient(new WebViewClient());
         return webView;
     }

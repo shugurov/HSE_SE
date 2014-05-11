@@ -28,7 +28,7 @@ public class EventFragment extends AbstractFragment
         ListView listView = (ListView) inflater.inflate(R.layout.activity_main_list, container, false);
         try
         {
-            listView.setAdapter(new EventsListAdapter(((EventScreen) getBaseScreen()).getEvents(), getActivity()));
+            listView.setAdapter(new EventsListAdapter(((EventScreen) getScreen()).getEvents(), getActivity()));
         } catch (JSONException e)
         {
             Toast.makeText(getActivity(), "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();

@@ -32,7 +32,7 @@ public abstract class AbstractFragment extends Fragment
     /*constants used as keys in bundle object*/
     public static String HSE_VIEW_TAG = "hse_view";
 
-    private BaseScreen baseScreen;
+    private BaseScreen screen;
 
 
     @Override
@@ -46,7 +46,7 @@ public abstract class AbstractFragment extends Fragment
     {
         if (args != null)
         {
-            baseScreen = (BaseScreen) args.get(HSE_VIEW_TAG);
+            screen = (BaseScreen) args.get(HSE_VIEW_TAG);
         }
     }
 
@@ -59,8 +59,8 @@ public abstract class AbstractFragment extends Fragment
 
     private void configureActionBar()
     {
-        getActivity().setTitle(baseScreen.getName());
-        if (baseScreen.isMainView())
+        getActivity().setTitle(screen.getName());
+        if (screen.isMainView())
         {
             setHasOptionsMenu(true);
         } else
@@ -80,7 +80,7 @@ public abstract class AbstractFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        outState.putParcelable(HSE_VIEW_TAG, baseScreen);
+        outState.putParcelable(HSE_VIEW_TAG, screen);
         super.onSaveInstanceState(outState);
     }
 
@@ -92,10 +92,10 @@ public abstract class AbstractFragment extends Fragment
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    /*getter for {@code hseView*/
-    protected BaseScreen getBaseScreen()
+    /*getter for {@code screen*/
+    protected BaseScreen getScreen()
     {
-        return baseScreen;
+        return screen;
     }
 
 }

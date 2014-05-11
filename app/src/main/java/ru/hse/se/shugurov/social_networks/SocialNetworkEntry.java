@@ -38,8 +38,11 @@ public class SocialNetworkEntry implements Parcelable
         this.date = date;
     }
 
-    private SocialNetworkEntry(Parcel parcel)
+    protected SocialNetworkEntry(Parcel source)
     {
+        author = source.readParcelable(SocialNetworkProfile.class.getClassLoader());
+        text = source.readString();
+        date = new Date(source.readLong());
     }
 
     public Date getDate()
@@ -66,7 +69,9 @@ public class SocialNetworkEntry implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-
+        dest.writeParcelable(author, flags);
+        dest.writeString(text);
+        dest.writeLong(date.getTime());
     }
 
 }

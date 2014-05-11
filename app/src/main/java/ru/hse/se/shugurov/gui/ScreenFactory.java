@@ -13,13 +13,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.Serializable;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.BaseScreen;
-import ru.hse.se.shugurov.screens.HSEViewTypes;
 import ru.hse.se.shugurov.screens.MapScreen;
+import ru.hse.se.shugurov.screens.ScreenTypes;
 import ru.hse.se.shugurov.screens.ScreenWithFile;
-import ru.hse.se.shugurov.screens.SocialNetworkView;
+import ru.hse.se.shugurov.screens.SocialNetworkScreen;
 import ru.hse.se.shugurov.social_networks.AccessToken;
 import ru.hse.se.shugurov.social_networks.FacebookRequester;
 import ru.hse.se.shugurov.social_networks.VKRequester;
@@ -34,15 +35,15 @@ import ru.hse.se.shugurov.social_networks.VKRequester;
  * <p/>
  * Created by Ivan Shugurov
  */
-public class ScreenFactory
+public class ScreenFactory implements Serializable //todo remove serializable
 {
     private static final String SHARED_PREFERENCES_TAG_SOCIAL = "social_networks";
     private static final String VK_ACCESS_TOKEN_TAG = "vk_access_token";
     private static final String FACEBOOK_ACCESS_TOKEN_TAG = "facebook_access_token";
     private static ScreenFactory screenFactory;
-    private FragmentActivity activity;
+    private transient FragmentActivity activity; //TODO transient
     private boolean isFirstFragment = true;
-    private AuthenticationFragment authenticationFragment;
+    private transient AuthenticationFragment authenticationFragment; //TODO transient
 
     /*crete an instance of the class*/
     private ScreenFactory(FragmentActivity activity, boolean isFirstFragment)
@@ -95,67 +96,67 @@ public class ScreenFactory
         Bundle arguments = new Bundle();
         switch (view.getScreenType())
         {
-            case HSEViewTypes.HTML_CONTENT:
+            case ScreenTypes.HTML_CONTENT:
                 fragment = new HTMLScreenFragment();
                 arguments.putParcelable(HTMLScreenFragment.HSE_VIEW_TAG, view);
                 break;
-            case HSEViewTypes.WEB_PAGE:
+            case ScreenTypes.WEB_PAGE:
                 openBrowser(view.getUrl());
                 break;
-            case HSEViewTypes.INNER_WEB_PAGE:
+            case ScreenTypes.INNER_WEB_PAGE:
                 fragment = new InternalWebFragment();
                 arguments.putParcelable(InternalWebFragment.HSE_VIEW_TAG, view);
                 break;
-            case HSEViewTypes.RSS:
-            case HSEViewTypes.RSS_WRAPPER:
+            case ScreenTypes.RSS:
+            case ScreenTypes.RSS_WRAPPER:
                 fragment = new RSSFragment();
                 arguments.putParcelable(RSSFragment.HSE_VIEW_TAG, view);
                 break;
-            case HSEViewTypes.VK_FORUM:
-                SocialNetworkView socialNetworkView = (SocialNetworkView) view;
+            case ScreenTypes.VK_FORUM:
+                SocialNetworkScreen socialNetworkScreen = (SocialNetworkScreen) view;
                 AccessToken vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
                     fragment = new TopicsFragment();
-                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, socialNetworkView.getObjectID());
-                    arguments.putString(SocialNetworkAbstractList.GROUP_NAME_TAG, socialNetworkView.getName());
+                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, socialNetworkScreen.getObjectId());
+                    arguments.putString(SocialNetworkAbstractList.GROUP_NAME_TAG, socialNetworkScreen.getName());
                     arguments.putSerializable(SocialNetworkAbstractList.REQUESTER_TAG, new VKRequester(vkAccessToken));
                 }
                 break;
-            case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                socialNetworkView = (SocialNetworkView) view;
+            case ScreenTypes.VK_PUBLIC_PAGE_WALL:
+                socialNetworkScreen = (SocialNetworkScreen) view;
                 vkAccessToken = getVkAccessToken();
                 if (vkAccessToken != null)
                 {
                     fragment = new WallPostScreen();
-                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, socialNetworkView.getObjectID());
-                    arguments.putString(SocialNetworkAbstractList.GROUP_NAME_TAG, socialNetworkView.getName());
+                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, socialNetworkScreen.getObjectId());
+                    arguments.putString(SocialNetworkAbstractList.GROUP_NAME_TAG, socialNetworkScreen.getName());
                     arguments.putSerializable(SocialNetworkAbstractList.REQUESTER_TAG, new VKRequester(vkAccessToken));
                 }
                 break;
-            case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
+            case ScreenTypes.VIEW_OF_OTHER_VIEWS:
                 fragment = new ViewOfOtherViewsAdapter();
                 arguments.putParcelable(ViewOfOtherViewsAdapter.HSE_VIEW_TAG, view);
                 break;
-            case HSEViewTypes.MAP:
+            case ScreenTypes.MAP:
                 fragment = new MapFragment();
                 arguments.putString(MapFragment.TITLE_TAG, view.getName());
                 arguments.putParcelableArray(MapFragment.MARKERS_TAG, ((MapScreen) view).getMarkers());
                 break;
-            case HSEViewTypes.EVENTS:
+            case ScreenTypes.EVENTS:
                 fragment = new EventFragment();
                 arguments.putParcelable(EventFragment.HSE_VIEW_TAG, view);
                 break;
-            case HSEViewTypes.FILE:
+            case ScreenTypes.FILE:
                 openFile((ScreenWithFile) view);
                 break;
-            case HSEViewTypes.FACEBOOK:
-                SocialNetworkView facebookView = (SocialNetworkView) view;
+            case ScreenTypes.FACEBOOK:
+                SocialNetworkScreen facebookView = (SocialNetworkScreen) view;
                 AccessToken facebookAccessToken = getFacebookAccessToken();
                 if (facebookAccessToken != null)
                 {
                     fragment = new TopicsFragment();
-                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, facebookView.getObjectID());
+                    arguments.putString(SocialNetworkAbstractList.GROUP_ID_TAG, facebookView.getObjectId());
                     arguments.putString(SocialNetworkAbstractList.GROUP_NAME_TAG, facebookView.getName());
                     arguments.putSerializable(SocialNetworkAbstractList.REQUESTER_TAG, new FacebookRequester(facebookAccessToken));
                 }
@@ -281,7 +282,7 @@ public class ScreenFactory
                 if (accessToken != null)
                 {
                     writeToSharePreferences(FACEBOOK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    Toast.makeText(activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                    notifyAboutAccessTokenReceiving();
                 }
             }
         };
@@ -296,10 +297,16 @@ public class ScreenFactory
     /*writes given string to shared preferences(using private mode)*/
     private void writeToSharePreferences(String tag, String content)
     {
-        SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
-        SharedPreferences.Editor preferencesEditor = preferences.edit();
-        preferencesEditor.putString(tag, content);
-        preferencesEditor.commit();
+        if (activity == null)
+        {
+            ScreenFactory.instance().writeToSharePreferences(tag, content);
+        } else
+        {
+            SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFERENCES_TAG_SOCIAL, Context.MODE_PRIVATE);
+            SharedPreferences.Editor preferencesEditor = preferences.edit();
+            preferencesEditor.putString(tag, content);
+            preferencesEditor.commit();
+        }
     }
 
     /*shows authentication fragment ans provides VkRequester to it*/
@@ -313,7 +320,8 @@ public class ScreenFactory
                 if (accessToken != null)
                 {
                     writeToSharePreferences(VK_ACCESS_TOKEN_TAG, accessToken.getStringRepresentation());
-                    Toast.makeText(activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                    notifyAboutAccessTokenReceiving();
+
                 }
             }
         };
@@ -323,5 +331,17 @@ public class ScreenFactory
         arguments.putSerializable(AuthenticationFragment.TOKEN_REQUEST_TAG, request);
         authenticationFragment.setArguments(arguments);
         changeFragments(activity.getSupportFragmentManager(), authenticationFragment);
+    }
+
+    private void notifyAboutAccessTokenReceiving()
+    {
+        if (activity == null)
+        {
+            ScreenFactory factory = ScreenFactory.instance();
+            Toast.makeText(factory.activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+        } else
+        {
+            Toast.makeText(activity, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+        }
     }
 }

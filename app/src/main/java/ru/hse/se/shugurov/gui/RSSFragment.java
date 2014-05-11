@@ -33,7 +33,7 @@ public class RSSFragment extends AbstractFragment//TODO здесь валитс�
         RSSScreen[] rssItems = null;
         try
         {
-            rssItems = ((RSSWrapperScreen) getBaseScreen()).getRSS();
+            rssItems = ((RSSWrapperScreen) getScreen()).getRSS();
         } catch (JSONException e)
         {
 
@@ -84,13 +84,13 @@ public class RSSFragment extends AbstractFragment//TODO здесь валитс�
             @Override
             public void onClick(View v)
             {
-                openBrowser(getBaseScreen().getUrl());
+                openBrowser(getScreen().getUrl());
             }
         });
-        if (getBaseScreen() instanceof RSSScreen)
+        if (getScreen() instanceof RSSScreen)
         {
-            ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(((RSSScreen) getBaseScreen()).getTitle());
-            ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(((RSSScreen) getBaseScreen()).getOmitted());
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_title)).setText(((RSSScreen) getScreen()).getTitle());
+            ((TextView) rssLayout.findViewById(R.id.rss_layout_text)).setText(((RSSScreen) getScreen()).getOmitted());
         } else
         {
             throw new IllegalStateException("Precondition violated in RssScreenAdapter.showEntireRSS.Inappropriate view type.");
@@ -101,10 +101,10 @@ public class RSSFragment extends AbstractFragment//TODO здесь валитс�
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        if (getBaseScreen() instanceof RSSWrapperScreen)
+        if (getScreen() instanceof RSSWrapperScreen)
         {
             return showListOfRSSItems(inflater, container);
-        } else if (getBaseScreen() instanceof RSSScreen)
+        } else if (getScreen() instanceof RSSScreen)
         {
             return showEntireRSS(inflater, container);
         } else

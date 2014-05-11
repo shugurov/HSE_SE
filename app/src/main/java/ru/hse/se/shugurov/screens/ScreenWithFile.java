@@ -1,5 +1,7 @@
 package ru.hse.se.shugurov.screens;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -8,6 +10,20 @@ import org.json.JSONObject;
  */
 public class ScreenWithFile extends BaseScreen implements HasFile
 {
+    public static final Creator<ScreenWithFile> CREATOR = new Creator<ScreenWithFile>()
+    {
+        @Override
+        public ScreenWithFile createFromParcel(Parcel source)
+        {
+            return new ScreenWithFile(source);
+        }
+
+        @Override
+        public ScreenWithFile[] newArray(int size)
+        {
+            return new ScreenWithFile[size];
+        }
+    };
     private String fileType;
     private String fileName;
 
@@ -17,6 +33,11 @@ public class ScreenWithFile extends BaseScreen implements HasFile
         fileType = jsonObject.getString("filetype");
         fileName = jsonObject.getString("filename");
         url = serverUrl + url;
+    }
+
+    private ScreenWithFile(Parcel source)
+    {
+        super(source);
     }
 
     public String getFileName()
@@ -34,5 +55,4 @@ public class ScreenWithFile extends BaseScreen implements HasFile
     {
         return new FileDescription(fileName, getUrl());
     }
-
 }

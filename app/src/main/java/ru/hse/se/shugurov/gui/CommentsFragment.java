@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -12,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Arrays;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.AbstractRequester;
@@ -69,9 +72,18 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
         if (args != null)
         {
             topicId = args.getString(TOPIC_ID_TAG);
-            comments = (SocialNetworkEntry[]) args.getParcelableArray(COMMENTS_TAG);
+            getCommentsFromBundle(args);
             stateListener = (StateListener) args.getSerializable(COMMENTS_LISTENER_TAG);
             topicTitle = args.getString(TOPIC_TITLE_TAG);
+        }
+    }
+
+    private void getCommentsFromBundle(Bundle args)
+    {
+        Parcelable[] parcelables = args.getParcelableArray(COMMENTS_TAG);
+        if (parcelables != null)
+        {
+            comments = Arrays.copyOf(parcelables, parcelables.length, SocialNetworkEntry[].class);
         }
     }
 
@@ -82,7 +94,7 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
         if (savedInstanceState != null)
         {
             topicId = savedInstanceState.getString(TOPIC_ID_TAG);
-            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(COMMENTS_TAG);
+            getCommentsFromBundle(savedInstanceState);
             commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
             stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
         }

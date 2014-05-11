@@ -71,7 +71,7 @@ public class BaseScreen implements Parcelable
     protected BaseScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         parseUsualDescriptionOfTheView(jsonObject);
-        if (screenType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
+        if (screenType == ScreenTypes.VIEW_OF_OTHER_VIEWS)
         {
             JSONArray jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
             parseJSON(jsonArray, serverURL);
@@ -160,7 +160,7 @@ public class BaseScreen implements Parcelable
         } else if (jsonObject.has(SECTIONS_TAG_IN_JSON))
         {
             isMainView = true;
-            screenType = HSEViewTypes.VIEW_OF_OTHER_VIEWS;
+            screenType = ScreenTypes.VIEW_OF_OTHER_VIEWS;
         }
         if (jsonObject.has("url"))
         {
@@ -190,30 +190,30 @@ public class BaseScreen implements Parcelable
             int type = jsonObject.getInt("type");
             switch (type)
             {
-                case HSEViewTypes.FILE:
+                case ScreenTypes.FILE:
                     viewList.add(new ScreenWithFile(jsonObject, serverURL));
                     break;
-                case HSEViewTypes.HTML_CONTENT:
+                case ScreenTypes.HTML_CONTENT:
                     viewList.add(new HtmlContentScreen(jsonObject, serverURL));
                     break;
-                case HSEViewTypes.RSS_WRAPPER:
+                case ScreenTypes.RSS_WRAPPER:
                     viewList.add(new RSSWrapperScreen(jsonObject, serverURL));
                     break;
-                case HSEViewTypes.FACEBOOK:
-                case HSEViewTypes.VK_FORUM:
-                case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
-                    viewList.add(new SocialNetworkView(jsonObject));
+                case ScreenTypes.FACEBOOK:
+                case ScreenTypes.VK_FORUM:
+                case ScreenTypes.VK_PUBLIC_PAGE_WALL:
+                    viewList.add(new SocialNetworkScreen(jsonObject));
                     break;
-                case HSEViewTypes.MAP:
+                case ScreenTypes.MAP:
                     viewList.add(new MapScreen(jsonObject, serverURL));
                     break;
-                case HSEViewTypes.EVENTS:
+                case ScreenTypes.EVENTS:
                     viewList.add(new EventScreen(jsonObject, serverURL));
                     break;
-                case HSEViewTypes.INNER_WEB_PAGE:
-                case HSEViewTypes.RSS:
-                case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
-                case HSEViewTypes.WEB_PAGE:
+                case ScreenTypes.INNER_WEB_PAGE:
+                case ScreenTypes.RSS:
+                case ScreenTypes.VIEW_OF_OTHER_VIEWS:
+                case ScreenTypes.WEB_PAGE:
                     viewList.add(new BaseScreen(jsonObject, serverURL));
                 default:
                     continue;
@@ -267,14 +267,14 @@ public class BaseScreen implements Parcelable
         {
             descriptions = new ArrayList<FileDescription>();
         }
-        if (screenType == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
+        if (screenType == ScreenTypes.VIEW_OF_OTHER_VIEWS)
         {
             for (BaseScreen view : childViews)
             {
                 if (view instanceof HasFile)
                 {
                     descriptions.add(((HasFile) view).getFileDescription());
-                } else if (view.getScreenType() == HSEViewTypes.VIEW_OF_OTHER_VIEWS)
+                } else if (view.getScreenType() == ScreenTypes.VIEW_OF_OTHER_VIEWS)
                 {
                     view.getDescriptionsOfFiles(descriptions);
                 }

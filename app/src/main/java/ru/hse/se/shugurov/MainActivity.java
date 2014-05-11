@@ -67,6 +67,10 @@ public class MainActivity extends ActionBarActivity
     {
         super.onSaveInstanceState(outState);
         outState.putBoolean(DOWNLOAD_COMPLETENESS, wasDownloadedCompletely);
+        if (task != null)
+        {
+            task.cancel(false);
+        }
     }
 
     @Override

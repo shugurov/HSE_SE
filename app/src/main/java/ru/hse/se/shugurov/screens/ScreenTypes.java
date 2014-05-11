@@ -3,7 +3,7 @@ package ru.hse.se.shugurov.screens;
 /**
  * lists all screen types represented in API
  */
-public interface HSEViewTypes
+public interface ScreenTypes
 {
     int INNER_WEB_PAGE = 1;
     int WEB_PAGE = 2;

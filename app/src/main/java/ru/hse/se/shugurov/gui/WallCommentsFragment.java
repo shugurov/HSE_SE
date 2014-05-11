@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Html;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.social_networks.CommentsAdapter;
@@ -82,7 +84,14 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
         if (savedInstanceState != null)
         {
             post = savedInstanceState.getParcelable(WALL_COMMENTS_POST_TAG);
-            comments = (SocialNetworkEntry[]) savedInstanceState.getParcelableArray(WALL_COMMENTS_TAG);
+            Parcelable[] parcelables = savedInstanceState.getParcelableArray(WALL_COMMENTS_TAG);
+            if (parcelables == null)
+            {
+                comments = new SocialNetworkEntry[0];
+            } else
+            {
+                comments = Arrays.copyOf(parcelables, parcelables.length, SocialNetworkEntry[].class);
+            }
             commentText = savedInstanceState.getString(TYPED_COMMENT);
             stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
         }

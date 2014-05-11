@@ -1,5 +1,7 @@
 package ru.hse.se.shugurov.screens;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +12,21 @@ import org.json.JSONObject;
  */
 public class HtmlContentScreen extends BaseScreen implements HasFile
 {
+
+    public static final Creator<HtmlContentScreen> CREATOR = new Creator<HtmlContentScreen>()
+    {
+        @Override
+        public HtmlContentScreen createFromParcel(Parcel source)
+        {
+            return new HtmlContentScreen(source);
+        }
+
+        @Override
+        public HtmlContentScreen[] newArray(int size)
+        {
+            return new HtmlContentScreen[size];
+        }
+    };
 
     /**
      * @param jsonObject json object which stores information about a screen
@@ -22,10 +39,14 @@ public class HtmlContentScreen extends BaseScreen implements HasFile
         url = serverURL + jsonObject.getString("html");
     }
 
+    private HtmlContentScreen(Parcel parcel)
+    {
+        super(parcel);
+    }
+
     @Override
     public FileDescription getFileDescription()
     {
         return new FileDescription(getKey(), getUrl());
     }
-
 }

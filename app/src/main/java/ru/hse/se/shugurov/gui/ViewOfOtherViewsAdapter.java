@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import ru.hse.se.shugurov.R;
 import ru.hse.se.shugurov.screens.BaseScreen;
-import ru.hse.se.shugurov.screens.HSEViewTypes;
+import ru.hse.se.shugurov.screens.ScreenTypes;
 
 /**
  * Class with shows "menu"
@@ -87,45 +87,45 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
         int backgroundColor = R.color.typical_item;
         switch (HSEViewType)
         {
-            case HSEViewTypes.INNER_WEB_PAGE:
+            case ScreenTypes.INNER_WEB_PAGE:
                 drawableID = R.drawable.section1;
                 backgroundColor = R.color.web_item;
                 break;
-            case HSEViewTypes.WEB_PAGE:
+            case ScreenTypes.WEB_PAGE:
                 drawableID = R.drawable.section2;
                 backgroundColor = R.color.web_item;
                 break;
-            case HSEViewTypes.FILE:
+            case ScreenTypes.FILE:
                 drawableID = R.drawable.section3;
                 backgroundColor = R.color.file_item;
                 break;
-            case HSEViewTypes.HTML_CONTENT:
+            case ScreenTypes.HTML_CONTENT:
                 drawableID = R.drawable.section4;
                 break;
-            case HSEViewTypes.FACEBOOK:
+            case ScreenTypes.FACEBOOK:
                 drawableID = R.drawable.section5;
                 backgroundColor = R.color.facebook_item;
                 break;
-            case HSEViewTypes.VK_PUBLIC_PAGE_WALL:
+            case ScreenTypes.VK_PUBLIC_PAGE_WALL:
                 drawableID = R.drawable.section6;
                 backgroundColor = R.color.vk_item;
                 break;
-            case HSEViewTypes.VK_FORUM:
+            case ScreenTypes.VK_FORUM:
                 drawableID = R.drawable.section6;
                 backgroundColor = R.color.vk_item;
                 break;
-            case HSEViewTypes.RSS_WRAPPER:
+            case ScreenTypes.RSS_WRAPPER:
                 drawableID = R.drawable.section8;
                 backgroundColor = R.color.rss_item;
                 break;
-            case HSEViewTypes.EVENTS:
+            case ScreenTypes.EVENTS:
                 drawableID = R.drawable.section9;
                 backgroundColor = R.color.event_item;
                 break;
-            case HSEViewTypes.VIEW_OF_OTHER_VIEWS:
+            case ScreenTypes.VIEW_OF_OTHER_VIEWS:
                 drawableID = R.drawable.section10;
                 break;
-            case HSEViewTypes.MAP:
+            case ScreenTypes.MAP:
                 drawableID = R.drawable.section13;
                 break;
             default:
@@ -141,7 +141,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
     @Override
     public void onClick(View view)
     {
-        BaseScreen selectedView = getBaseScreen().getViewElements()[view.getId()];
+        BaseScreen selectedView = getScreen().getViewElements()[view.getId()];
         ScreenFactory.instance().showFragment(selectedView);
     }
 
@@ -181,7 +181,7 @@ public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.On
         {
             screenWidth = getScreenWidth();
         }
-        View content = getLinearLayoutWithScreenItems(inflater, getBaseScreen().getViewElements(), screenWidth);
+        View content = getLinearLayoutWithScreenItems(inflater, getScreen().getViewElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
         return scrollView;
