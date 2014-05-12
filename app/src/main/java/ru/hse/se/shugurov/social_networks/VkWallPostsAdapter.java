@@ -17,7 +17,9 @@ import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 
 /**
- * Created by Иван on 02.05.2014.
+ * Provides object to a list view
+ * <p/>
+ * Created by Ivan Shugurov
  */
 public class VkWallPostsAdapter extends BaseAdapter
 {
@@ -26,6 +28,12 @@ public class VkWallPostsAdapter extends BaseAdapter
     private SocialNetworkTopic[] posts;
     private DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
+    /**
+     * Creates a new instance. Makes all preparations for inflating and showing list items
+     *
+     * @param context is used to inflate layouts
+     * @param posts   array of posts to be displayed
+     */
     public VkWallPostsAdapter(Context context, SocialNetworkTopic[] posts)
     {
         this.posts = posts;

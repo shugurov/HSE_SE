@@ -14,7 +14,8 @@ import java.util.Map;
 
 import ru.hse.se.shugurov.utills.Requester;
 
-/** Handles vk requests.
+/**
+ * Handles vk requests.
  * <p/>
  * Created by Ivan Shugurov
  */
@@ -52,7 +53,8 @@ public class VKRequester extends AbstractRequester
         super(accessToken);
     }
 
-    private static void parseProfiles(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
+    /*sets author fields*/
+    private void parseProfiles(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
     {
         for (int i = 0; i < profiles.length(); i++)
         {
@@ -73,7 +75,8 @@ public class VKRequester extends AbstractRequester
         }
     }
 
-    private static void parseGroups(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
+    /*parses groups*/
+    private void parseGroups(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
     {
         for (int i = 0; i < profiles.length(); i++)
         {
@@ -93,7 +96,8 @@ public class VKRequester extends AbstractRequester
         }
     }
 
-    private SocialNetworkEntry[] getWallComments(String commentsJson)//TODO стоит, наверное убрать
+    /*pares a string which contains json representation of a wall*/
+    private SocialNetworkEntry[] getWallComments(String commentsJson)
     {
         SocialNetworkEntry[] comments = null;
         try
@@ -119,13 +123,8 @@ public class VKRequester extends AbstractRequester
         return comments;
     }
 
-    /**
-     * Requests authors for comments
-     *
-     * @param comments
-     * @param callback
-     */
-    private void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO поправить(
+    /*Requests authors for comments*/
+    private void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)
     {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < comments.length; i++)
@@ -141,7 +140,8 @@ public class VKRequester extends AbstractRequester
         requester.execute(url);
     }
 
-    private void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)//TODO поправить(
+    /*sets authors to topics*/
+    private void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)
     {
         Map<String, List<SocialNetworkProfile>> profilesMap = new HashMap<String, List<SocialNetworkProfile>>();
         for (SocialNetworkEntry comment : comments)
@@ -201,6 +201,7 @@ public class VKRequester extends AbstractRequester
     }
 
 
+    /*parses a string representation of topics*/
     private SocialNetworkTopic[] getTopics(String topicsJson)
     {
         SocialNetworkTopic[] vkBoardTopics;
@@ -257,6 +258,7 @@ public class VKRequester extends AbstractRequester
         requester.execute(request);
     }
 
+    /*parses a string representation of comments*/
     private SocialNetworkEntry[] getComments(String commentsJson)
     {
         SocialNetworkEntry[] comments;
@@ -308,6 +310,7 @@ public class VKRequester extends AbstractRequester
         requester.execute(url);
     }
 
+    /*parses a string representation of wall posts*/
     private SocialNetworkTopic[] getWallPosts(String wallPostJson)
     {
         SocialNetworkTopic[] posts = null;
@@ -387,6 +390,7 @@ public class VKRequester extends AbstractRequester
         requester.execute(url);
     }
 
+    /*makes a request*/
     private void requestAuthorsOfComments(final SocialNetworkEntry[] comments, final RequestResultListener<SocialNetworkEntry> listener)
     {
         getProfileInformation(comments, new Requester.RequestResultCallback()

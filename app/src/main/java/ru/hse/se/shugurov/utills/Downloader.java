@@ -16,7 +16,9 @@ import ru.hse.se.shugurov.screens.FileDescription;
 
 
 /**
- * Created by Shugurov Ivan on 21.10.13.
+ * Downloads files and stores them in a local storage
+ *
+ * Created by Ivan Shugurov
  */
 public class Downloader extends AsyncTask<FileDescription, Void, Void>
 {

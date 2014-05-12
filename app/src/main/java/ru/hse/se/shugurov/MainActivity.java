@@ -1,6 +1,8 @@
 package ru.hse.se.shugurov;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
@@ -50,6 +52,7 @@ public class MainActivity extends ActionBarActivity
             checkFiles();
         }
         ImageLoader.initialize(this);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2c5491")));
     }
 
     @Override
