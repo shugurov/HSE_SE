@@ -101,9 +101,9 @@ public abstract class AbstractRequester implements Serializable
     /**
      * @param groupId  specifies a group whose comments are desired
      * @param postId   specifies a wall post whose comments are desired
-     * @param callback used to notify a caller about result of a request
+     * @param listener used to notify a caller about result of a request
      */
-    public void getWallComments(String groupId, String postId, Requester.RequestResultCallback callback)
+    public void getWallComments(String groupId, String postId, RequestResultListener<SocialNetworkEntry> listener)
     {
         throw new UnsupportedOperationException();
     }

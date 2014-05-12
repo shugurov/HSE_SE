@@ -30,7 +30,7 @@ public class VKRequester extends AbstractRequester
      */
     public static final String OAUTH = "https://oauth.vk.com/authorize?" +
             "client_id=3965004&redirect_uri=" + REDIRECTION_URL +
-            "&display=mobile&response_type=token&scope=wall,groups";
+            "&display=mobile&response_type=token&scope=wall,groups,offline";
 
 
     private static final String GET_COMMENTS = "https://api.vk.com/method/board.getComments?group_id=%s&topic_id=%s&access_token=%s&extended=1&count=100";
@@ -50,102 +50,6 @@ public class VKRequester extends AbstractRequester
     public VKRequester(AccessToken accessToken)
     {
         super(accessToken);
-    }
-
-    /**
-     * parses comments json
-     *
-     * @param commentsJson
-     * @return
-     */
-    public static SocialNetworkEntry[] getWallComments(String commentsJson)//TODO стоит, наверное убрать
-    {
-        SocialNetworkEntry[] comments = null;
-        try
-        {
-            JSONObject jsonObject = new JSONObject(commentsJson);
-            JSONArray responseArray = jsonObject.getJSONArray("response");
-            comments = new SocialNetworkEntry[responseArray.length() - 1];
-            for (int i = 1; i < responseArray.length(); i++)
-            {
-                JSONObject commentObject = responseArray.getJSONObject(i);
-                String userId = commentObject.getString("uid");
-
-                long date = commentObject.getLong("date") * 1000;
-                String text = commentObject.getString("text");
-                SocialNetworkProfile profile = new SocialNetworkProfile(userId);
-                comments[i - 1] = new SocialNetworkEntry(profile, text, new Date(date));
-            }
-
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
-        return comments;
-    }
-
-    /**
-     * Requests authors for comments
-     *
-     * @param comments
-     * @param callback
-     */
-    public static void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO поправить(
-    {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < comments.length; i++)
-        {
-            if (i != 0)
-            {
-                builder.append(',');
-            }
-            builder.append(comments[i].getAuthor().getId());
-        }
-        String url = String.format(GET_PROFILE_INFORMATION, builder.toString());
-        Requester requester = new Requester(callback);
-        requester.execute(url);
-    }
-
-    /**
-     * fills comments objects with authors
-     *
-     * @param comments
-     * @param profilesJson
-     */
-    public static void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)//TODO поправить(
-    {
-        Map<String, List<SocialNetworkProfile>> profilesMap = new HashMap<String, List<SocialNetworkProfile>>();
-        for (SocialNetworkEntry comment : comments)
-        {
-            List<SocialNetworkProfile> profilesForCurrentId = profilesMap.get(comment.getAuthor().getId());
-            if (profilesForCurrentId == null)
-            {
-                profilesForCurrentId = new ArrayList<SocialNetworkProfile>();
-                profilesMap.put(comment.getAuthor().getId(), profilesForCurrentId);
-            }
-            profilesForCurrentId.add(comment.getAuthor());
-        }
-        try
-        {
-            JSONObject receivedObject = new JSONObject(profilesJson);
-            JSONArray profilesArray = receivedObject.getJSONArray("response");
-            for (int i = 0; i < profilesArray.length(); i++)
-            {
-                JSONObject profileObject = profilesArray.getJSONObject(i);
-                String userId = profileObject.getString("uid");
-                String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
-                String photo = profileObject.getString("photo_100");
-                List<SocialNetworkProfile> userProfiles = profilesMap.get(userId);
-                for (SocialNetworkProfile userProfile : userProfiles)
-                {
-                    userProfile.setFullName(name);
-                    userProfile.setPhoto(photo);
-                }
-            }
-        } catch (JSONException e)
-        {
-            e.printStackTrace();
-        }
     }
 
     private static void parseProfiles(Map<String, SocialNetworkProfile> profilesMap, JSONArray profiles)
@@ -186,6 +90,90 @@ public class VKRequester extends AbstractRequester
             {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private SocialNetworkEntry[] getWallComments(String commentsJson)//TODO стоит, наверное убрать
+    {
+        SocialNetworkEntry[] comments = null;
+        try
+        {
+            JSONObject jsonObject = new JSONObject(commentsJson);
+            JSONArray responseArray = jsonObject.getJSONArray("response");
+            comments = new SocialNetworkEntry[responseArray.length() - 1];
+            for (int i = 1; i < responseArray.length(); i++)
+            {
+                JSONObject commentObject = responseArray.getJSONObject(i);
+                String userId = commentObject.getString("uid");
+
+                long date = commentObject.getLong("date") * 1000;
+                String text = commentObject.getString("text");
+                SocialNetworkProfile profile = new SocialNetworkProfile(userId);
+                comments[i - 1] = new SocialNetworkEntry(profile, text, new Date(date));
+            }
+
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
+        }
+        return comments;
+    }
+
+    /**
+     * Requests authors for comments
+     *
+     * @param comments
+     * @param callback
+     */
+    private void getProfileInformation(SocialNetworkEntry[] comments, Requester.RequestResultCallback callback)//TODO поправить(
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < comments.length; i++)
+        {
+            if (i != 0)
+            {
+                builder.append(',');
+            }
+            builder.append(comments[i].getAuthor().getId());
+        }
+        String url = String.format(GET_PROFILE_INFORMATION, builder.toString());
+        Requester requester = new Requester(callback);
+        requester.execute(url);
+    }
+
+    private void fillProfileInformation(SocialNetworkEntry[] comments, String profilesJson)//TODO поправить(
+    {
+        Map<String, List<SocialNetworkProfile>> profilesMap = new HashMap<String, List<SocialNetworkProfile>>();
+        for (SocialNetworkEntry comment : comments)
+        {
+            List<SocialNetworkProfile> profilesForCurrentId = profilesMap.get(comment.getAuthor().getId());
+            if (profilesForCurrentId == null)
+            {
+                profilesForCurrentId = new ArrayList<SocialNetworkProfile>();
+                profilesMap.put(comment.getAuthor().getId(), profilesForCurrentId);
+            }
+            profilesForCurrentId.add(comment.getAuthor());
+        }
+        try
+        {
+            JSONObject receivedObject = new JSONObject(profilesJson);
+            JSONArray profilesArray = receivedObject.getJSONArray("response");
+            for (int i = 0; i < profilesArray.length(); i++)
+            {
+                JSONObject profileObject = profilesArray.getJSONObject(i);
+                String userId = profileObject.getString("uid");
+                String name = profileObject.getString("first_name") + " " + profileObject.getString("last_name");
+                String photo = profileObject.getString("photo_100");
+                List<SocialNetworkProfile> userProfiles = profilesMap.get(userId);
+                for (SocialNetworkProfile userProfile : userProfiles)
+                {
+                    userProfile.setFullName(name);
+                    userProfile.setPhoto(photo);
+                }
+            }
+        } catch (JSONException e)
+        {
+            e.printStackTrace();
         }
     }
 
@@ -371,11 +359,51 @@ public class VKRequester extends AbstractRequester
     }
 
     @Override
-    public void getWallComments(String groupId, String postId, Requester.RequestResultCallback callback)
+    public void getWallComments(String groupId, String postId, final RequestResultListener<SocialNetworkEntry> listener)
     {
         String url = String.format(WALL_GET_COMMENTS_FOR_POST, groupId, postId);
+        Requester.RequestResultCallback callback = new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String result)
+            {
+                if (result == null || (result != null && result.contains("error")))
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    SocialNetworkEntry[] comments = getWallComments(result);
+                    if (comments == null)
+                    {
+                        listener.resultObtained(comments);
+                    } else
+                    {
+                        requestAuthorsOfComments(comments, listener);
+                    }
+                }
+            }
+        };
         Requester requester = new Requester(callback);
         requester.execute(url);
+    }
+
+    private void requestAuthorsOfComments(final SocialNetworkEntry[] comments, final RequestResultListener<SocialNetworkEntry> listener)
+    {
+        getProfileInformation(comments, new Requester.RequestResultCallback()
+        {
+            @Override
+            public void pushResult(String profilesJson)
+            {
+                if (profilesJson == null)
+                {
+                    listener.resultObtained(null);
+                } else
+                {
+                    fillProfileInformation(comments, profilesJson);
+                    listener.resultObtained(comments);
+                }
+            }
+        });
     }
 
     @Override

@@ -25,12 +25,12 @@ import java.text.DateFormat;
 import java.util.Arrays;
 
 import ru.hse.se.shugurov.R;
+import ru.hse.se.shugurov.social_networks.AbstractRequester;
 import ru.hse.se.shugurov.social_networks.CommentsAdapter;
 import ru.hse.se.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.se.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.se.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.se.shugurov.social_networks.StateListener;
-import ru.hse.se.shugurov.social_networks.VKRequester;
 import ru.hse.se.shugurov.utills.FlexibleImageView;
 import ru.hse.se.shugurov.utills.ImageLoader;
 import ru.hse.se.shugurov.utills.Requester;
@@ -151,19 +151,14 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
             {
                 if (comments[i].getAuthor().getFullName() == null)
                 {
-                    VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
-                    {
-                        @Override
-                        public void pushResult(String result)
-                        {
-                            handleFullProfilesInformationObtaining(result);
-                        }
-                    });
                     emptyProfilesOccur = true;
                     break;
                 }
             }
-            if (!emptyProfilesOccur)
+            if (emptyProfilesOccur)
+            {
+                loadComments();
+            } else
             {
                 instantiateAdapter();
             }
@@ -174,41 +169,21 @@ public class WallCommentsFragment extends SocialNetworkAbstractList
     /*requests a list of comments via requester*/
     private void loadComments()
     {
-        getRequester().getWallComments(getGroupId(), post.getId(), new Requester.RequestResultCallback()
+        getRequester().getWallComments(getGroupId(), post.getId(), new AbstractRequester.RequestResultListener<SocialNetworkEntry>()
         {
             @Override
-            public void pushResult(String result)
+            public void resultObtained(SocialNetworkEntry[] resultComments)
             {
-                if (result == null)
+                if (resultComments == null)
                 {
                     Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
                 } else
                 {
-                    comments = VKRequester.getWallComments(result);
-                    VKRequester.getProfileInformation(comments, new Requester.RequestResultCallback()
-                    {
-                        @Override
-                        public void pushResult(String result)
-                        {
-                            handleFullProfilesInformationObtaining(result);
-                        }
-                    });
+                    comments = resultComments;
+                    instantiateAdapter();
                 }
             }
         });
-    }
-
-    /*checks whether request was correct or not, if it was correct then triggers adapter setting*/
-    private void handleFullProfilesInformationObtaining(String result)
-    {
-        if (result == null)
-        {
-            Toast.makeText(getActivity(), "Нет Интернет соединения", Toast.LENGTH_SHORT).show();
-        } else
-        {
-            VKRequester.fillProfileInformation(comments, result);
-            instantiateAdapter();
-        }
     }
 
     /*creates header view, footer view and sets adapter to a list viw*/

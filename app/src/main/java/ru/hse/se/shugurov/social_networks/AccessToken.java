@@ -24,7 +24,13 @@ public class AccessToken implements Serializable
     {
         this.accessToken = accessToken;
         long currentTime = System.currentTimeMillis();
-        this.expirationTime = currentTime + expiresIn * 1000;
+        if (expiresIn == 0)
+        {
+            expirationTime = 0;
+        } else
+        {
+            this.expirationTime = currentTime + expiresIn * 1000;
+        }
     }
 
     /**
@@ -66,8 +72,14 @@ public class AccessToken implements Serializable
      */
     public boolean hasExpired()
     {
-        long currentTime = System.currentTimeMillis();
-        return currentTime >= expirationTime;
+        if (expirationTime == 0)
+        {
+            return false;
+        } else
+        {
+            long currentTime = System.currentTimeMillis();
+            return currentTime >= expirationTime;
+        }
     }
 
     /**
