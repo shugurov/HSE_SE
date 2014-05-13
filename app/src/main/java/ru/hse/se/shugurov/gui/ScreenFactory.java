@@ -212,9 +212,9 @@ public class ScreenFactory implements Serializable //todo remove serializable
         {
             Intent target = new Intent(Intent.ACTION_VIEW);
             target.setDataAndType(Uri.fromFile(file), fileView.getFileType());
-            Intent chooser = Intent.createChooser(target, "Open a file");
             try
             {
+                Intent chooser = Intent.createChooser(target, "Open a file");
                 activity.startActivity(chooser);
             } catch (ActivityNotFoundException e)
             {

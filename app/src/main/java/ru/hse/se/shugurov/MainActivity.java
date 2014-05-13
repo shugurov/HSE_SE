@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,8 +78,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     public void onBackPressed()
     {
-        FragmentManager manager = getSupportFragmentManager();
-        manager.popBackStack();
+        super.onBackPressed();
     }
 
     @Override
