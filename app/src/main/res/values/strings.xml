@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Отделение ПИ</string>
-    <string name="google_api_key">AIzaSyAYdTVYVGIbQmos0DrNBCzkCkl0QW2lKmU</string>
+    <string name="google_api_key">AIzaSyCV7wcmOf99fbUbV3Sr9hLvoXnpu-dqJUI</string>
     <string name="google_static_map">http://maps.googleapis.com/maps/api/staticmap?center=%s</string>
     <string name="json_url">"http://promoteeducate1.appspot.com/api/structure/app/fe1222a924fa7c649d33a36c5532594fb239fb6f"</string>
     <string name="server_url">http://promoteeducate1.appspot.com</string>
