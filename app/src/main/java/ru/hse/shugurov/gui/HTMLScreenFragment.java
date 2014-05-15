@@ -12,7 +12,7 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import ru.hse.shugurov.R;
-import ru.hse.shugurov.utills.FileManager;
+import ru.hse.shugurov.utils.FileManager;
 
 /**
  * Used to demonstrate html documents. Has some limitations due to {@code TextView} which can demonstrate only base tags.

@@ -11,7 +11,7 @@ import android.widget.Toast;
 import ru.hse.shugurov.R;
 import ru.hse.shugurov.social_networks.AbstractRequester;
 import ru.hse.shugurov.social_networks.StateListener;
-import ru.hse.shugurov.utills.Requester;
+import ru.hse.shugurov.utils.Requester;
 
 /**
  * Class used to show a from which allows user to create a topic. Makes request to publish this

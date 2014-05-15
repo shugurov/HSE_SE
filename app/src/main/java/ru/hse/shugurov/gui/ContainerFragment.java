@@ -142,7 +142,7 @@ public class ContainerFragment extends AbstractFragment implements View.OnClickL
     @Override
     public void onClick(View view)
     {
-        BaseScreen selectedView = getScreen().getViewElements()[view.getId()];
+        BaseScreen selectedView = getScreen().getScreenElements()[view.getId()];
         ScreenFactory.instance().showFragment(selectedView);
     }
 
@@ -182,7 +182,7 @@ public class ContainerFragment extends AbstractFragment implements View.OnClickL
         {
             screenWidth = getScreenWidth();
         }
-        View content = getLinearLayoutWithScreenItems(inflater, getScreen().getViewElements(), screenWidth);
+        View content = getLinearLayoutWithScreenItems(inflater, getScreen().getScreenElements(), screenWidth);
         ScrollView scrollView = (ScrollView) inflater.inflate(R.layout.activity_main_scroll, container, false);
         scrollView.addView(content);
         return scrollView;

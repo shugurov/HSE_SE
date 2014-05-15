@@ -2,13 +2,13 @@ package ru.hse.shugurov.social_networks;
 
 import java.io.Serializable;
 
-import ru.hse.shugurov.utills.Requester;
+import ru.hse.shugurov.utils.Requester;
 
 /**
  * Abstract superclass for requesters of specific social networks assuming tat they use OAuth 2 authentication.
  * Most of the methods are not abstract, however they do not have implementations. Every specific requester implements those methods which make
  * sense for a particular social network. Subclasses have to declare actual code that interacts with
- * social networks, passes data to it and gets a response. Typically it is done with using {@link ru.hse.shugurov.utills.Requester}.
+ * social networks, passes data to it and gets a response. Typically it is done with using {@link ru.hse.shugurov.utils.Requester}.
  * Subclasses also have to include parsers for a data types they receive from the Internet.
  * There is a need to create a new instance for a every new access token.
  * <p/>

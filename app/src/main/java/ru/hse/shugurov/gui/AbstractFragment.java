@@ -20,7 +20,7 @@ import ru.hse.shugurov.screens.BaseScreen;
  * <p/>
  * Fragment requires following arguments:
  * <ul>
- * <li>{@link ru.hse.shugurov.screens.BaseScreen} with a key specified by {@code HSE_VIEW_TAG}</li>
+ * <li>{@link ru.hse.shugurov.screens.BaseScreen} with a key specified by {@code SCREEN_TAG}</li>
  * </ul>
  * <p/>
  * <strong>Is is assumed that method setArguments is called after putting all arguments in a bundle object</strong>
@@ -31,7 +31,7 @@ import ru.hse.shugurov.screens.BaseScreen;
 public abstract class AbstractFragment extends Fragment
 {
     /*constants used as keys in bundle object*/
-    public static String HSE_VIEW_TAG = "hse_view";
+    public static String SCREEN_TAG = "base_screen_abstract_fragment";
 
     private BaseScreen screen;
 
@@ -48,7 +48,7 @@ public abstract class AbstractFragment extends Fragment
     {
         if (args != null)
         {
-            screen = (BaseScreen) args.get(HSE_VIEW_TAG);
+            screen = (BaseScreen) args.get(SCREEN_TAG);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractFragment extends Fragment
     private void configureActionBar()
     {
         getActivity().setTitle(screen.getName());
-        if (screen.isMainView())
+        if (screen.isMainScreen())
         {
             setHasOptionsMenu(true);
         } else
@@ -83,7 +83,7 @@ public abstract class AbstractFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        outState.putParcelable(HSE_VIEW_TAG, screen);
+        outState.putParcelable(SCREEN_TAG, screen);
         super.onSaveInstanceState(outState);
     }
 

@@ -14,7 +14,7 @@ import java.text.DateFormat;
 
 import ru.hse.shugurov.R;
 import ru.hse.shugurov.screens.Event;
-import ru.hse.shugurov.utills.ImageLoader;
+import ru.hse.shugurov.utils.ImageLoader;
 
 /**
  * Adapter for a list of events. See also {@link EventsFragment}

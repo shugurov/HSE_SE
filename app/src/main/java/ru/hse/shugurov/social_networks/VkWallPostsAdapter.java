@@ -13,8 +13,8 @@ import android.widget.TextView;
 import java.text.DateFormat;
 
 import ru.hse.shugurov.R;
-import ru.hse.shugurov.utills.ImageLoader;
-import ru.hse.shugurov.utills.ImageViewProxy;
+import ru.hse.shugurov.utils.ImageLoader;
+import ru.hse.shugurov.utils.ImageViewProxy;
 
 /**
  * Provides object to a list view

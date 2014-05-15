@@ -31,9 +31,9 @@ import ru.hse.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.shugurov.social_networks.SocialNetworkProfile;
 import ru.hse.shugurov.social_networks.SocialNetworkTopic;
 import ru.hse.shugurov.social_networks.StateListener;
-import ru.hse.shugurov.utills.ImageLoader;
-import ru.hse.shugurov.utills.ImageViewProxy;
-import ru.hse.shugurov.utills.Requester;
+import ru.hse.shugurov.utils.ImageLoader;
+import ru.hse.shugurov.utils.ImageViewProxy;
+import ru.hse.shugurov.utils.Requester;
 
 /**
  * Mostly used to show vk wall post comments

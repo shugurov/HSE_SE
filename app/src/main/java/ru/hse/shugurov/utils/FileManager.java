@@ -1,4 +1,4 @@
-package ru.hse.shugurov.utills;
+package ru.hse.shugurov.utils;
 
 import android.content.Context;
 

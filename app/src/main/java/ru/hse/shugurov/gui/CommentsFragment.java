@@ -21,7 +21,7 @@ import ru.hse.shugurov.social_networks.AbstractRequester;
 import ru.hse.shugurov.social_networks.CommentsAdapter;
 import ru.hse.shugurov.social_networks.SocialNetworkEntry;
 import ru.hse.shugurov.social_networks.StateListener;
-import ru.hse.shugurov.utills.Requester;
+import ru.hse.shugurov.utils.Requester;
 
 /**
  * Class for demonstrating a list of comments from a specific topic of social network.
@@ -68,6 +68,11 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
     public void setArguments(Bundle args)
     {
         super.setArguments(args);
+        readStateFromBundle(args);
+    }
+
+    private void readStateFromBundle(Bundle args)
+    {
         if (args != null)
         {
             topicId = args.getString(TOPIC_ID_TAG);
@@ -91,13 +96,7 @@ public class CommentsFragment extends SocialNetworkAbstractList//в vk нету 
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null)
-        {
-            topicId = savedInstanceState.getString(TOPIC_ID_TAG);
-            getCommentsFromBundle(savedInstanceState);
-            commentText = savedInstanceState.getString(COMMENTS_COMMENT_TAG);
-            stateListener = (StateListener) savedInstanceState.getSerializable(COMMENTS_LISTENER_TAG);
-        }
+        readStateFromBundle(savedInstanceState);
     }
 
     @Override

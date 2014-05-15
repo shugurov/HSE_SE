@@ -111,7 +111,7 @@ public class BaseScreen implements Parcelable
      * @return first screen which contain array of child screens
      * @throws JSONException if json representation has errors or does not have required fields
      */
-    public static BaseScreen getView(String json, String serverURL) throws JSONException
+    public static BaseScreen getScreen(String json, String serverURL) throws JSONException
     {
         JSONObject jsonObject = new JSONObject(json);
         BaseScreen viewToReturn = new BaseScreen(jsonObject, serverURL);
@@ -248,7 +248,7 @@ public class BaseScreen implements Parcelable
      *
      * @return child elements or null
      */
-    public BaseScreen[] getViewElements()
+    public BaseScreen[] getScreenElements()
     {
         return this.childViews;
     }
@@ -258,7 +258,7 @@ public class BaseScreen implements Parcelable
      *
      * @return whether requested screen is main or not
      */
-    public boolean isMainView()
+    public boolean isMainScreen()
     {
         return isMainView;
     }
@@ -312,7 +312,7 @@ public class BaseScreen implements Parcelable
     {
         dest.writeString(url);
         dest.writeInt(screenType);
-        dest.writeBooleanArray(new boolean[]{isMainView()});
+        dest.writeBooleanArray(new boolean[]{isMainScreen()});
         dest.writeString(name);
         dest.writeString(key);
         dest.writeParcelableArray(childViews, flags);

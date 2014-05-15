@@ -21,9 +21,9 @@ import java.util.Set;
 import ru.hse.shugurov.gui.ScreenFactory;
 import ru.hse.shugurov.screens.BaseScreen;
 import ru.hse.shugurov.screens.FileDescription;
-import ru.hse.shugurov.utills.Downloader;
-import ru.hse.shugurov.utills.FileManager;
-import ru.hse.shugurov.utills.ImageLoader;
+import ru.hse.shugurov.utils.Downloader;
+import ru.hse.shugurov.utils.FileManager;
+import ru.hse.shugurov.utils.ImageLoader;
 
 /**
  * @author Ivan Shugurov
@@ -113,6 +113,7 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /*checks if all files in JSON are present. If necessary requests downloading missing files.*/
     private void checkFiles()
     {
         String jsonUrl = getString(R.string.json_url);
@@ -185,6 +186,7 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    /*creates progress dialog and shows it*/
     private void startProgressDialog()
     {
         if (progressDialog == null)
@@ -197,6 +199,7 @@ public class MainActivity extends ActionBarActivity
         progressDialog.show();
     }
 
+    /*requests parsing of server responses, initializes UI*/
     private boolean setJsonField()
     {
         FileManager fileManager = FileManager.instance();
@@ -211,7 +214,7 @@ public class MainActivity extends ActionBarActivity
         BaseScreen newView;
         try
         {
-            newView = BaseScreen.getView(json, getString(R.string.server_url));
+            newView = BaseScreen.getScreen(json, getString(R.string.server_url));
         } catch (JSONException e)
         {
             handleJsonException();
@@ -221,17 +224,20 @@ public class MainActivity extends ActionBarActivity
         return true;
     }
 
+    /*tells a user about exception*/
     private void handleJsonException()
     {
         Toast.makeText(this, "Не удалось загрузить контент", Toast.LENGTH_SHORT).show();
     }
 
+    /*requests a new JSON, starts progress dialog*/
     private void refreshContent()
     {
         startProgressDialog();
         requestJson();
     }
 
+    /*requests a new JSON*/
     private void requestJson()
     {
         Downloader.DownloadCallback downloadCallback = getCallbackForJsonDownloading();
@@ -240,6 +246,7 @@ public class MainActivity extends ActionBarActivity
         task.execute(new FileDescription(JSON_FILE_NAME, jsonUrl));
     }
 
+    /*creates callback for jJSON downloading*/
     private Downloader.DownloadCallback getCallbackForJsonDownloading()
     {
         return new Downloader.DownloadCallback()

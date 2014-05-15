@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ru.hse.shugurov.utills.Requester;
+import ru.hse.shugurov.utils.Requester;
 
 /**
  * Handles facebook requests.

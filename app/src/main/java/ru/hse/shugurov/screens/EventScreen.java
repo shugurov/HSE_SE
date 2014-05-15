@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import ru.hse.shugurov.utills.FileManager;
+import ru.hse.shugurov.utils.FileManager;
 
 /**
  * Used to describe a screen with events

@@ -36,15 +36,15 @@ import ru.hse.shugurov.social_networks.VKRequester;
  *
  * @author Ivan Shugurov
  */
-public class ScreenFactory implements Serializable //todo remove serializable
+public class ScreenFactory implements Serializable
 {
     private static final String SHARED_PREFERENCES_TAG_SOCIAL = "social_networks";
     private static final String VK_ACCESS_TOKEN_TAG = "vk_access_token";
     private static final String FACEBOOK_ACCESS_TOKEN_TAG = "facebook_access_token";
     private static ScreenFactory screenFactory;
-    private transient FragmentActivity activity; //TODO transient
+    private transient FragmentActivity activity;
     private boolean isFirstFragment = true;
-    private transient AuthenticationFragment authenticationFragment; //TODO transient
+    private transient AuthenticationFragment authenticationFragment;
 
     /*crete an instance of the class*/
     private ScreenFactory(FragmentActivity activity, boolean isFirstFragment)
@@ -99,19 +99,19 @@ public class ScreenFactory implements Serializable //todo remove serializable
         {
             case ScreenTypes.HTML_CONTENT:
                 fragment = new HTMLScreenFragment();
-                arguments.putParcelable(HTMLScreenFragment.HSE_VIEW_TAG, view);
+                arguments.putParcelable(HTMLScreenFragment.SCREEN_TAG, view);
                 break;
             case ScreenTypes.WEB_PAGE:
                 openBrowser(view.getUrl());
                 break;
             case ScreenTypes.INNER_WEB_PAGE:
                 fragment = new InternalWebFragment();
-                arguments.putParcelable(InternalWebFragment.HSE_VIEW_TAG, view);
+                arguments.putParcelable(InternalWebFragment.SCREEN_TAG, view);
                 break;
             case ScreenTypes.RSS:
             case ScreenTypes.RSS_WRAPPER:
                 fragment = new RSSFragment();
-                arguments.putParcelable(RSSFragment.HSE_VIEW_TAG, view);
+                arguments.putParcelable(RSSFragment.SCREEN_TAG, view);
                 break;
             case ScreenTypes.VK_FORUM:
                 SocialNetworkScreen socialNetworkScreen = (SocialNetworkScreen) view;
@@ -137,7 +137,7 @@ public class ScreenFactory implements Serializable //todo remove serializable
                 break;
             case ScreenTypes.VIEW_OF_OTHER_VIEWS:
                 fragment = new ContainerFragment();
-                arguments.putParcelable(ContainerFragment.HSE_VIEW_TAG, view);
+                arguments.putParcelable(ContainerFragment.SCREEN_TAG, view);
                 break;
             case ScreenTypes.MAP:
                 fragment = new MapFragment();
@@ -146,7 +146,7 @@ public class ScreenFactory implements Serializable //todo remove serializable
                 break;
             case ScreenTypes.EVENTS:
                 fragment = new EventsFragment();
-                arguments.putParcelable(EventsFragment.HSE_VIEW_TAG, view);
+                arguments.putParcelable(EventsFragment.SCREEN_TAG, view);
                 break;
             case ScreenTypes.FILE:
                 openFile((ScreenWithFile) view);
