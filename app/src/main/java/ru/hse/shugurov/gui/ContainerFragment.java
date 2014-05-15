@@ -123,7 +123,7 @@ public class ContainerFragment extends AbstractFragment implements View.OnClickL
                 drawableID = R.drawable.section9;
                 backgroundColor = R.color.event_item;
                 break;
-            case ScreenTypes.VIEW_OF_OTHER_VIEWS:
+            case ScreenTypes.CONTAINER_SCREEN:
                 drawableID = R.drawable.section10;
                 break;
             case ScreenTypes.MAP:

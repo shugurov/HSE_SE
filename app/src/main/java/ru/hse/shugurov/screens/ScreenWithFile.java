@@ -33,7 +33,7 @@ public class ScreenWithFile extends BaseScreen implements HasFile
     private String fileType;
     private String fileName;
 
-    ScreenWithFile(JSONObject jsonObject, String serverUrl) throws JSONException
+    protected ScreenWithFile(JSONObject jsonObject, String serverUrl) throws JSONException
     {
         super(jsonObject, serverUrl);
         fileType = jsonObject.getString("filetype");

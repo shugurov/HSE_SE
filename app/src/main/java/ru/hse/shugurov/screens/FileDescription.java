@@ -35,8 +35,7 @@ public class FileDescription
      */
     public FileDescription(String name, String url, boolean proneToChanges)
     {
-        this.name = name;
-        this.url = url;
+        this(name, url);
         this.proneToChanges = proneToChanges;
     }
 

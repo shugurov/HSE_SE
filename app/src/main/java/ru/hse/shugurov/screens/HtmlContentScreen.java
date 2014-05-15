@@ -36,13 +36,13 @@ public class HtmlContentScreen extends BaseScreen implements HasFile
      * @param serverURL
      * @throws JSONException
      */
-    HtmlContentScreen(JSONObject jsonObject, String serverURL) throws JSONException
+    protected HtmlContentScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         super(jsonObject, serverURL);
         url = serverURL + jsonObject.getString("html");
     }
 
-    private HtmlContentScreen(Parcel parcel)
+    protected HtmlContentScreen(Parcel parcel)
     {
         super(parcel);
     }

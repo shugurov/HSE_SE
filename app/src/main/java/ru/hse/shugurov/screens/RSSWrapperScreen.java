@@ -46,7 +46,7 @@ public class RSSWrapperScreen extends BaseScreen implements HasFile
         super(input);
     }
 
-    RSSWrapperScreen(JSONObject jsonObject, String serverURL) throws JSONException
+    protected RSSWrapperScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         super(jsonObject, serverURL);
         url = serverURL + "/api/structure/rss/" + getKey();

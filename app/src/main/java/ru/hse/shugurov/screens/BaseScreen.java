@@ -76,7 +76,7 @@ public class BaseScreen implements Parcelable
     protected BaseScreen(JSONObject jsonObject, String serverURL) throws JSONException
     {
         parseUsualDescriptionOfTheView(jsonObject);
-        if (screenType == ScreenTypes.VIEW_OF_OTHER_VIEWS)
+        if (screenType == ScreenTypes.CONTAINER_SCREEN)
         {
             JSONArray jsonArray = jsonObject.getJSONArray(SECTIONS_TAG_IN_JSON);
             parseJSON(jsonArray, serverURL);
@@ -168,7 +168,7 @@ public class BaseScreen implements Parcelable
         } else if (jsonObject.has(SECTIONS_TAG_IN_JSON))
         {
             isMainView = true;
-            screenType = ScreenTypes.VIEW_OF_OTHER_VIEWS;
+            screenType = ScreenTypes.CONTAINER_SCREEN;
         }
         if (jsonObject.has("url"))
         {
@@ -220,7 +220,7 @@ public class BaseScreen implements Parcelable
                     break;
                 case ScreenTypes.INNER_WEB_PAGE:
                 case ScreenTypes.RSS:
-                case ScreenTypes.VIEW_OF_OTHER_VIEWS:
+                case ScreenTypes.CONTAINER_SCREEN:
                 case ScreenTypes.WEB_PAGE:
                     viewList.add(new BaseScreen(jsonObject, serverURL));
                 default:
@@ -275,14 +275,14 @@ public class BaseScreen implements Parcelable
         {
             descriptions = new ArrayList<FileDescription>();
         }
-        if (screenType == ScreenTypes.VIEW_OF_OTHER_VIEWS)
+        if (screenType == ScreenTypes.CONTAINER_SCREEN)
         {
             for (BaseScreen view : childViews)
             {
                 if (view instanceof HasFile)
                 {
                     descriptions.add(((HasFile) view).getFileDescription());
-                } else if (view.getScreenType() == ScreenTypes.VIEW_OF_OTHER_VIEWS)
+                } else if (view.getScreenType() == ScreenTypes.CONTAINER_SCREEN)
                 {
                     view.getDescriptionsOfFiles(descriptions);
                 }

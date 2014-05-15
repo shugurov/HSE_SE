@@ -135,7 +135,7 @@ public class ScreenFactory implements Serializable
                     arguments.putSerializable(SocialNetworkAbstractList.REQUESTER_TAG, new VKRequester(vkAccessToken));
                 }
                 break;
-            case ScreenTypes.VIEW_OF_OTHER_VIEWS:
+            case ScreenTypes.CONTAINER_SCREEN:
                 fragment = new ContainerFragment();
                 arguments.putParcelable(ContainerFragment.SCREEN_TAG, view);
                 break;

@@ -29,11 +29,6 @@ public class RSSScreen extends BaseScreen
             return new RSSScreen[size];
         }
     };
-    private final static String TITLE_TAG = "title";
-    private final static String OMITTED_TAG = "omitted";
-    private final static String NULL_TAG = "null";
-    private final static String SUMMARY_TAG = "summary";
-    private final static String LINK_TAG = "link";
     private String title = "";
     private String omitted = "";
     private String summary = "";
@@ -41,11 +36,11 @@ public class RSSScreen extends BaseScreen
 
     RSSScreen(JSONObject jsonObject) throws JSONException
     {
-        title = jsonObject.getString(TITLE_TAG);
-        omitted = jsonObject.getString(OMITTED_TAG);
-        summary = jsonObject.getString(SUMMARY_TAG);
-        url = jsonObject.getString(LINK_TAG);
-        if (omitted.equals(NULL_TAG))
+        title = jsonObject.getString("title");
+        omitted = jsonObject.getString("omitted");
+        summary = jsonObject.getString("summary");
+        url = jsonObject.getString("null");
+        if (omitted.equals("null"))
         {
             type = RSSTypes.ONLY_TITLE;
             summary = "";
@@ -61,7 +56,7 @@ public class RSSScreen extends BaseScreen
     /**
      * Used for recreating objects after their serialization. All subclasses <strong>have to call it first</strong>
      */
-    private RSSScreen(Parcel input)
+    protected RSSScreen(Parcel input)
     {
         super(input);
         title = input.readString();
@@ -100,6 +95,7 @@ public class RSSScreen extends BaseScreen
         return type;
     }
 
+    /*removes CSS because TextView can not apply it*/
     private void clearStyle()
     {
         int startIndex = summary.indexOf("<style");

@@ -96,7 +96,6 @@ public abstract class AbstractRequester implements Serializable
      */
     public void addCommentToTopic(String groupId, String topicId, String text, Requester.RequestResultCallback callback)
     {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -106,7 +105,6 @@ public abstract class AbstractRequester implements Serializable
      */
     public void getWallComments(String groupId, String postId, RequestResultListener<SocialNetworkEntry> listener)
     {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -119,7 +117,6 @@ public abstract class AbstractRequester implements Serializable
      */
     public void addCommentToWallPost(String groupId, String postId, String text, Requester.RequestResultCallback callback)
     {
-        throw new UnsupportedOperationException();
     }
 
     /**

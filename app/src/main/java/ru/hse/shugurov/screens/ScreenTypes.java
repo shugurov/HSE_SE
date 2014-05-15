@@ -15,7 +15,7 @@ public interface ScreenTypes
     int VK_FORUM = 6;
     int RSS_WRAPPER = 8;
     int EVENTS = 9;
-    int VIEW_OF_OTHER_VIEWS = 10;
+    int CONTAINER_SCREEN = 10;
     int VK_PUBLIC_PAGE_WALL = 11;
     int MAP = 13;
     int RSS = 999;
