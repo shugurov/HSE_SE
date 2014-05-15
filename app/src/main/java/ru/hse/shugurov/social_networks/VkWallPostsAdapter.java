@@ -19,7 +19,8 @@ import ru.hse.shugurov.utills.ImageViewProxy;
 /**
  * Provides object to a list view
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class VkWallPostsAdapter extends BaseAdapter
 {

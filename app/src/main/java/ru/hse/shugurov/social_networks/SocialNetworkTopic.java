@@ -8,7 +8,8 @@ import java.util.Date;
 /**
  * Represents a social network topic. Every topics consist of a title, id, comments and optional attache picture
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class SocialNetworkTopic extends SocialNetworkEntry
 {

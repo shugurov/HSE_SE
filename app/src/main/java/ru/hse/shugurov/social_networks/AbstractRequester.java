@@ -12,7 +12,8 @@ import ru.hse.shugurov.utills.Requester;
  * Subclasses also have to include parsers for a data types they receive from the Internet.
  * There is a need to create a new instance for a every new access token.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public abstract class AbstractRequester implements Serializable
 {

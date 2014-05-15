@@ -22,7 +22,8 @@ import java.util.WeakHashMap;
  * Used to download and cache images. Uses LRUCache to do it. Getting request to show a picture it checks it is is present in cache.
  * If present then immediately displays it, otherwise it starts another thread and download a picture.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class ImageLoader
 {
@@ -76,11 +77,13 @@ public class ImageLoader
         }
     }
 
+    /*requests photo downloading*/
     private void queuePhoto(String url, ImageView imageView)
     {
         new LoadBitmapTask().execute(new PhotoToLoad(url, imageView));
     }
 
+    /*reads bitmap from input stream*/
     private Bitmap getBitmap(String url)
     {
         Bitmap bitmap = null;
@@ -92,12 +95,14 @@ public class ImageLoader
         return bitmap;
     }
 
+    /*checks if image view is reused*/
     private boolean imageViewReused(PhotoToLoad photoToLoad)
     {
         String tag = imageViews.get(photoToLoad.getImageView());
         return tag == null || !tag.equals(photoToLoad.getUrl());
     }
 
+    /*opens Internet connection and gets input stream*/
     private InputStream openInputStream(String urlString)
     {
         InputStream inputStream = null;
@@ -132,6 +137,7 @@ public class ImageLoader
         return inputStream;
     }
 
+    /*describes a pair of url and imageView*/
     private class PhotoToLoad
     {
         private String url;
@@ -143,11 +149,17 @@ public class ImageLoader
             this.imageView = imageView;
         }
 
+        /**
+         * @return instance of ImageView which should display a picture
+         */
         public ImageView getImageView()
         {
             return imageView;
         }
 
+        /**
+         * @return url to a picture object
+         */
         public String getUrl()
         {
             return url;
@@ -155,6 +167,7 @@ public class ImageLoader
 
     }
 
+    /*downloads images in separate thread*/
     private class LoadBitmapTask extends AsyncTask<PhotoToLoad, Void, Bitmap>
     {
         private PhotoToLoad photoToLoad;

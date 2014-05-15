@@ -16,9 +16,10 @@ import ru.hse.shugurov.R;
 import ru.hse.shugurov.utills.ImageLoader;
 
 /**
- * Used to fill a list with comments
+ * Used to fill a list of comments
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class CommentsAdapter extends BaseAdapter
 {

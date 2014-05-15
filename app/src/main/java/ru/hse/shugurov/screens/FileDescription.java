@@ -1,9 +1,12 @@
 package ru.hse.shugurov.screens;
 
 /**
- * Class represents a file as a set of two fields: file name and url where this file can be obtained.
+ * Class represents a file as a set of three fields: file name and url where this file can be obtained,
+ * boolean variable which shows if changes are possible. Generally {@code proneToChanges} is true for
+ * those files whose internal structure may vary. For example, RSS files, Events.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class FileDescription
 {
@@ -60,6 +63,8 @@ public class FileDescription
 
 
     /**
+     * Tells if it is a good idea to download this file every time it is possible
+     *
      * @return whether a file is prone to be changed
      */
     public boolean isProneToChanges()

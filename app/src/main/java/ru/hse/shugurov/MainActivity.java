@@ -25,6 +25,9 @@ import ru.hse.shugurov.utills.Downloader;
 import ru.hse.shugurov.utills.FileManager;
 import ru.hse.shugurov.utills.ImageLoader;
 
+/**
+ * @author Ivan Shugurov
+ */
 public class MainActivity extends ActionBarActivity
 {
     private static String DOWNLOAD_COMPLETENESS = "download_completeness";

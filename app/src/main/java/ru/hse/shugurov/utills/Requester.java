@@ -13,18 +13,29 @@ import java.net.URLConnection;
 /**
  * Makes requests to social networks.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class Requester extends AsyncTask<String, Void, String[]>
 {
     private RequestResultCallback callback;
     private MultipleRequestResultCallback multipleRequestResultCallback;
 
+    /**
+     * Creates instance which downloads 1 item from the Internet
+     *
+     * @param callback used for notification when downloading is finished
+     */
     public Requester(RequestResultCallback callback)
     {
         this.callback = callback;
     }
 
+    /**
+     * Creates instance which downloads a number of items from the Internet
+     *
+     * @param multipleRequestResultCallback used for notification when downloading is finished
+     */
     public Requester(MultipleRequestResultCallback multipleRequestResultCallback)
     {
         this.multipleRequestResultCallback = multipleRequestResultCallback;
@@ -63,6 +74,7 @@ public class Requester extends AsyncTask<String, Void, String[]>
         }
     }
 
+    /*downloads from the Internet*/
     private String downloadFromTheInternet(String url)
     {
         InputStream input = OpenHttpUrlConnection(url);
@@ -77,7 +89,7 @@ public class Requester extends AsyncTask<String, Void, String[]>
         String content = "";
         try
         {
-            while ((charRead = reader.read(inputBuffer)) > 0)
+            while ((charRead = reader.read(inputBuffer)) != -1)
             {
                 String readString = String.copyValueOf(inputBuffer, 0, charRead);
                 content += readString;
@@ -98,6 +110,7 @@ public class Requester extends AsyncTask<String, Void, String[]>
         return content;
     }
 
+    /*opens internet connection, gets and returns input stream*/
     private InputStream OpenHttpUrlConnection(String urlString)
     {
         InputStream input = null;
@@ -127,13 +140,31 @@ public class Requester extends AsyncTask<String, Void, String[]>
         return input;
     }
 
+    /**
+     * Used as a callback for notifying of end of downloading.
+     */
     public interface RequestResultCallback
     {
+        /**
+         * Pushes a single result. Generally, objects which implement this interface should check that
+         * obtained value is not null
+         *
+         * @param result is null if downloading was not successful, otherwise not null.
+         */
         void pushResult(String result);
     }
 
+    /**
+     * Used as a callback for notifying of end of downloading.
+     */
     public interface MultipleRequestResultCallback
     {
+        /**
+         * Pushes a number of results. Generally, objects which implement this interface should check that
+         * obtained array is not null
+         *
+         * @param results is null if downloading was not successful, otherwise not null.
+         */
         void pushResult(String[] results);
     }
 }

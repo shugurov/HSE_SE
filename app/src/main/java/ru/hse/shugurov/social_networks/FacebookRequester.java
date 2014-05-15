@@ -18,7 +18,8 @@ import ru.hse.shugurov.utills.Requester;
 /**
  * Handles facebook requests.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class FacebookRequester extends AbstractRequester
 {

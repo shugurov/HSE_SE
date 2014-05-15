@@ -13,7 +13,8 @@ import java.io.Serializable;
  * Instance of this class wraps an instance of  {@link com.google.android.gms.maps.model.MarkerOptions}
  * in order to extends MarkerOptions with several additional fields
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class MarkerWrapper implements Parcelable
 {

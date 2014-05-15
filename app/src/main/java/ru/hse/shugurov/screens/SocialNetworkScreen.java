@@ -6,7 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Иван on 01.11.13.
+ * Describes common properties of social network screens
+ * <p/>
+ *
+ * @author Ivan Shugurov
  */
 public class SocialNetworkScreen extends BaseScreen
 {
@@ -29,6 +32,12 @@ public class SocialNetworkScreen extends BaseScreen
     };
     private String objectId = "";
 
+    /**
+     * Parses JSON and creates a new instance
+     *
+     * @param jsonObject JSON response which contains essential information for creation
+     * @throws JSONException if supplied JSON response is incorrect
+     */
     protected SocialNetworkScreen(JSONObject jsonObject) throws JSONException
     {
         super(jsonObject);

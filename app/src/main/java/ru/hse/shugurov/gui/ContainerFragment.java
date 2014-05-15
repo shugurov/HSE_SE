@@ -26,9 +26,10 @@ import ru.hse.shugurov.screens.ScreenTypes;
  * <p/>
  * For the required arguments see{@link AbstractFragment}
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
-public class ViewOfOtherViewsAdapter extends AbstractFragment implements View.OnClickListener
+public class ContainerFragment extends AbstractFragment implements View.OnClickListener
 {
     private static final int MINIMUM_WIDTH_OF_THE_ELEMENT = 300;
 

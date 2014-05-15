@@ -8,7 +8,8 @@ import org.json.JSONObject;
 /**
  * Represents a screen with html content. Overrides receiving url and then returns FileDescription
  * <p/>
- * Created Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class HtmlContentScreen extends BaseScreen implements HasFile
 {

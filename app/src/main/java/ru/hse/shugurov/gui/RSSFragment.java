@@ -23,7 +23,8 @@ import ru.hse.shugurov.screens.RSSWrapperScreen;
  * See {@link ru.hse.shugurov.gui.RSSListAdapter}
  * <p/>
  * For the required arguments see {@link AbstractFragment}
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class RSSFragment extends AbstractFragment//TODO здесь валится
 {

@@ -20,7 +20,8 @@ import ru.hse.shugurov.utills.FileManager;
  * CSS is not supported
  * <p/>
  * For the required arguments see{@link AbstractFragment}
- * Created byIvan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class HTMLScreenFragment extends AbstractFragment
 {

@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
  * Used to wait for a particular link. When desired link is caught, object of the class
  * parses it and gets an access token
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class AuthorizationWebClient extends WebViewClient
 {

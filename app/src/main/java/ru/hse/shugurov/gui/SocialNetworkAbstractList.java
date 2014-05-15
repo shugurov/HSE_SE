@@ -16,7 +16,8 @@ import ru.hse.shugurov.social_networks.AbstractRequester;
  * </ul>
  * <p/>
  * Is is assumed that method setArguments is called after putting all arguments in a bundle object
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public abstract class SocialNetworkAbstractList extends ListFragment
 {

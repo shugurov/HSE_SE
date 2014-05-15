@@ -3,7 +3,8 @@ package ru.hse.shugurov.screens;
 /**
  * Used to mark screens that have files which have to be downloaded and saved in local storage.
  * <strong>It is assumed that </strong>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public interface HasFile
 {

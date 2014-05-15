@@ -17,7 +17,8 @@ import ru.hse.shugurov.utills.Requester;
 /**
  * Handles vk requests.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class VKRequester extends AbstractRequester
 {

@@ -13,7 +13,8 @@ import ru.hse.shugurov.R;
  * Class used to demonstrate web pages within application
  * <p/>
  * For the required arguments see {@link AbstractFragment}
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class InternalWebFragment extends AbstractFragment
 {

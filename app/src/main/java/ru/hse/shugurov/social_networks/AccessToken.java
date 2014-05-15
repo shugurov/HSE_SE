@@ -7,7 +7,8 @@ import java.util.StringTokenizer;
 /**
  * Represents an access token, provides a possibility to store it is shared preferences as a string.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class AccessToken implements Serializable
 {

@@ -8,7 +8,8 @@ import java.util.Date;
 /**
  * Represents a social network entry like a comment which has an author, a date of publishing and a text
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class SocialNetworkEntry implements Parcelable
 {

@@ -6,7 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Иван on 25.10.13.
+ * used to describe a screen which should open a file in an external application via a mechanism of intents.
+ * <p/>
+ *
+ * @author Ivan Shugurov
  */
 public class ScreenWithFile extends BaseScreen implements HasFile
 {
@@ -46,11 +49,17 @@ public class ScreenWithFile extends BaseScreen implements HasFile
         super(source);
     }
 
+    /**
+     * @return file name
+     */
     public String getFileName()
     {
         return fileName;
     }
 
+    /**
+     * @return file type
+     */
     public String getFileType()
     {
         return fileType;

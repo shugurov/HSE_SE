@@ -6,7 +6,8 @@ import android.os.Parcelable;
 /**
  * Represents a user of a social network. Every profile consists of an univ identifier, a link to a photo and a full name
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class SocialNetworkProfile implements Parcelable
 {

@@ -24,7 +24,8 @@ import ru.hse.shugurov.social_networks.TopicsAdapter;
  * <p/>
  * For the required arguments see{@link ru.hse.shugurov.gui.SocialNetworkAbstractList}
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class TopicsFragment extends SocialNetworkAbstractList
 {

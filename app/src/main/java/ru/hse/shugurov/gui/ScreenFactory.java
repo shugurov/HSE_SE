@@ -33,7 +33,8 @@ import ru.hse.shugurov.social_networks.VKRequester;
  * <p/>
  * Design of this class was strongly influenced by singleton design pattern.
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class ScreenFactory implements Serializable //todo remove serializable
 {
@@ -135,8 +136,8 @@ public class ScreenFactory implements Serializable //todo remove serializable
                 }
                 break;
             case ScreenTypes.VIEW_OF_OTHER_VIEWS:
-                fragment = new ViewOfOtherViewsAdapter();
-                arguments.putParcelable(ViewOfOtherViewsAdapter.HSE_VIEW_TAG, view);
+                fragment = new ContainerFragment();
+                arguments.putParcelable(ContainerFragment.HSE_VIEW_TAG, view);
                 break;
             case ScreenTypes.MAP:
                 fragment = new MapFragment();
@@ -144,8 +145,8 @@ public class ScreenFactory implements Serializable //todo remove serializable
                 arguments.putParcelableArray(MapFragment.MARKERS_TAG, ((MapScreen) view).getMarkers());
                 break;
             case ScreenTypes.EVENTS:
-                fragment = new EventFragment();
-                arguments.putParcelable(EventFragment.HSE_VIEW_TAG, view);
+                fragment = new EventsFragment();
+                arguments.putParcelable(EventsFragment.HSE_VIEW_TAG, view);
                 break;
             case ScreenTypes.FILE:
                 openFile((ScreenWithFile) view);

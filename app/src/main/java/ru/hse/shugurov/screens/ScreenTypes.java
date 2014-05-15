@@ -2,6 +2,8 @@ package ru.hse.shugurov.screens;
 
 /**
  * lists all screen types represented in API
+ *
+ * @author Ivan Shugurov
  */
 public interface ScreenTypes
 {

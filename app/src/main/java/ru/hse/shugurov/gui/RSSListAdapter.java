@@ -13,7 +13,7 @@ import ru.hse.shugurov.screens.RSSScreen;
 /**
  * Provides items for {@code ListView}
  * <p/>
- * Created by Ivan Shugurov
+ * v
  */
 public class RSSListAdapter extends BaseAdapter
 {

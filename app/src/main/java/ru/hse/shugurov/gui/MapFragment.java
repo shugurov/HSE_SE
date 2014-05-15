@@ -34,7 +34,8 @@ import ru.hse.shugurov.screens.MarkerWrapper;
  * </ul>
  * <p/>
  * <strong>Is is assumed that method setArguments is called after putting all arguments in a bundle object</strong>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class MapFragment extends SupportMapFragment
 {

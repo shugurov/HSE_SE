@@ -8,7 +8,8 @@ import java.io.InputStreamReader;
 /**
  * Used for convenient reading from a file. Design is strongly influenced by singleton design pattern
  * <p/>
- * Created by Иван Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class FileManager
 {

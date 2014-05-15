@@ -13,7 +13,10 @@ import ru.hse.shugurov.utills.FileManager;
 
 
 /**
- * Created by Иван on 28.10.13.
+ * Describes a screen with a list of RSS elements
+ * <p/>
+ *
+ * @author Ivan Shugurov
  */
 public class RSSWrapperScreen extends BaseScreen implements HasFile
 {

@@ -6,7 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Used as a callback object to notify about state changes
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class StateListener implements Serializable
 {

@@ -6,7 +6,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Иван on 28.10.13.
+ * Describes RSS element
+ *
+ * @author Ivan Shugurov
  */
 public class RSSScreen extends BaseScreen
 {

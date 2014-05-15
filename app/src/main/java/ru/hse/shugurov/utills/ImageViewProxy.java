@@ -8,7 +8,8 @@ import android.widget.ImageView;
  * and redirects setImageBitmap method calls to this instance. The same goes for hashCode, equals and invalidate.
  * Other methods are not supported by this proxy class
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class ImageViewProxy extends ImageView
 {

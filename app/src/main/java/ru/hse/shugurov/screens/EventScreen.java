@@ -13,7 +13,8 @@ import ru.hse.shugurov.utills.FileManager;
 /**
  * Used to describe a screen with events
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class EventScreen extends BaseScreen implements HasFile
 {

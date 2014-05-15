@@ -46,7 +46,8 @@ import ru.hse.shugurov.utills.Requester;
  * <p/>
  * For other required arguments see{@link ru.hse.shugurov.gui.SocialNetworkAbstractList}
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class WallCommentsFragment extends SocialNetworkAbstractList
 {

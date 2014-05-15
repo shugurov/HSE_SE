@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 /**
  * Lists all available rss types
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public enum RSSTypes implements Serializable
 {

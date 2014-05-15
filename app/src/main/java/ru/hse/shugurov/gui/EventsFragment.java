@@ -19,7 +19,7 @@ import ru.hse.shugurov.screens.EventScreen;
  *
  * @author Ivan Shugurov
  */
-public class EventFragment extends AbstractFragment
+public class EventsFragment extends AbstractFragment
 {
 
     @Override

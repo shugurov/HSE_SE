@@ -25,7 +25,8 @@ import ru.hse.shugurov.screens.BaseScreen;
  * <p/>
  * <strong>Is is assumed that method setArguments is called after putting all arguments in a bundle object</strong>
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public abstract class AbstractFragment extends Fragment
 {

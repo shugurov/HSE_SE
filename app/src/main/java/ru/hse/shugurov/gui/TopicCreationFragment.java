@@ -25,7 +25,8 @@ import ru.hse.shugurov.utills.Requester;
  * <li>{@link ru.hse.shugurov.social_networks.StateListener} with a key specified by {@code STATE_LISTENER_TAG}. Object is passed as a serializable object</li>
  * </ul>
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class TopicCreationFragment extends Fragment
 {

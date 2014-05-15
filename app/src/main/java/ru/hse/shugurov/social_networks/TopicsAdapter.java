@@ -19,7 +19,8 @@ import ru.hse.shugurov.utills.ImageLoader;
 /**
  * Used to create a list of topics
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class TopicsAdapter extends BaseAdapter
 {

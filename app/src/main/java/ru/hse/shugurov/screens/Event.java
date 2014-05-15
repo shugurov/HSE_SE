@@ -10,7 +10,8 @@ import java.util.Date;
 /**
  * Class represents specific event
  * <p/>
- * Created byIvan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class Event extends BaseScreen
 {

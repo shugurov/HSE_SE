@@ -15,6 +15,8 @@ import java.util.Collection;
 /**
  * Base class for all screen classes. This class provides a number of methods for parsing json and
  * creating a graph of object which represents application structure
+ *
+ * @author Ivan Shugurov
  */
 public class BaseScreen implements Parcelable
 {

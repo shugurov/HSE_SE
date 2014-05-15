@@ -17,9 +17,10 @@ import ru.hse.shugurov.screens.Event;
 import ru.hse.shugurov.utills.ImageLoader;
 
 /**
- * Adapter for a list of events. See also {@link ru.hse.shugurov.gui.EventFragment}
+ * Adapter for a list of events. See also {@link EventsFragment}
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class EventsListAdapter extends BaseAdapter
 {

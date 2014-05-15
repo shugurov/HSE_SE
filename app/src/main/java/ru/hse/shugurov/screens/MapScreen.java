@@ -13,7 +13,8 @@ import java.util.Arrays;
 /**
  * Class represents a map screen which has several map markers
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class MapScreen extends BaseScreen
 {

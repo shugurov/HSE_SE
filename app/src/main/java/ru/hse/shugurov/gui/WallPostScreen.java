@@ -19,7 +19,8 @@ import ru.hse.shugurov.social_networks.VkWallPostsAdapter;
  * *
  * For the required arguments see{@link ru.hse.shugurov.gui.SocialNetworkAbstractList}
  * <p/>
- * Created by Ivan Shugurov
+ *
+ * @author Ivan Shugurov
  */
 public class WallPostScreen extends SocialNetworkAbstractList
 {
