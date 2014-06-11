@@ -271,7 +271,7 @@ public class FacebookRequester extends AbstractRequester
         profilesWithCurrentId.add(profile);
     }
 
-    /*requests posts*/
+    /*requests post*/
     private void getPost(String postId, final RequestResultListener<SocialNetworkTopic> listener)
     {
         String request = String.format(GET_POST, postId, getAccessToken());

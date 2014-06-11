@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
  */
 public class AuthorizationWebClient extends WebViewClient
 {
-    private static final String ACCESS_TOKEN_TAG = "access_token";
     private String waitFor;
     private TokenCallback callback;
 
@@ -51,7 +50,7 @@ public class AuthorizationWebClient extends WebViewClient
         AccessToken receivedToken = null;
         if (link.indexOf("denied") < 0)
         {
-            String token = parseForArgument(link, ACCESS_TOKEN_TAG);
+            String token = parseForArgument(link, "access_token");
             String expiresInString = parseForArgument(link, "expires_in");
             receivedToken = new AccessToken(token, Long.parseLong(expiresInString));
         }

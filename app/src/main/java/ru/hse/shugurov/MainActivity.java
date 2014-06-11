@@ -9,8 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import org.json.JSONException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -52,14 +50,14 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        ScreenFactory.initFactory(this, savedInstanceState == null);
         FileManager.initialize(this);
+        ImageLoader.initialize(this);
+        ScreenFactory.initFactory(this, savedInstanceState == null);
         setContentView(R.layout.activity_main);
         if (savedInstanceState != null)
         {
             wasDownloadedCompletely = savedInstanceState.getBoolean(DOWNLOAD_COMPLETENESS);
         }
-        ImageLoader.initialize(this);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2c5491")));
     }
 
@@ -203,6 +201,11 @@ public class MainActivity extends ActionBarActivity
     private boolean setJsonField()
     {
         FileManager fileManager = FileManager.instance();
+        if (fileManager == null)
+        {
+            FileManager.initialize(this);
+            fileManager = FileManager.instance();
+        }
         String json;
         try
         {
@@ -215,7 +218,7 @@ public class MainActivity extends ActionBarActivity
         try
         {
             newView = BaseScreen.getScreen(json, getString(R.string.server_url));
-        } catch (JSONException e)
+        } catch (Exception e)
         {
             handleJsonException();
             return false;
@@ -257,7 +260,6 @@ public class MainActivity extends ActionBarActivity
                 boolean isSuccessful = setJsonField();
                 if (isSuccessful)
                 {
-
                     checkFiles();
                 } else
                 {

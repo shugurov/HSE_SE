@@ -47,6 +47,16 @@ public class ScreenWithFile extends BaseScreen implements HasFile
     protected ScreenWithFile(Parcel source)
     {
         super(source);
+        fileType = source.readString();
+        fileName = source.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        super.writeToParcel(dest, flags);
+        dest.writeString(fileType);
+        dest.writeString(fileName);
     }
 
     /**

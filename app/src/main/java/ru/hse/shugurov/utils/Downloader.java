@@ -81,11 +81,6 @@ public class Downloader extends AsyncTask<FileDescription, Void, Void>
         return null;
     }
 
-    @Override
-    protected void onPreExecute()
-    {
-        super.onPreExecute();
-    }
 
     @Override
     protected void onPostExecute(Void aVoid)

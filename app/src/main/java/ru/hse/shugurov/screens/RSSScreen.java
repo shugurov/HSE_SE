@@ -39,8 +39,8 @@ public class RSSScreen extends BaseScreen
         title = jsonObject.getString("title");
         omitted = jsonObject.getString("omitted");
         summary = jsonObject.getString("summary");
-        url = jsonObject.getString("null");
-        if (omitted.equals("null"))
+        url = jsonObject.getString("link");
+        if (omitted == null || (omitted != null && omitted.equals("null")))
         {
             type = RSSTypes.ONLY_TITLE;
             summary = "";
