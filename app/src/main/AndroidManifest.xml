@@ -25,6 +25,7 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_api_key"/>
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="aa3e3b4deeec06edec58e14afa0d47fb4c63ebfb"/>
 
 
     </application>
